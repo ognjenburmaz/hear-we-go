@@ -1,0 +1,28 @@
+# Java & Maven
+target/
+*.class
+*.jar
+*.war
+.mvn/
+*.log
+
+# IDE files (IntelliJ / Eclipse / VS Code)
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+# Node & Angular
+node_modules/
+dist/
+.angular/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Docker volumes (if you map them locally)
+mongo-data/
+hdfs-data/

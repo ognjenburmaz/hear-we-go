@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 1. Inherit defaults from Spring Boot -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.streaming</groupId>
+    <artifactId>streaming-backend-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging> <!-- IMPORTANT: Must be 'pom' for a parent -->
+
+    <name>streaming-backend-parent</name>
+    <description>Parent POM for Microservices Music Streaming App</description>
+
+    <!-- 2. Global Properties / Versions -->
+    <properties>
+        <java.version>17</java.version>
+        <spring-cloud.version>2023.0.2</spring-cloud.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version> <!-- Useful for DTO mapping -->
+    </properties>
+
+    <!-- 3. Child Modules (These must match your folder names exactly) -->
+    <!-- Uncomment these as you create the folders -->
+    <modules>
+        <module>api-gateway</module>
+        <module>discovery-service</module>
+        <module>users-service</module>
+        <module>content-service</module>
+        <module>ratings-service</module>
+        <module>subscriptions-service</module>
+        <module>notification-service</module>
+        <module>recommendation-service</module>
+        <module>analytics-service</module>
+        <module>common-lib</module>
+    </modules>
+
+    <!-- 4. Dependency Management: Defines versions, doesn't import jars yet -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Cloud BOM (Bill of Materials) -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- MapStruct (Recommended for mapping Entity <-> DTO) -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 5. Global Dependencies: EVERY child module gets these automatically -->
+    <dependencies>
+        <!-- Lombok (Boilerplate reduction) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Testing Basics -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <!-- Lombok Processor -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <!-- MapStruct Processor (if used) -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
