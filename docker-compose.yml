@@ -115,7 +115,9 @@ services:
 
   # 1. Service Discovery (The Phonebook)
   discovery-service:
-    build: ./backend/discovery-service
+    build:
+      context: ./backend
+      dockerfile: discovery-service/Dockerfile
     container_name: streaming-discovery
     ports:
       - "8761:8761"
@@ -131,7 +133,9 @@ services:
 
   # 2. API Gateway (The Doorman) - Req 2.2
   api-gateway:
-    build: ./backend/api-gateway
+    build:
+      context: ./backend
+      dockerfile: api-gateway/Dockerfile
     container_name: streaming-gateway
     ports:
       - "8080:8080" # This is the main port you use in the browser
@@ -147,7 +151,9 @@ services:
 
   # 3. Users Service (Req 1.1 - 1.3)
   users-service:
-    build: ./backend/users-service
+    build:
+      context: ./backend
+      dockerfile: users-service/Dockerfile
     container_name: streaming-users
     ports:
       - "8081:8081" # Exposed for debugging
@@ -163,7 +169,9 @@ services:
 
   # 4. Content Service (Req 1.4 - 1.6)
   content-service:
-    build: ./backend/content-service
+    build:
+      context: ./backend
+      dockerfile: content-service/Dockerfile
     container_name: streaming-content
     ports:
       - "8082:8082"
@@ -186,7 +194,9 @@ services:
 
   # 5. Ratings Service (Req 1.9)
   ratings-service:
-    build: ./backend/ratings-service
+    build:
+      context: ./backend
+      dockerfile: ratings-service/Dockerfile
     container_name: streaming-ratings
     ports:
       - "8083:8083"
@@ -208,7 +218,9 @@ services:
 
   # 6. Subscriptions Service (Req 1.10)
   subscriptions-service:
-    build: ./backend/subscriptions-service
+    build:
+      context: ./backend
+      dockerfile: subscriptions-service/Dockerfile
     container_name: streaming-subscriptions
     ports:
       - "8084:8084"
@@ -229,7 +241,9 @@ services:
 
   # 7. Notification Service (Req 1.11)
   notification-service:
-    build: ./backend/notification-service
+    build:
+      context: ./backend
+      dockerfile: notification-service/Dockerfile
     container_name: streaming-notifications
     ports:
       - "8085:8085"
@@ -250,7 +264,9 @@ services:
 
   # 8. Recommendation Service (Req 1.13)
   recommendation-service:
-    build: ./backend/recommendation-service
+    build:
+      context: ./backend
+      dockerfile: recommendation-service/Dockerfile
     container_name: streaming-recommendations
     ports:
       - "8086:8086"
@@ -270,7 +286,9 @@ services:
 
   # 9. Analytics Service (Req 1.16)
   analytics-service:
-    build: ./backend/analytics-service
+    build:
+      context: ./backend
+      dockerfile: recommendation-service/Dockerfile
     container_name: streaming-analytics
     ports:
       - "8087:8087"
