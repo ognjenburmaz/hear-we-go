@@ -149,8 +149,8 @@ services:
   users-service:
     build: ./backend/users-service
     container_name: streaming-users
-    ports:
-      - "8081:8081" # Exposed for debugging
+#    ports:
+#      - "8081:8081" # Exposed for debugging
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/users-db
@@ -165,8 +165,8 @@ services:
   content-service:
     build: ./backend/content-service
     container_name: streaming-content
-    ports:
-      - "8082:8082"
+#    ports:
+#      - "8082:8082"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/content-db
@@ -188,8 +188,8 @@ services:
   ratings-service:
     build: ./backend/ratings-service
     container_name: streaming-ratings
-    ports:
-      - "8083:8083"
+#    ports:
+#      - "8083:8083"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       # Scylla is compatible with Cassandra drivers
@@ -210,8 +210,8 @@ services:
   subscriptions-service:
     build: ./backend/subscriptions-service
     container_name: streaming-subscriptions
-    ports:
-      - "8084:8084"
+#    ports:
+#      - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
@@ -231,8 +231,8 @@ services:
   notification-service:
     build: ./backend/notification-service
     container_name: streaming-notifications
-    ports:
-      - "8085:8085"
+#    ports:
+#      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
@@ -252,8 +252,8 @@ services:
   recommendation-service:
     build: ./backend/recommendation-service
     container_name: streaming-recommendations
-    ports:
-      - "8086:8086"
+#    ports:
+#      - "8086:8086"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_NEO4J_URI=bolt://neo4j:7687
@@ -272,8 +272,8 @@ services:
   analytics-service:
     build: ./backend/analytics-service
     container_name: streaming-analytics
-    ports:
-      - "8087:8087"
+#    ports:
+#      - "8087:8087"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/analytics-db
