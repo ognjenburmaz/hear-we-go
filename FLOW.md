@@ -9,3 +9,6 @@ maven projekat pri prvom otvaranju, desni klik na taj pom, add to maven, zatim r
 
 O.B.
 docker fix i user implements userdetails
+
+O.B.
+gateway radi, docker compose treba sve da digne, `@TODO` security da se poboljsa? i response za reg i log da bude smislen, front sta god i da se i on dokerizuje
