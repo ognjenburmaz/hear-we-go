@@ -6,3 +6,6 @@ Sem toga s dokerom nisam jos nista probao. Common lib je zajednicka "biblioteka"
 Mora u IDE da se enable annotation processing zbog lomboka. Kad se podigne app ako radi na ```http://localhost:8761/``` ce biti eureka gui, to je register za
 povezivanje servisa medjusobno. Pom koji se nalazi u backend diktira ostalima, zato moze tako da se otvori projekat u root folderu. Ako IDE ne vidi
 maven projekat pri prvom otvaranju, desni klik na taj pom, add to maven, zatim reload.
+
+O.B.
+docker fix i user implements userdetails
