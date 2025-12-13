@@ -3,7 +3,6 @@ package com.streaming.users.controller;
 import com.streaming.common.dto.AuthRequest;
 import com.streaming.common.dto.UserRegistrationRequest;
 import com.streaming.users.model.User;
-import com.streaming.users.security.JwtUtil;
 import com.streaming.users.security.TokenUtils;
 import com.streaming.users.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -59,7 +58,7 @@ public class AuthController {
 //    }
     @CrossOrigin
     @PostMapping("/login")
-    public ResponseEntity<JwtUtil.JwtDTO> createAuthenticationToken(
+    public ResponseEntity<TokenUtils.JwtDTO> createAuthenticationToken(
             @RequestBody AuthRequest authenticationRequest, HttpServletResponse response, HttpSession session) {
         System.out.println("OKINUO SE LOGIN CONTROLLER! 1");
 
@@ -81,7 +80,7 @@ public class AuthController {
         System.out.println("OKINUO SE LOGIN CONTROLLER! 4");
         System.out.println("TOKEN: " + jwt);
 
-        return ResponseEntity.ok(new JwtUtil.JwtDTO(jwt, expiresIn));
+        return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, expiresIn));
     }
 
     @CrossOrigin
