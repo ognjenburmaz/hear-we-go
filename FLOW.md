@@ -12,3 +12,20 @@ docker fix i user implements userdetails
 
 O.B.
 gateway radi, docker compose treba sve da digne, `@TODO` security da se poboljsa? i response za reg i log da bude smislen, front sta god i da se i on dokerizuje
+
+A.V.
+
+- Konfigurisan mongodb, sada se pri paljenju docker compose mongo baza za user-service puni sa podacima iz
+  ```backend/users-service/src/main/resources/db/import_users.js``` (Skripta se pokrece SAMO JEDNOM, ako zelimo da je
+  pokrenemo opet potrebno obrisati ```hear-we-go_mongo_data``` volume sa dockera)
+- Zavrsen Spring Security na users-service, login i registracija rade kako treba, prilikom logina salje se username i
+  password, a dobija se jwt i expiration date, videti postman zahteve ovde:
+  ```https://www.postman.com/workspace/My-Workspace~af45c8f7-dc83-4402-8b3b-ba9332cb2405/collection/39270923-523321ee-ce19-468a-a271-0fe1cfaf5642?action=share&source=copy-link&creator=39270923``` ,
+  folder Veliki Projekat
+- api-gateway nam uopste ne treba kao spring app, vec samo iskoristimo postojeci NGINX image i konfigurisemo sve putanje
+  u ```backend/nginx/nginx.conf```. Obratiti paznju da NGINX menja http zahteve tako sto izbaci deo posle "location" pa
+  ce npr zahtev ```http://localhost:8080/api/users/login``` biti prosledjen na user-service kao
+  ```http://users-service:8081/login```. (Ovo vrv znate, ali nije localhost i drugi je port zato sto unutar dockera ovaj
+  servis slusa na 8081, a mi saljemo zahtev na 8080 na kom slusa NGNIX)
+- Trebalo bi se pozabaviti autorizacijom u ngnix, ali ne bi trebalo da je puno komplikovano
+- `@TODO` jos samo FE aplikacija, trello i ako cemo odmah raditi i sertifikate tj komunikaciju preko HTTPS

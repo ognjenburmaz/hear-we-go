@@ -66,6 +66,9 @@ public class UserService implements UserDetailsService {
         } else {
             List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
             String role = "RK";
+            if (user.get().getRole().equals("A")) {
+                role = "A";
+            }
 
 //            for (User u : userRepository.findAll()) {
 //                if (user.get().getUsername().equals(u.getUsername())) {
