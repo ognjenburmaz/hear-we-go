@@ -20,5 +20,15 @@ db.users.insertMany([
         role: "RK",
         active: true,
         lastPasswordReset: new Date("2025-02-01T09:30:00Z")
+    },
+    {
+        username: "admin",
+        email: "admin@example.com",
+        firstName: "Admin",
+        lastName: "Korisnik",
+        passwordHash: "$2a$08$zkU3ED/TwsqjdBzMAJsLaumT.Lpy4Gky2KFXyE2.19dRh5WpYbSfO",
+        role: "A",
+        active: true,
+        lastPasswordReset: new Date("2025-02-01T09:30:00Z")
     }
 ]);
