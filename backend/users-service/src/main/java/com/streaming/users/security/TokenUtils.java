@@ -3,6 +3,7 @@ package com.streaming.users.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -77,5 +78,11 @@ public class TokenUtils {
 
     public int getExpiredIn() {
         return expiration.intValue();
+    }
+
+    @AllArgsConstructor
+    public static class JwtDTO {
+        public String jwt;
+        public int expiresIn;
     }
 }

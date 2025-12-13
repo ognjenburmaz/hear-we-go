@@ -3,7 +3,7 @@ package com.streaming.users.service;
 import com.streaming.common.dto.UserRegistrationRequest;
 import com.streaming.users.model.User;
 import com.streaming.users.repository.UserRepository;
-import com.streaming.users.security.JwtUtil;
+import com.streaming.users.security.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +24,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final TokenUtils jwtUtil;
 //    private final AuthenticationManager authenticationManager;
 
     public User registerUser(UserRegistrationRequest request) {
