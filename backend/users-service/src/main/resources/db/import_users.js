@@ -1,0 +1,24 @@
+db = db.getSiblingDB("users-db");
+
+db.users.insertMany([
+    {
+        username: "aleksav",
+        email: "aleksa@example.com",
+        firstName: "Aleksa",
+        lastName: "Velickovic",
+        passwordHash: "$2a$10$7sQJtq9KJ0y4YxFZkYbM7uN1YQZK8q8R5nYqZ7n6yK8m2Xz9F2QK",
+        role: "RK",
+        active: true,
+        lastPasswordReset: new Date("2025-01-01T12:00:00Z")
+    },
+    {
+        username: "testuser",
+        email: "test@example.com",
+        firstName: "Test",
+        lastName: "User",
+        passwordHash: "$2a$10$eImiTXuWVxfM37uY4JANjQ==",
+        role: "RK",
+        active: true,
+        lastPasswordReset: new Date("2025-02-01T09:30:00Z")
+    }
+]);
