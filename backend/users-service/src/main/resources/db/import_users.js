@@ -2,11 +2,11 @@ db = db.getSiblingDB("users-db");
 
 db.users.insertMany([
     {
-        username: "aleksav",
+        username: "aleksa",
         email: "aleksa@example.com",
         firstName: "Aleksa",
         lastName: "Velickovic",
-        passwordHash: "$2a$10$7sQJtq9KJ0y4YxFZkYbM7uN1YQZK8q8R5nYqZ7n6yK8m2Xz9F2QK",
+        passwordHash: "$2a$08$uPQ8FCcgcR2VqykhXdKW2OdVY9GIarOtVQJf4iTVur53aegBFA.A6",
         role: "RK",
         active: true,
         lastPasswordReset: new Date("2025-01-01T12:00:00Z")
