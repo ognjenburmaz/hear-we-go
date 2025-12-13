@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -45,7 +45,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
+    @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserRegistrationRequest request) {
         return ResponseEntity.ok(userService.registerUser(request));
