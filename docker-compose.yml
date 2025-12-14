@@ -16,18 +16,18 @@ services:
     environment:
       MONGO_INITDB_DATABASE: users-db
 
-  nginx:
-    image: nginx:latest
-    container_name: api-gateway
-    ports:
-      - "8080:80"
-    volumes:
-      - ./backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - users-service
-    #      Ovde dodati i druge servise kad ih napravimo
-    networks:
-      - streaming-net
+  #  nginx:
+  #    image: nginx:latest
+  #    container_name: api-gateway
+  #    ports:
+  #      - "8080:80"
+  #    volumes:
+  #      - ./backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #    depends_on:
+  #      - users-service
+  #    #      Ovde dodati i druge servise kad ih napravimo
+  #    networks:
+  #      - streaming-net
 
   redis:
     image: redis:alpine
@@ -114,11 +114,29 @@ services:
   # 2. MICROSERVICES
   # ==========================================
 
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED=true
+      - JAVA_TOOL_OPTIONS=-Xmx200m
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - streaming-net
+
   discovery-service:
     build:
       context: ./backend
       dockerfile: discovery-service/Dockerfile
-    container_name: streaming-discovery
+    container_name: discovery-service
     ports:
       - "8761:8761"
     environment:
@@ -156,7 +174,7 @@ services:
     build:
       context: ./backend
       dockerfile: content-service/Dockerfile
-    container_name: streaming-content
+    container_name: content-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/content-db
@@ -180,7 +198,7 @@ services:
     build:
       context: ./backend
       dockerfile: ratings-service/Dockerfile
-    container_name: streaming-ratings
+    container_name: ratings-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
@@ -202,7 +220,7 @@ services:
     build:
       context: ./backend
       dockerfile: subscriptions-service/Dockerfile
-    container_name: streaming-subscriptions
+    container_name: subscriptions-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
@@ -224,7 +242,7 @@ services:
     build:
       context: ./backend
       dockerfile: notification-service/Dockerfile
-    container_name: streaming-notifications
+    container_name: notification-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
@@ -246,7 +264,7 @@ services:
     build:
       context: ./backend
       dockerfile: recommendation-service/Dockerfile
-    container_name: streaming-recommendations
+    container_name: recommendation-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_NEO4J_URI=bolt://neo4j:7687
@@ -267,7 +285,7 @@ services:
     build:
       context: ./backend
       dockerfile: analytics-service/Dockerfile # <--- FIXED THIS PATH
-    container_name: streaming-analytics
+    container_name: analytics-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/analytics-db
