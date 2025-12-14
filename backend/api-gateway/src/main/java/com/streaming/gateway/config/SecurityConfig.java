@@ -36,7 +36,7 @@ public class SecurityConfig {
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
         // Use the SAME secret key as User Service
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437"));
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("21377d21d9ad8aec91f1f08f03abf8a37ebeced0590fd6db1072ffeb227cfc008dafc1d462c15869705c0c2c6c8372a6fdf31a5fea105120755e9a98aaee49f9"));
         return NimbusReactiveJwtDecoder.withSecretKey(key).build();
     }
 }

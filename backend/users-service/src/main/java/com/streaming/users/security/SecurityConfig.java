@@ -1,4 +1,4 @@
-package com.streaming.users.config;
+package com.streaming.users.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
