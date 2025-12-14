@@ -28,4 +28,4 @@ A.V.
   ```http://users-service:8081/login```. (Ovo vrv znate, ali nije localhost i drugi je port zato sto unutar dockera ovaj
   servis slusa na 8081, a mi saljemo zahtev na 8080 na kom slusa NGNIX)
 - Trebalo bi se pozabaviti autorizacijom u ngnix, ali ne bi trebalo da je puno komplikovano
-- `@TODO` jos samo FE aplikacija, trello i ako cemo odmah raditi i sertifikate tj komunikaciju preko HTTPS
+- `@TODO` jos samo FE aplikacija, trelloi i ako cemo odmah raditi i sertifikate tj komunikaciju preko HTTPS
