@@ -20,11 +20,12 @@ export class LoginComponent {
     const credentials = { username: this.username, password: this.password };
 
     this.authService.login(credentials).subscribe({
-      next: (token) => {
-        console.log('Successfully logged in, token:', token);
+      next: (response) => {
+        console.log('Successfully logged in!', response);
       },
       error: (err) => {
         console.error('Login error in component:', err);
+        alert('Login failed. Please check your username and password.');
       }
     });
   }
