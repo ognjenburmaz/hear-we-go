@@ -37,7 +37,7 @@ export interface User {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/users';
+  private apiUrl = '/api/users';
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -48,7 +48,7 @@ export class AuthService {
         tap(response => {
           const token = response.jwt;
           localStorage.setItem('authToken', token);
-          console.log('Login successful, token stored:', token);
+          console.log('Login successdockful, token stored:', token);
           this.router.navigate(['/home']);
         }),
         catchError(error => {
