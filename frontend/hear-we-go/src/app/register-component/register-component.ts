@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core'; // <--- 1. Import
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { CommonModule } from '@angular/common';
@@ -19,7 +19,12 @@ export class RegisterComponent {
 
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  // 2. Ubaci cdr u konstruktor
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   onRegister(): void {
     this.errorMessage = '';
@@ -61,6 +66,8 @@ export class RegisterComponent {
       error: (err) => {
         console.error('Registration error:', err);
         this.errorMessage = 'Registracija nije uspela. Proverite podatke ili pokušajte kasnije.';
+
+        this.cdr.detectChanges();
       }
     });
   }
