@@ -45,7 +45,7 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @CrossOrigin
+
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody @Valid UserRegistrationRequest request) {
         return ResponseEntity.ok(userService.registerUser(request));
@@ -56,7 +56,6 @@ public class AuthController {
 //        String token = userService.login(request.getUsername(), request.getPassword());
 //        return ResponseEntity.ok(token);
 //    }
-    @CrossOrigin
     @PostMapping("/login")
     public ResponseEntity<TokenUtils.JwtDTO> createAuthenticationToken(
             @RequestBody AuthRequest authenticationRequest, HttpServletResponse response, HttpSession session) {
@@ -83,7 +82,6 @@ public class AuthController {
         return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, expiresIn));
     }
 
-    @CrossOrigin
     @GetMapping("/all")
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.findAll());
