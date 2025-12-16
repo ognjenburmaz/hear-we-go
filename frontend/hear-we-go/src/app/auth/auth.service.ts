@@ -68,7 +68,7 @@ export class AuthService {
         tap(user => {
           console.log('Registration successful:', user);
 
-          // this.router.navigate(['/login']);
+          this.router.navigate(['/login']);
         }),
         catchError(error => {
           console.error('Registration failed:', error);
