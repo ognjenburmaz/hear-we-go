@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core'; // <--- 1. Importuj ChangeDetectorRef
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,11 @@ export class LoginComponent {
   password!: string;
   errorMessage: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   onLogin(): void {
     this.errorMessage = '';
@@ -35,6 +39,8 @@ export class LoginComponent {
       error: (err) => {
         console.error('Login error:', err);
         this.errorMessage = 'Pogrešno korisničko ime ili lozinka.';
+
+        this.cdr.detectChanges();
       }
     });
   }

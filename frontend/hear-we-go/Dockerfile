@@ -1,4 +1,3 @@
-# --- FAZA 1: Build ---
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
@@ -6,14 +5,12 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# --- FAZA 2: Nginx ---
-FROM nginx:alpine
 
+FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 
 COPY --from=build /app/dist/hear-we-go/browser /usr/share/nginx/html
-
 RUN if [ -f /usr/share/nginx/html/index.csr.html ]; then \
         mv /usr/share/nginx/html/index.csr.html /usr/share/nginx/html/index.html; \
     fi

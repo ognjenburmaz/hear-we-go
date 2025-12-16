@@ -1,0 +1,56 @@
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #121212;
+  font-family: sans-serif;
+  color: #e0e0e0;
+}
+
+.home-card {
+  background-color: #1e1e1e;
+  padding: 40px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-top: 3px solid #ffc107;
+  text-align: center; 
+}
+
+h2 {
+  margin: 0 0 10px;
+  color: #ffc107;
+  text-align: center;
+}
+
+.subtitle {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #b0b0b0;
+  font-size: 0.9rem;
+}
+
+.content {
+  margin-bottom: 30px;
+  color: #d1d1d1;
+  font-size: 1rem;
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffc107;
+  color: #121212;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-logout:hover {
+  background-color: #e0a800;
+}
