@@ -299,6 +299,18 @@ services:
       - kafka
     networks:
       - streaming-net
+  frontend-client:
+    build:
+
+      context: ./frontend/hear-we-go
+      dockerfile: Dockerfile
+    container_name: streaming-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - streaming-net
 
 volumes:
   mongo_data:

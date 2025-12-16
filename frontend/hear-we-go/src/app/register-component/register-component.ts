@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service'; // Pretpostavljam putanju
+import { AuthService } from '../auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -17,26 +17,50 @@ export class RegisterComponent {
   username!: string;
   password!: string;
 
+  errorMessage: string = '';
+
   constructor(private authService: AuthService, private router: Router) { }
 
   onRegister(): void {
+    this.errorMessage = '';
+
+    const cleanFirstName = this.firstName?.trim();
+    const cleanLastName = this.lastName?.trim();
+    const cleanEmail = this.email?.trim();
+    const cleanUsername = this.username?.trim();
+    const cleanPassword = this.password?.trim();
+
+    if (!cleanFirstName || !cleanLastName || !cleanEmail || !cleanUsername || !cleanPassword) {
+      this.errorMessage = 'Sva polja su obavezna';
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      this.errorMessage = 'Unesite validnu email adresu.';
+      return;
+    }
+
+    if (cleanPassword.length <= 8) {
+      this.errorMessage = 'Lozinka mora biti duža od 8 karaktera.';
+      return;
+    }
+
     const registrationData = {
-      firstName: this.firstName,
-      lastName: this.lastName,
-      email: this.email,
-      username: this.username,
-      password: this.password
+      firstName: cleanFirstName,
+      lastName: cleanLastName,
+      email: cleanEmail,
+      username: cleanUsername,
+      password: cleanPassword
     };
 
-    // Poziv servisa za registraciju (treba implementirati u AuthService)
     this.authService.register(registrationData).subscribe({
       next: (response) => {
-        console.log('Successfully registered!', response);
-        this.router.navigate(['/login']); // Preusmeri na login nakon uspešne registracije
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         console.error('Registration error:', err);
-        alert('Registration failed. Please check your data.');
+        this.errorMessage = 'Registracija nije uspela. Proverite podatke ili pokušajte kasnije.';
       }
     });
   }
