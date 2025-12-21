@@ -38,3 +38,9 @@ A.V.
 - Ipak vracen stari api gateway (Eureka i Spring Cloud)
 - Trebalo bi se pozabaviti autorizacijom u ngnix, ali ne bi trebalo da je puno komplikovano
 - `@TODO` jos samo FE aplikacija, trelloi i ako cemo odmah raditi i sertifikate tj komunikaciju preko HTTPS
+
+O.K.
+Uradjen front za auth
+
+O.B.
+Back crud za pesme, albume, izvodjace (content service), code cleanup

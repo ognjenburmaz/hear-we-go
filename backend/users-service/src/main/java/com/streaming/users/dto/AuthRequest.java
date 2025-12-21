@@ -1,4 +1,4 @@
-package com.streaming.common.dto;
+package com.streaming.users.dto;
 import lombok.Data;
 
 @Data
