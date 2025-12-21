@@ -6,9 +6,10 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login-component',
-  imports: [ CommonModule, FormsModule, RouterModule ],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
+  standalone: true
 })
 export class LoginComponent {
   username!: string;

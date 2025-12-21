@@ -16,19 +16,6 @@ services:
     environment:
       MONGO_INITDB_DATABASE: users-db
 
-  #  nginx:
-  #    image: nginx:latest
-  #    container_name: api-gateway
-  #    ports:
-  #      - "8080:80"
-  #    volumes:
-  #      - ./backend/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  #    depends_on:
-  #      - users-service
-  #    #      Ovde dodati i druge servise kad ih napravimo
-  #    networks:
-  #      - streaming-net
-
   redis:
     image: redis:alpine
     container_name: streaming-redis
@@ -180,7 +167,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/content-db
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
-      - HDFS_URI=hdfs://namenode:9000
+      - HDFS_URI=hdfs://namenode:8020
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
