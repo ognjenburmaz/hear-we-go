@@ -66,14 +66,17 @@ public class TokenUtils {
                 && !isTokenExpired(token);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<String, Object>();
-        claims.put("sub", userDetails.getUsername());
-        claims.put("role", userDetails.getAuthorities().toArray()[0]);
+    public String generateToken(String username, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", username);
+        claims.put("role", role);
         claims.put("created", new Date(System.currentTimeMillis()));
-        return Jwts.builder().setClaims(claims)
+
+        return Jwts.builder()
+                .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(SignatureAlgorithm.HS256, secret)
+                .compact();
     }
 
     public int getExpiredIn() {
