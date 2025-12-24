@@ -26,3 +26,5 @@ Thumbs.db
 # Docker volumes (if you map them locally)
 mongo-data/
 hdfs-data/
+
+.env
