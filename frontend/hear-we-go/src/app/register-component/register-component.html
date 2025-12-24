@@ -1,0 +1,43 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Create Account</h2>
+    <p class="subtitle">Join our streaming platform</p>
+
+    <form (ngSubmit)="onRegister()">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" class="form-control" name="firstName" [(ngModel)]="firstName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" class="form-control" name="lastName" [(ngModel)]="lastName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" name="email" [(ngModel)]="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" class="form-control" name="username" [(ngModel)]="username" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" name="password" [(ngModel)]="password" required>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-register">Register</button>
+
+      <div class="footer-links">
+        <p>Already have an account? <a routerLink="/login">Login here</a></p>
+      </div>
+    </form>
+  </div>
+</div>
