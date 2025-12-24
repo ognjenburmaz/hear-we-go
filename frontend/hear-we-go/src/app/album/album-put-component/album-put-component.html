@@ -1,0 +1,39 @@
+<div class="main-container">
+  <div class="form-card">
+    
+    <p class="subtitle">Izmenite album</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="title">Naziv</label>
+        <input type="text" id="title" name="title" [(ngModel)]="title" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="genre">Zanr</label>
+        <input type="text" id="genre" name="genre" [(ngModel)]="genre" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="releaseDate">Datum Objave</label>
+        <input type="date" id="releaseDate" name="releaseDate" [(ngModel)]="releaseDate" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="artistIds">Artist</label>
+        <select id="artistsIds" name="artistIds" [(ngModel)]="artistIds" class="form-control" required>
+            <option>placeholder</option>
+            </select>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-submit">Submit</button>
+    </form>
+
+  </div>
+</div>
+
+
