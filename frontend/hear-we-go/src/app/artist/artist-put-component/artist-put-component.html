@@ -1,0 +1,31 @@
+<div class="main-container">
+  <div class="form-card">
+    
+    <p class="subtitle">Izmenite umetnika</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Ime</label>
+        <input type="text" id="name" name="name" [(ngModel)]="name" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="biography">Biografija</label>
+        <input type="text" id="biography" name="biography" [(ngModel)]="biography" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="genres">Zanrovi</label>
+        <input type="text" id="genres" name="genres" [(ngModel)]="genres" class="form-control" required>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="btn-submit">Submit</button>
+    </form>
+
+  </div>
+</div>
+
