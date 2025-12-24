@@ -15,8 +15,8 @@ import java.util.Map;
 @Component
 public class TokenUtils {
 
-    @Value("21377d21d9ad8aec91f1f08f03abf8a37ebeced0590fd6db1072ffeb227cfc008dafc1d462c15869705c0c2c6c8372a6fdf31a5fea105120755e9a98aaee49f9")
-    private String secret;
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Value("3600000")
     private Long expiration;
@@ -35,7 +35,7 @@ public class TokenUtils {
     private Claims getClaimsFromToken(String token) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(this.secret)
+            claims = Jwts.parser().setSigningKey(this.secretKey)
                     .parseClaimsJws(token).getBody();
         } catch (Exception e) {
             claims = null;
@@ -75,7 +75,7 @@ public class TokenUtils {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
