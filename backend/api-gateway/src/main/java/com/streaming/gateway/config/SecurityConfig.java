@@ -2,6 +2,7 @@ package com.streaming.gateway.config;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
@@ -19,6 +20,9 @@ import javax.crypto.SecretKey;
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
+
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
@@ -47,8 +51,7 @@ public class SecurityConfig {
 
     @Bean
     public ReactiveJwtDecoder jwtDecoder() {
-        // Use the SAME secret key as User Service
-        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode("21377d21d9ad8aec91f1f08f03abf8a37ebeced0590fd6db1072ffeb227cfc008dafc1d462c15869705c0c2c6c8372a6fdf31a5fea105120755e9a98aaee49f9"));
+        SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         return NimbusReactiveJwtDecoder.withSecretKey(key).build();
     }
 
