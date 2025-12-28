@@ -11,15 +11,10 @@
                 <th>Genres</th>
                 
             </tr>
-            <tr>
-                <td>aaaaa</td>
-                <td>a</td>
-                <td>a</td>
-            </tr>
-            <tr>
-                <td>a</td>
-                <td>a</td>
-                <td>a</td>
+            <tr *ngFor="let artist of artists">
+              <td>{{artist.name}}</td>
+              <td>{{artist.biography}}</td>
+              <td>{{artist.genres[0]}}</td>
             </tr>
         </table>
   </div>
