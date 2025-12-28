@@ -3,7 +3,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Artist, ArtistService } from '../artist-service';
 
 @Component({
   selector: 'app-artist-add-component',
@@ -21,7 +21,8 @@ export class ArtistAddComponent
   
     constructor(
       private router: Router,
-      private cdr: ChangeDetectorRef
+      private cdr: ChangeDetectorRef,
+      private service : ArtistService
     ) { }
   
     onSubmit(): void {
@@ -31,5 +32,22 @@ export class ArtistAddComponent
         this.errorMessage = 'Sva polja su obavezna!';
         return;
       }
+    
+
+    const artist: Artist ={
+     name: this.name.trim(),
+      biography:this.biography.trim(),
+      genres:this.genres
     }
+
+         this.service.create(artist).subscribe({
+        next:(artist: Artist) => {
+          this.router.navigate(['artists'])
+        },
+        error:(_) => {
+          console.log("Greska!")
+        }
+      })
+  }
+     
 }
