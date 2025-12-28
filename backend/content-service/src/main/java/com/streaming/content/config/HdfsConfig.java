@@ -11,7 +11,7 @@ import java.net.URI;
 @Configuration
 public class HdfsConfig {
 
-    @Value("${hdfs.uri:hdfs://namenode:8020}")
+    @Value("${HDFS_URI}")
     private String hdfsUri;
 
     @Bean
