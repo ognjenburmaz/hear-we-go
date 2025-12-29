@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 interface AuthRequest {
   username: string;
@@ -39,17 +39,35 @@ export interface User {
 export class AuthService {
   private apiUrl = '/api/users';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+  }
 
-  login(credentials: AuthRequest): Observable<LoginResponse> {
-    const url = `${this.apiUrl}/login`;
+  otplogin(credentials: AuthRequest): Observable<LoginResponse> {
+    const url = `${this.apiUrl}/otplogin`;
     return this.http.post<LoginResponse>(url, credentials)
       .pipe(
         tap(response => {
           const token = response.jwt;
           localStorage.setItem('authToken', token);
-          console.log('Login successdockful, token stored:', token);
-          this.router.navigate(['/home']);
+          console.log('Login successful, token stored:', token);
+          // this.router.navigate(['/home']);
+        }),
+        catchError(error => {
+          console.error('Login failed:', error);
+          throw error;
+        })
+      );
+  }
+
+  pswlogin(credentials: AuthRequest): Observable<any> {
+    const url = `${this.apiUrl}/pswlogin`;
+    return this.http.post<any>(url, credentials)
+      .pipe(
+        tap(response => {
+          // const token = response.jwt;
+          // localStorage.setItem('authToken', token);
+          console.log("Login succesful, response from endpoint: " + response);
+          // this.router.navigate(['/home']);
         }),
         catchError(error => {
           console.error('Login failed:', error);
@@ -77,7 +95,6 @@ export class AuthService {
         })
       );
   }
-
 
 
   logout(): void {
