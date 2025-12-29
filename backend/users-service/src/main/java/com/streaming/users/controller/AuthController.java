@@ -57,14 +57,13 @@ public class AuthController {
                 )
         );
 
-
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
         String otp = otpService.generateOtp(authRequest.getUsername());
 
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(user.getEmail());
         msg.setSubject("Vas jednokratni kod");
-        msg.setText("Vas kod je: " + otp);
+        msg.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
 
         try {
             mailSender.send(msg);
@@ -91,8 +90,6 @@ public class AuthController {
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
 
         String jwt = tokenUtils.generateToken(user.getUsername(), user.getRole());
-
-//        user.setOneTimePassword(null);
 
         return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, tokenUtils.getExpiredIn()));
     }
