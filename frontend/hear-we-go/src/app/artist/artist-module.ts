@@ -14,14 +14,17 @@ import { RouterModule } from '@angular/router';
     RouterModule,
     ArtistsComponent,
     ArtistAddComponent,
-    ArtistPutComponent
+    ArtistPutComponent,
+  
+    
     
   ],
   exports:
   [
     ArtistsComponent,
     ArtistAddComponent,
-    ArtistPutComponent
+    ArtistPutComponent,
+
   ]
 })
 export class ArtistModule { }
