@@ -17,6 +17,8 @@ public class User {
     private String firstName;
     private String lastName;
     private String passwordHash;
+    private String oneTimePasswordHash;
+    private LocalDateTime otpExpiresAt;
     private String role;
     private boolean active;
     private LocalDateTime lastPasswordReset;

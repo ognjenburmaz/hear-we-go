@@ -1,8 +1,8 @@
-import { Component, ChangeDetectorRef } from '@angular/core'; // <--- 1. Importuj ChangeDetectorRef
-import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {ChangeDetectorRef, Component} from '@angular/core'; // <--- 1. Importuj ChangeDetectorRef
+import {Router, RouterModule} from '@angular/router';
+import {AuthService} from '../auth/auth.service';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-login-component',
@@ -32,10 +32,10 @@ export class LoginComponent {
 
     const credentials = { username: this.username, password: this.password };
 
-    this.authService.login(credentials).subscribe({
+    this.authService.pswlogin(credentials).subscribe({
       next: (response) => {
         console.log('Successfully logged in!', response);
-        this.router.navigate(['/home']);
+        this.router.navigate(['/otplogin']);
       },
       error: (err) => {
         console.error('Login error:', err);
