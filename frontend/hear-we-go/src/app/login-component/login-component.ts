@@ -20,7 +20,8 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {
+  }
 
   onLogin(): void {
     this.errorMessage = '';
@@ -30,11 +31,12 @@ export class LoginComponent {
       return;
     }
 
-    const credentials = { username: this.username, password: this.password };
+    const credentials = {username: this.username, password: this.password};
 
     this.authService.pswlogin(credentials).subscribe({
       next: (response) => {
         console.log('Successfully logged in!', response);
+        localStorage.setItem("username", this.username)
         this.router.navigate(['/otplogin']);
       },
       error: (err) => {

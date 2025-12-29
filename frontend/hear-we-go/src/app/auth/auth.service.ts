@@ -5,7 +5,7 @@ import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 
 interface AuthRequest {
-  username: string;
+  username: string | null;
   password: string;
 }
 
