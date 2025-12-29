@@ -25,15 +25,25 @@ export class ArtistsComponent implements OnInit {
 
       }
 
-      ngOnInit(): void {
-        this.service.getAll().subscribe
-   ({
-      next:(artists:Artist[])=>{
-          this.artists=artists;
-          
-        },  
-      error:(_)=>console.log("greska")
-    })
+      ngOnInit(): void 
+      {
+        this.LoadAllArtists();
       }
+      LoadAllArtists():void
+      {
+           this.service.getAll().subscribe
+        ({
+         next:(artists:Artist[])=>{
+             
+              this.artists=artists;
+              this.cdr.detectChanges();
+          
+           },  
+          error:(_)=>console.log("greska")
+           })
+      }
+   navigateToAdd() {
+  this.router.navigate(['/artists/add']);
+}
 }
 

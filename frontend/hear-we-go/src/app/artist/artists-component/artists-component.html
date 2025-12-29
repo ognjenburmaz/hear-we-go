@@ -1,21 +1,30 @@
 <div class="main-container">
   <div class="container-card">
+    
    
-    <a href="artists/add">
-      <button class="btn-addArtist">Dodaj Umetnika</button>
-        </a>
-        <table class="table-artists">
-            <tr class="tr-th">
+      <button class="addArtist" (click)="navigateToAdd()">Dodaj Umetnika</button>
+    
+     <table  class="table-artists">
+  <thead>
+   <tr class="tr-th">
                 <th>Name</th>
                 <th>Biography</th>
                 <th>Genres</th>
-                
+                <th>Edit</th>
             </tr>
-            <tr *ngFor="let artist of artists">
+  </thead>
+  <tbody>
+   
+    <tr *ngFor="let artist of artists">
               <td>{{artist.name}}</td>
               <td>{{artist.biography}}</td>
               <td>{{artist.genres[0]}}</td>
+              <td><button class="editArtist"  [routerLink]="['/artists/put', artist.id]">Izmeni Umetnika</button></td>
             </tr>
-        </table>
+  </tbody>
+</table>
+
+    
+
   </div>
 </div>

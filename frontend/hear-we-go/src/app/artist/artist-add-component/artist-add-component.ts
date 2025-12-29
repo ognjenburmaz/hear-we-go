@@ -16,7 +16,7 @@ export class ArtistAddComponent
 {
   name!: string;
     biography!: string;
-    genres: string[] = [];
+    genres: string='';
     errorMessage:string='';
   
     constructor(
@@ -37,7 +37,7 @@ export class ArtistAddComponent
     const artist: Artist ={
      name: this.name.trim(),
       biography:this.biography.trim(),
-      genres:this.genres
+      genres:this.genres.split(',')
     }
 
          this.service.create(artist).subscribe({

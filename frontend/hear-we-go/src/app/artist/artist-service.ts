@@ -18,7 +18,7 @@ export interface Artist {
 })
 export class ArtistService 
 {
-  private apiUrl = '/api/content/artists';
+  private apiUrl = 'api/content/artists';
   constructor(private http: HttpClient, private router: Router) { }
 
   create(artistData:  Artist): Observable<Artist> {
@@ -40,8 +40,28 @@ export class ArtistService
         );
     }
 
+    put(artistData:  Artist,id:string): Observable<Artist> {
+      const url = `${this.apiUrl}`;
+  
+  
+      return this.http.put<Artist>(this.apiUrl+'/'+id, artistData)
+        .pipe(
+          tap(artist => {
+            console.log('Edit successful:', artist);
+  
+            this.router.navigate(['/artists']);
+          }),
+          catchError(error => {
+            console.error('Edit failed:', error);
+  
+            throw error;
+          })
+        );
+    }
+
     getAll() :Observable<Artist[]> 
 {
     return this.http.get<Artist[]>(this.apiUrl);
  } 
+
 }
