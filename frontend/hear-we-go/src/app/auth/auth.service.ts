@@ -43,7 +43,7 @@ export class AuthService {
   }
 
   otplogin(credentials: AuthRequest): Observable<LoginResponse> {
-    const url = `${this.apiUrl}/otplogin`;
+    const url = `${this.apiUrl}/login/otp`;
     return this.http.post<LoginResponse>(url, credentials)
       .pipe(
         tap(response => {
@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   pswlogin(credentials: AuthRequest): Observable<any> {
-    const url = `${this.apiUrl}/pswlogin`;
+    const url = `${this.apiUrl}/login/psw`;
     return this.http.post<any>(url, credentials)
       .pipe(
         tap(response => {

@@ -29,7 +29,7 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/api/users/pswlogin", "/api/users/otplogin", "/api/users/register").permitAll()
+                        .pathMatchers("/api/users/login/*", "/api/users/register").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
 
                         .pathMatchers(HttpMethod.POST, "/api/content/**").hasRole("ADMIN")

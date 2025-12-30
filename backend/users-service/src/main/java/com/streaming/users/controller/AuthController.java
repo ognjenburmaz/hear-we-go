@@ -46,7 +46,7 @@ public class AuthController {
         return ResponseEntity.ok(userServiceImpl.registerUser(request));
     }
 
-    @PostMapping("/pswlogin")
+    @PostMapping("/login/psw")
     public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
 
 
@@ -75,7 +75,7 @@ public class AuthController {
         return ResponseEntity.ok(null);
     }
 
-    @PostMapping("/otplogin")
+    @PostMapping("/login/otp")
     public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest) {
 
         Authentication authentication =
