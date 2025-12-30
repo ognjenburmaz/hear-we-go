@@ -9,6 +9,7 @@ import { AlbumPutComponent } from './album/album-put-component/album-put-compone
 import { SongAddComponent } from './song/song-add-component/song-add-component';
 import { SongPutComponent } from './song/song-put-component/song-put-component';
 import { ArtistsComponent } from './artist/artists-component/artists-component';
+import { SongsGetByAlbumComponent } from './song/songs-get-by-album-component/songs-get-by-album-component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'artists/put/:id', component: ArtistPutComponent},
   { path: 'albums/add', component: AlbumAddComponent},
   { path: 'albums/put/:id', component: AlbumPutComponent},
+  { path: 'albums/:id/songs', component: SongsGetByAlbumComponent},
    { path: 'songs/add', component: SongAddComponent},
-      { path: 'songs/put', component: SongPutComponent},
+      { path: 'songs/put/:id', component: SongPutComponent},
 ];

@@ -45,7 +45,7 @@ title!: string;
             if(this.albumId!=null){
                      this.service.put(album,this.albumId).subscribe({
                     next:(album: Album) => {
-                      this.router.navigate(['artists'])
+                      this.router.navigate(['home'])
                     },
                     error:(_) => {
                       console.log("Greska!")

@@ -41,7 +41,7 @@ export class AlbumAddComponent
       
                this.service.create(album).subscribe({
               next:(album: Album) => {
-                this.router.navigate(['artists'])
+                this.router.navigate(['home'])
               },
               error:(_) => {
                 console.log("Greska!")
