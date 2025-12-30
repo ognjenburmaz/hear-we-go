@@ -1,6 +1,7 @@
 package com.streaming.users.controller;
 
 import com.streaming.users.dto.AuthRequest;
+import com.streaming.users.dto.EmailRequest;
 import com.streaming.users.dto.UserRegistrationRequest;
 import com.streaming.users.dto.UserRegistrationResponse;
 import com.streaming.users.model.User;
@@ -25,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -100,8 +100,8 @@ public class UserController {
     }
 
     @PostMapping("/recovery")
-    public ResponseEntity<?> sendRecoveryMail(@RequestBody Map<String, String> body) throws MessagingException { // Temporary usage of map, will use DTOs later
-        String email = body.get("email"); // Getting the value from JSON since we dont have a DTO Object yet
+    public ResponseEntity<?> sendRecoveryMail(@RequestBody EmailRequest emailRequest) throws MessagingException {
+        String email = emailRequest.getEmail();
         System.out.println("email --------------------------------: " + email);
         User user = null;
         if (userServiceImpl.findByEmail(email).isPresent()) {
@@ -134,7 +134,7 @@ public class UserController {
         }
 
 
-        return ResponseEntity.ok("Uspesno poslat mejl!");
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/all")
