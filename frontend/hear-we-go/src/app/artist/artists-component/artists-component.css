@@ -22,7 +22,7 @@
   justify-content: center;
   align-items: center;
 }
-.btn-addArtist {
+.addArtist {
   width: 100%;
   padding: 12px;
   background-color: #ffc107;
@@ -35,10 +35,33 @@
   transition: background 0.3s;
 }
 
-.btn-addArtist:hover {
+.addArtist:hover {
   background-color: #e0a800;
 }
+ .table-artists td {
+  vertical-align: middle;
+  text-align: center; /* This centers the button horizontally */
+  padding: 12px;
+}
+.editArtist {
+  display: inline-block;
+  padding: 8px 16px; /* Vertical and horizontal padding */
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  border-radius: 6px; /* Slightly rounder corners for a modern look */
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none; /* In case it's a link */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width:max-content;
+}
 
+.editArtist:hover {
+  background-color: #e0a800;
+}
 .table-artists{
     font-size: 1.2rem;
     font-weight: bold;
