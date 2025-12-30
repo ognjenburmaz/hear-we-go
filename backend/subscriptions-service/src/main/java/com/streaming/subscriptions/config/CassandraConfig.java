@@ -5,15 +5,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
 import org.springframework.data.cassandra.config.SchemaAction;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
-import org.springframework.data.cassandra.core.cql.keyspace.KeyspaceOption;
 
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
-    // 1. INJECT THE VALUES FROM DOCKER ENV / PROPERTIES
     @Value("${spring.cassandra.contact-points:localhost}")
     private String contactPoints;
 
@@ -23,7 +20,6 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Value("${spring.cassandra.keyspace-name:subscriptions_ks}")
     private String keyspaceName;
 
-    // 2. OVERRIDE THE GETTERS TO USE THOSE VALUES
     @Override
     protected String getKeyspaceName() {
         return keyspaceName;
@@ -40,16 +36,28 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     }
 
     @Override
+    protected String getLocalDataCenter() {
+        return "datacenter1";
+    }
+
+    @Override
     public SchemaAction getSchemaAction() {
         return SchemaAction.CREATE_IF_NOT_EXISTS;
     }
 
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
-        return Collections.singletonList(
+        return List.of(
                 CreateKeyspaceSpecification.createKeyspace(keyspaceName)
                         .ifNotExists()
-                        .with(KeyspaceOption.REPLICATION)
+                        .withSimpleReplication(1)
         );
+    }
+
+    @Override
+    public String[] getEntityBasePackages() {
+        return new String[] {
+                "com.streaming.subscriptions.model"
+        };
     }
 }
