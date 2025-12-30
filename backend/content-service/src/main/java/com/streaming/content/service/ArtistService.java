@@ -11,5 +11,7 @@ public interface ArtistService {
 
     List<ArtistResponse> getAllArtists();
 
-    public ArtistResponse updateArtist(String id, ArtistRequest request);
+    ArtistResponse updateArtist(String id, ArtistRequest request);
+
+    ArtistResponse getArtistById(String id);
 }
