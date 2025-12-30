@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
-import {Router} from '@angular/router';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface AuthRequest {
   username: string | null;
@@ -39,8 +39,7 @@ export interface User {
 export class AuthService {
   private apiUrl = '/api/users';
 
-  constructor(private http: HttpClient, private router: Router) {
-  }
+  constructor(private http: HttpClient, private router: Router) { }
 
   otplogin(credentials: AuthRequest): Observable<LoginResponse> {
     const url = `${this.apiUrl}/login/otp`;
@@ -76,34 +75,47 @@ export class AuthService {
       );
   }
 
-
   register(registrationData: UserRegistrationRequest): Observable<User> {
     const url = `${this.apiUrl}/register`;
-
-
     return this.http.post<User>(url, registrationData)
       .pipe(
         tap(user => {
           console.log('Registration successful:', user);
-
           this.router.navigate(['/login']);
         }),
         catchError(error => {
           console.error('Registration failed:', error);
-
           throw error;
         })
       );
   }
 
+  getUserInfo() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
 
-  logout(): void {
-    localStorage.removeItem('authToken');
-    this.router.navigate(['/login']);
+    try {
+      const payload = token.split('.')[1];
+      const decodedJson = atob(payload);
+      const data = JSON.parse(decodedJson);
+
+      return {
+        username: data.sub,
+        role: data.role
+      };
+    } catch (e) {
+      console.error("Greška pri čitanju tokena", e);
+      return null;
+    }
   }
 
   isAuthenticated(): boolean {
     return localStorage.getItem('authToken') !== null;
+  }
+
+  logout(): void {
+    localStorage.removeItem('authToken');
+    this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
