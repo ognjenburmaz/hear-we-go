@@ -19,8 +19,6 @@ public class SubscriptionController {
 
     @PostMapping
     public ResponseEntity<Void> subscribe(@RequestBody SubscriptionRequest request, Principal principal) {
-        // @TODO add JWT field
-        // Principal.getName() returns the username/id from the JWT token
         service.subscribe(principal.getName(), request);
         return ResponseEntity.ok().build();
     }

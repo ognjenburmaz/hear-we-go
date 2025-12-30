@@ -18,7 +18,6 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
-        // @TODO add this field to the JWT builder
         // 'Principal' comes from the Gateway's JWT (The "sub" field, usually username/email)
         // If you store 'userId' in token, extract it. For now assuming username is the key.
         String userId = principal.getName();
