@@ -38,6 +38,8 @@ public class SecurityConfig {
 
                         .pathMatchers(HttpMethod.GET, "/api/content/**").authenticated()
 
+                        .pathMatchers(HttpMethod.POST, "/api/notifications/test").hasRole("ADMIN")
+
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

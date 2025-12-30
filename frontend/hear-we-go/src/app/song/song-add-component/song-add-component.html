@@ -21,13 +21,12 @@
 
       <div class="form-group">
         <label for="albumId">Album</label>
-        <select id="albumId" name="albumId" [(ngModel)]="albumId" class="form-control" required>
-            <option>placeholder</option>
-            </select>
+        <input type="text" id="albumId" name="albumId" [(ngModel)]="albumId" class="form-control" required>
+            
       </div>
       <div class="form-group">
         <label for="name">Mp3 fajl</label>
-        <input type="file" id="file" name="file" [(ngModel)]="file" class="form-control" required>
+        <input type="file" id="file" name="file" (change)="onFileSelected($event)" class="form-control" required>
       </div>
 
     

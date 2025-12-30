@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Song, SongService } from '../song-service';
 
 
 @Component({
@@ -11,7 +12,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './song-add-component.css',
 })
 export class SongAddComponent {
-  file!: any
+  file: File | null = null;
   title!:string;
   albumId!:string;
   genre!:string;
@@ -19,9 +20,18 @@ export class SongAddComponent {
 errorMessage:string='';
  constructor(
       private router: Router,
-      private cdr: ChangeDetectorRef
+      private cdr: ChangeDetectorRef,
+      private service:SongService
     ) { }
+onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  
 
+  if (file) {
+    this.file = file;
+    console.log("File selected:", file.name);
+  }
+}
      onSubmit(): void {
       this.errorMessage = '';
   
@@ -29,5 +39,28 @@ errorMessage:string='';
         this.errorMessage = 'Sva polja su obavezna!';
         return;
       }
+
+
+       const song: Song ={
+           title: this.title.trim(),
+            durationSeconds:this.durationSeconds,
+            genre:this.genre.trim(),
+            albumId:this.albumId.trim(),
+          }
+          const songBlob = new Blob([JSON.stringify(song)], {
+      type: 'application/json'
+        });
+          const formData = new FormData();
+          formData.append('song',songBlob);
+          formData.append('file',this.file);
+        
+               this.service.create(formData).subscribe({
+              next:(song: Song) => {
+                this.router.navigate(['home'])
+              },
+              error:(_) => {
+                console.log("Greska!")
+              }
+            })
     }
 }
