@@ -5,9 +5,10 @@ import { Artist, ArtistService } from '../artist-service';
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-artists-component',
-  imports: [CommonModule,RouterModule,FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './artists-component.html',
   styleUrl: './artists-component.css',
+  standalone: true
 })
 
 
@@ -25,7 +26,7 @@ export class ArtistsComponent implements OnInit {
 
       }
 
-      ngOnInit(): void 
+      ngOnInit(): void
       {
         this.LoadAllArtists();
       }
@@ -34,11 +35,11 @@ export class ArtistsComponent implements OnInit {
            this.service.getAll().subscribe
         ({
          next:(artists:Artist[])=>{
-             
+
               this.artists=artists;
               this.cdr.detectChanges();
-          
-           },  
+
+           },
           error:(_)=>console.log("greska")
            })
       }
