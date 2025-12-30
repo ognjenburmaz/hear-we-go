@@ -1,0 +1,20 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <h2>Korisnički Profil</h2>
+    <p class="subtitle">Pregled tvojih podataka</p>
+
+    <div class="info-group" *ngIf="userData">
+      <label>Korisničko ime (Email)</label>
+      <div class="info-value">{{ userData.username }}</div>
+    </div>
+
+    <div class="info-group" *ngIf="userData">
+      <label>Uloga</label>
+      <div class="info-value role-badge">{{ userData.role }}</div>
+    </div>
+
+    <div *ngIf="!userData" class="error-message">
+      Nema podataka o korisniku. Molimo ulogujte se.
+    </div>
+  </div>
+</div>
