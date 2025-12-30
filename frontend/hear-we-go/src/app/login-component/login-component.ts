@@ -37,7 +37,7 @@ export class LoginComponent {
       next: (response) => {
         console.log('Successfully logged in!', response);
         localStorage.setItem("username", this.username)
-        this.router.navigate(['/otplogin']);
+        this.router.navigate(['/login/otp']);
       },
       error: (err) => {
         console.error('Login error:', err);
