@@ -22,6 +22,6 @@ export const routes: Routes = [
   { path: 'albums/add', component: AlbumAddComponent},
   { path: 'albums/put/:id', component: AlbumPutComponent},
   { path: 'albums/:id/songs', component: SongsGetByAlbumComponent},
-   { path: 'songs/add', component: SongAddComponent},
-      { path: 'songs/put/:id', component: SongPutComponent},
+  { path: 'songs/add', component: SongAddComponent},
+  { path: 'songs/put/:id', component: SongPutComponent},
 ];
