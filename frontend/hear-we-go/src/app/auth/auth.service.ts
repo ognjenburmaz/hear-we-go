@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
+import {Router} from '@angular/router';
+import {EmailRequest} from './emailRequest';
 
 interface AuthRequest {
   username: string | null;
@@ -39,7 +40,8 @@ export interface User {
 export class AuthService {
   private apiUrl = '/api/users';
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, private router: Router) {
+  }
 
   otplogin(credentials: AuthRequest): Observable<LoginResponse> {
     const url = `${this.apiUrl}/login/otp`;
@@ -70,6 +72,20 @@ export class AuthService {
         }),
         catchError(error => {
           console.error('Login failed:', error);
+          throw error;
+        })
+      );
+  }
+
+  sendRecoveryEmail(email: EmailRequest): Observable<any> {
+    const url = `${this.apiUrl}/recovery`;
+    return this.http.post<any>(url, email)
+      .pipe(
+        tap(response => {
+          console.log("Request for email sent, response from endpoint: " + response);
+        }),
+        catchError(error => {
+          console.error('Request for email failed:', error);
           throw error;
         })
       );
