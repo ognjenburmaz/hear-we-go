@@ -8,12 +8,15 @@ import com.streaming.users.security.OtpAuthenticationToken;
 import com.streaming.users.security.TokenUtils;
 import com.streaming.users.service.impl.OtpService;
 import com.streaming.users.service.impl.UserServiceImpl;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,11 +25,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class AuthController {
+public class UserController {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
@@ -60,13 +65,13 @@ public class AuthController {
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
         String otp = otpService.generateOtp(authRequest.getUsername());
 
-        SimpleMailMessage msg = new SimpleMailMessage();
-        msg.setTo(user.getEmail());
-        msg.setSubject("Vas jednokratni kod");
-        msg.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Vas jednokratni kod");
+        message.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
 
         try {
-            mailSender.send(msg);
+            mailSender.send(message);
             System.out.println("Poslat MEJL!");
         } catch (Exception ex) {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
@@ -92,6 +97,44 @@ public class AuthController {
         String jwt = tokenUtils.generateToken(user.getUsername(), user.getRole());
 
         return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, tokenUtils.getExpiredIn()));
+    }
+
+    @PostMapping("/recovery")
+    public ResponseEntity<?> sendRecoveryMail(@RequestBody Map<String, String> body) throws MessagingException { // Temporary usage of map, will use DTOs later
+        String email = body.get("email"); // Getting the value from JSON since we dont have a DTO Object yet
+        System.out.println("email --------------------------------: " + email);
+        User user = null;
+        if (userServiceImpl.findByEmail(email).isPresent()) {
+            user = userServiceImpl.findByEmail(email).get();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
+        user.setRecoveryHash(UUID.randomUUID());
+        userServiceImpl.save(user);
+
+        String magicLink = "http://localhost/users/recover?recoveryHash=" + user.getRecoveryHash();
+
+        helper.setTo(user.getEmail());
+        helper.setSubject("Resetovanje lozinke");
+        helper.setText("<html>\n" +
+                "    <h1>Vas kod za resetovanje lozinke je: </h1>\n" +
+                "    <br>\n" +
+                "    <a href=\"" + magicLink + "\">" + magicLink + "</a>\n" +
+                "</html>", true);
+
+        try {
+            mailSender.send(message);
+            System.out.println("Poslat HTML MEJL!");
+        } catch (Exception ex) {
+            System.err.println("Greška pri slanju HTML mejla: " + ex.getMessage());
+        }
+
+
+        return ResponseEntity.ok("Uspesno poslat mejl!");
     }
 
     @GetMapping("/all")
