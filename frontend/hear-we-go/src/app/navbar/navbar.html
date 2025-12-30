@@ -1,0 +1,13 @@
+<nav class="navbar">
+  <div class="nav-brand">StreamingApp</div>
+  <div class="nav-links">
+    <a routerLink="/home" *ngIf="authService.isAuthenticated()">Početna</a>
+    <a routerLink="/profile" *ngIf="authService.isAuthenticated()">Profil</a>
+
+    <a routerLink="/login" *ngIf="!authService.isAuthenticated()">Prijava</a>
+
+    <button (click)="onLogout()" *ngIf="authService.isAuthenticated()" class="btn-nav-logout">
+      Odjavi se
+    </button>
+  </div>
+</nav>
