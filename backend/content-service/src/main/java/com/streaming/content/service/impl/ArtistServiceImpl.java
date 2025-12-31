@@ -1,5 +1,6 @@
 package com.streaming.content.service.impl;
 
+import com.streaming.common.event.ContentCreatedEvent;
 import com.streaming.content.dto.ArtistRequest;
 import com.streaming.content.dto.ArtistResponse;
 import com.streaming.content.model.Artist;
@@ -19,15 +20,24 @@ import java.util.stream.Collectors;
 public class ArtistServiceImpl implements ArtistService {
 
     private final ArtistRepository artistRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate; // For Events
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ContentMapper mapper;
 
     public ArtistResponse createArtist(ArtistRequest request) {
         Artist artistEntity = mapper.toEntity(request);
 
         Artist savedArtist = artistRepository.save(artistEntity);
-        // Req 1.11 & 2.6: Notify system about new Artist (for Subscriptions/Notifications)
-        // kafkaTemplate.send("content-events", new ArtistCreatedEvent(saved.getId(), saved.getGenres()));
+
+        ContentCreatedEvent event = new ContentCreatedEvent(
+                savedArtist.getId(),
+                savedArtist.getName(),
+                "ARTIST",
+                savedArtist.getId(),
+                savedArtist.getName(),
+                savedArtist.getGenres().isEmpty() ? "Unknown" : savedArtist.getGenres().get(0)
+        );
+
+        kafkaTemplate.send("content-created-topic", event);
         return mapper.toResponse(savedArtist);
     }
 
@@ -48,6 +58,12 @@ public class ArtistServiceImpl implements ArtistService {
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ArtistResponse getArtistById(String id) {
+        Artist artist = artistRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Artist not found with ID: " + id));
+        return mapper.toResponse(artist);
     }
 
     public List<Artist> searchArtists(String name) {
