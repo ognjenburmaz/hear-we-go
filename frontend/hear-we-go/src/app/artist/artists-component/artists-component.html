@@ -18,7 +18,7 @@
     <tr *ngFor="let artist of artists">
               <td>{{artist.name}}</td>
               <td>{{artist.biography}}</td>
-              <td>{{artist.genres[0]}}</td>
+              <td>{{artist.genres.join(', ')}}</td>
               <td class="table-artists"><button class="editArtist"  [routerLink]="['/artists/put', artist.id]">Izmeni Umetnika</button></td>
             </tr>
   </tbody>

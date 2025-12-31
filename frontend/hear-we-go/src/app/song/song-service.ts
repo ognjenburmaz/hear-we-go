@@ -56,8 +56,20 @@ export class SongService {
           );
       }
 
-      getAll(albumId:string) :Observable<Song[]>
+      getAllByAlbum(albumId:string) :Observable<Song[]>
   {
       return this.http.get<Song[]>(this.apiUrlAlbums+'/'+albumId+'/songs');
    }
+    getAll() :Observable<Song[]> 
+         {
+             return this.http.get<Song[]>(this.apiUrl);
+          } 
+         getOne(id:string) :Observable<Song> 
+         {
+             return this.http.get<Song>(this.apiUrl+'/'+id);
+          } 
+          delete(id:string) :Observable<Song> 
+         {
+             return this.http.delete<Song>(this.apiUrl+'/'+id);
+          } 
 }

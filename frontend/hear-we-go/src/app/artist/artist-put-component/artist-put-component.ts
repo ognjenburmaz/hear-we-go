@@ -28,28 +28,28 @@ export class ArtistPutComponent implements OnInit {
     ) { }
   ngOnInit(): void 
   {
-     this.service.getAll().subscribe
-        ({
-         next:(artists:Artist[])=>{
-             
-              this.artists=artists;
-              this.cdr.detectChanges();
-          
-           },  
-          error:(_)=>console.log("greska")
-           })
-           this.cdr.detectChanges();
+     
     this.artistId = this.route.snapshot.paramMap.get('id');
-   this.artist=this.artists.find(artist => artist.id === this.artistId);
-   this.cdr.detectChanges();
-   console.log(this.artist);
-           if(this.artist!=undefined)
+    if(this.artistId!=null){
+   this.service.getOne(this.artistId).subscribe
+        ({
+         next:(artist:Artist)=>{
+             
+              this.artist=artist;
+        
+              if(this.artist!=undefined)
            {
            this.name=this.artist.name
            this.biography=this.artist.biography
            this.genres=this.artist.genres.join(', ');
             this.cdr.detectChanges();
            }
+           this.cdr.detectChanges();
+           },  
+          error:(_)=>console.log("greska")
+           })
+          }
+           
   }
     onSubmit(): void {
       this.errorMessage = '';

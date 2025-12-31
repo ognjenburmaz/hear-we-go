@@ -62,5 +62,8 @@ export class ArtistService
 {
     return this.http.get<Artist[]>(this.apiUrl);
  } 
-
+getOne(id:string) :Observable<Artist> 
+{
+    return this.http.get<Artist>(this.apiUrl+'/'+id);
+ } 
 }

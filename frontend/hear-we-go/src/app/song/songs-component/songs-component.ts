@@ -1,35 +1,36 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {  Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Song, SongService } from '../song-service';
+
+
 @Component({
-  selector: 'app-songs-get-by-album-component',
+  selector: 'app-songs-component',
   imports: [CommonModule,RouterModule,FormsModule],
-  templateUrl: './songs-get-by-album-component.html',
-  styleUrl: './songs-get-by-album-component.css',
+  templateUrl: './songs-component.html',
+  styleUrl: './songs-component.css',
 })
-export class SongsGetByAlbumComponent implements OnInit
+export class SongsComponent  implements OnInit
  {
 
   songs:Song[]=[];
-  albumId:string|null=null;
   constructor(private router: Router,
       private cdr:ChangeDetectorRef,
-      private service :SongService,
-      private route:ActivatedRoute)
+      private service :SongService)
+ 
   {
 
   }
   ngOnInit(): void 
         {
-          this.albumId = this.route.snapshot.paramMap.get('id');
+         
           this.LoadAllSongs();
         }
         LoadAllSongs():void
         {
-          if(this.albumId!=null){
-             this.service.getAllByAlbum(this.albumId).subscribe
+          
+             this.service.getAll().subscribe
           ({
            next:(songs:Song[])=>{
                
@@ -40,8 +41,10 @@ export class SongsGetByAlbumComponent implements OnInit
             error:(_)=>console.log("greska")
              })
             }
-        }
+        
      navigateToAdd() {
     this.router.navigate(['/songs/add']);
   }
+
+  
 }
