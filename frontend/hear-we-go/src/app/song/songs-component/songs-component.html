@@ -1,0 +1,33 @@
+<div class="main-container">
+  <div class="container-card">
+    
+   
+      <button class="addSong" (click)="navigateToAdd()">Dodaj Pesmu</button>
+    
+     <table  class="table-songs">
+  <thead>
+   <tr class="tr-th">
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Duration</th>
+                <th>Edit</th>
+            </tr>
+  </thead>
+  <tbody>
+   
+    <tr *ngFor="let song of songs">
+              <td>{{song.title}}</td>
+              <td>{{song.genre}}</td>
+              <td>{{song.durationSeconds}}</td>
+              <td class="table-songs"><button class="editSong"  [routerLink]="['/songs/put', song.id]">Izmeni Pesmu</button>
+              <button class="editSong" [routerLink]="['/songs/delete', song.id]" >Obrisi Pesmu</button></td>
+            </tr>
+  </tbody>
+</table>
+
+    
+
+  </div>
+</div>
+
+

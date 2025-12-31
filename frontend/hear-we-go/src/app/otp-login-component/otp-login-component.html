@@ -1,0 +1,25 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Unesite vas jednokratni kod koji vam je poslat na mejl</h2>
+    <p class="subtitle">Kod istice za 5 minuta...</p>
+
+    <form (ngSubmit)="onLogin()">
+
+      <div class="form-group">
+        <label for="password">Kod</label>
+        <input [(ngModel)]="otp" class="form-control" id="password" name="password" required type="text">
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button class="btn-login" type="submit">Prijavi se</button>
+    </form>
+
+    <!--    <div class="footer-links">-->
+    <!--      <a routerLink="/register">Nemate nalog? Registracija</a>-->
+    <!--    </div>-->
+  </div>
+</div>
+

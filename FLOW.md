@@ -44,3 +44,20 @@ Uradjen front za auth
 
 O.B.
 Back crud za pesme, albume, izvodjace (content service), code cleanup
+
+A.V.
+Implementirano logovanje pomocu jednokratne lozinke (Zahtev 1.2 u specifikaciji). Sada pored lozinke korisnik mora da
+unese i jednokratan kod koji mu se salje na mejl. Uradjen i backend i frontend deo.
+Dodati ovo u .env: EMAIL_PASSWORD=dmbj gzqy dxxx veau  
+Takodje svi useri trenutno imaju moje mejlove pa mozete to promeniti/dodati nove u
+```backend/users-service/src/main/resources/db/import_users.js```
+(Obavezno u docker desktop containers > obrisati ceo compose pa volumes > obrisati mongov volume)
+
+A.V.
+Zavrsen account recovery, sada u slucaju zaboravljene lozinke korisnik upisuje mejl od svog naloga, na koji ce se
+poslati magicni link
+koji ce omoguciti korisniku promenu lozinke. Uradjen i frontend i backend
+
+A.V.
+Namestio MailHog, kada se app pokrene u dockeru mail-ovi se nece slati na pravi mejl nego ce se nalaziti na
+```http://localhost:8025/```, tako da ne mora svako da dodaje svoje mejlove medju user-e

@@ -97,6 +97,15 @@ services:
     networks:
       - streaming-net
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: streaming-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - streaming-net
+
   # ==========================================
   # 2. MICROSERVICES
   # ==========================================
@@ -151,6 +160,7 @@ services:
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - JAVA_TOOL_OPTIONS=-Xmx200m
       - JWT_SECRET=${JWT_SECRET}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     depends_on:
       - mongo
       - discovery-service
@@ -170,7 +180,7 @@ services:
       - HDFS_URI=hdfs://namenode:8020
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - mongo
@@ -194,7 +204,7 @@ services:
       - SPRING_CASSANDRA_KEYSPACE_NAME=ratings_ks
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - scylla
@@ -216,7 +226,7 @@ services:
       - SPRING_CASSANDRA_KEYSPACE_NAME=subscriptions_ks
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - scylla
@@ -238,7 +248,7 @@ services:
       - SPRING_CASSANDRA_KEYSPACE_NAME=notifications_ks
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - scylla
@@ -259,7 +269,7 @@ services:
       - SPRING_NEO4J_AUTHENTICATION_PASSWORD=password
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - neo4j
@@ -278,7 +288,7 @@ services:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/analytics-db
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
       - JAVA_TOOL_OPTIONS=-Xmx200m
     depends_on:
       - mongo

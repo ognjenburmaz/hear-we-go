@@ -1,1 +1,31 @@
-<p>songs-get-by-album-component works!</p>
+<div class="main-container">
+  <div class="container-card">
+    
+   
+      <button class="addSong" (click)="navigateToAdd()">Dodaj Pesmu</button>
+    
+     <table  class="table-songs">
+  <thead>
+   <tr class="tr-th">
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Duration</th>
+               
+            </tr>
+  </thead>
+  <tbody>
+   
+    <tr *ngFor="let song of songs">
+              <td>{{song.title}}</td>
+              <td>{{song.genre}}</td>
+              <td>{{song.durationSeconds}}</td>
+              
+            </tr>
+  </tbody>
+</table>
+
+    
+
+  </div>
+</div>
+

@@ -3,7 +3,7 @@ db = db.getSiblingDB("users-db");
 db.users.insertMany([
     {
         username: "aleksa",
-        email: "aleksa@example.com",
+        email: "velickovicaleksa555@gmail.com",
         firstName: "Aleksa",
         lastName: "Velickovic",
         passwordHash: "$2a$08$uPQ8FCcgcR2VqykhXdKW2OdVY9GIarOtVQJf4iTVur53aegBFA.A6",
@@ -13,7 +13,7 @@ db.users.insertMany([
     },
     {
         username: "testuser",
-        email: "test@example.com",
+        email: "a.velickovic333@gmail.com",
         firstName: "Test",
         lastName: "User",
         passwordHash: "$2a$10$eImiTXuWVxfM37uY4JANjQ==",
@@ -23,12 +23,22 @@ db.users.insertMany([
     },
     {
         username: "admin",
-        email: "admin@example.com",
+        email: "aleksavelickovic555@gmail.com",
         firstName: "Admin",
         lastName: "Korisnik",
         passwordHash: "$2a$08$zkU3ED/TwsqjdBzMAJsLaumT.Lpy4Gky2KFXyE2.19dRh5WpYbSfO",
         role: "ADMIN",
         active: true,
         lastPasswordReset: new Date("2025-02-01T09:30:00Z")
-    }
+    },
+    {
+            username: "milan",
+            email: "maricmilan0414@gmail.com",
+            firstName: "Admin",
+            lastName: "Korisnik",
+            passwordHash: "$2a$08$NgGWXY6E3BwjUZ2Lj.MSIeEwYcUDr.pQzdL3KrFzWEO2QExBe8dsu",
+            role: "ADMIN",
+            active: true,
+            lastPasswordReset: new Date("2025-02-01T09:30:00Z")
+        }
 ]);
