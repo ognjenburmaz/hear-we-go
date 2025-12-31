@@ -1,0 +1,22 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Unesite vasu imejl adresu da bi ste dobili link za povracaj svog naloga</h2>
+    <p class="subtitle">Email...</p>
+
+    <form (ngSubmit)="onSubmit()">
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input [(ngModel)]="email" class="form-control" id="email" name="email" required type="email">
+      </div>
+
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <button class="btn-login" type="submit">Potvrdi</button>
+    </form>
+
+  </div>
+</div>
+
