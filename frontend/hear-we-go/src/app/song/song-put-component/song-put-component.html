@@ -21,7 +21,17 @@
 
       <div class="form-group">
         <label for="albumId">Album</label>
-        <input  type="text" id="albumId" name="albumId" [(ngModel)]="albumId" class="form-control" required>
+   
+  <select 
+    id="albumId" 
+    name="albumId" 
+    [(ngModel)]="albumId" 
+    class="form-control" 
+    required>
+    <option *ngFor="let album of albums" [value]="album.id">
+      {{ album.title }}
+    </option>
+  </select>
             
       </div>
       
