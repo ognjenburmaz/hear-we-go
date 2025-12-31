@@ -20,8 +20,18 @@
       </div>
 
       <div class="form-group">
-        <label for="artistIds">Artist</label>
-        <input type="text" id="artistsIds" name="artistIds" [(ngModel)]="artistIds" class="form-control" required>
+       <label for="artistIds">Umetnici (drzite ctrl za selektovanje vise umetnika)</label>
+  <select 
+    id="artistIds" 
+    name="artistIds" 
+    [(ngModel)]="artistIds" 
+    class="form-control" 
+    multiple 
+    required>
+    <option *ngFor="let artist of artists" [value]="artist.id">
+      {{ artist.name }}
+    </option>
+  </select>
       </div>
 
       <div *ngIf="errorMessage" class="error-message">
