@@ -13,6 +13,10 @@ public interface ContentService {
 
     AlbumResponse updateAlbum(String id, AlbumRequest request);
 
+    AlbumResponse getAlbumById(String id);
+
+    List<AlbumResponse> getAllAlbums();
+
     List<AlbumResponse> getAlbumsByArtist(String artistId);
 
     SongResponse addSong(SongRequest song, MultipartFile file);
@@ -20,6 +24,10 @@ public interface ContentService {
     SongResponse updateSong(String id, SongRequest request);
 
     void deleteSong(String id);
+
+    SongResponse getSongById(String id);
+
+    List<SongResponse> getAllSongs();
 
     List<SongResponse> getSongsInAlbum(String albumId);
 }

@@ -32,6 +32,11 @@ public class ContentController {
         return ResponseEntity.ok(artistService.getAllArtists());
     }
 
+    @GetMapping("/artists/{id}")
+    public ResponseEntity<ArtistResponse> getArtistById(@PathVariable String id) {
+        return ResponseEntity.ok(artistService.getArtistById(id));
+    }
+
     @PutMapping("/artists/{id}")
     public ResponseEntity<ArtistResponse> updateArtist(
             @PathVariable String id,
@@ -44,6 +49,16 @@ public class ContentController {
     @PostMapping("/albums")
     public ResponseEntity<AlbumResponse> createAlbum(@RequestBody @Valid AlbumRequest request) {
         return ResponseEntity.ok(contentService.createAlbum(request));
+    }
+
+    @GetMapping("/albums")
+    public ResponseEntity<List<AlbumResponse>> getAllAlbums() {
+        return ResponseEntity.ok(contentService.getAllAlbums());
+    }
+
+    @GetMapping("/albums/{id}")
+    public ResponseEntity<AlbumResponse> getAlbumById(@PathVariable String id) {
+        return ResponseEntity.ok(contentService.getAlbumById(id));
     }
 
     @PutMapping("/albums/{id}")
@@ -66,6 +81,16 @@ public class ContentController {
             @RequestPart("file") MultipartFile file
     ) {
         return ResponseEntity.ok(contentService.addSong(request, file));
+    }
+
+    @GetMapping("/songs")
+    public ResponseEntity<List<SongResponse>> getAllSongs() {
+        return ResponseEntity.ok(contentService.getAllSongs());
+    }
+
+    @GetMapping("/songs/{id}")
+    public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
+        return ResponseEntity.ok(contentService.getSongById(id));
     }
 
     @PutMapping("/songs/{id}")
