@@ -57,3 +57,7 @@ A.V.
 Zavrsen account recovery, sada u slucaju zaboravljene lozinke korisnik upisuje mejl od svog naloga, na koji ce se
 poslati magicni link
 koji ce omoguciti korisniku promenu lozinke. Uradjen i frontend i backend
+
+A.V.
+Namestio MailHog, kada se app pokrene u dockeru mail-ovi se nece slati na pravi mejl nego ce se nalaziti na
+```http://localhost:8025/```, tako da ne mora svako da dodaje svoje mejlove medju user-e
