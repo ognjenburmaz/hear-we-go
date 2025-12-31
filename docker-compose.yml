@@ -97,6 +97,15 @@ services:
     networks:
       - streaming-net
 
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: streaming-mailhog
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    networks:
+      - streaming-net
+
   # ==========================================
   # 2. MICROSERVICES
   # ==========================================
