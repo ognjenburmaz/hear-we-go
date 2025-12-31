@@ -56,4 +56,12 @@ export class AlbumService {
             })
           );
       }
+       getAll() :Observable<Album[]> 
+      {
+          return this.http.get<Album[]>(this.apiUrl);
+       } 
+      getOne(id:string) :Observable<Album> 
+      {
+          return this.http.get<Album>(this.apiUrl+'/'+id);
+       } 
 }

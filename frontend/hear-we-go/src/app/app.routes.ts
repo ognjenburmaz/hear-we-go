@@ -16,6 +16,9 @@ import {authGuard, guestGuard} from './auth-guard';
 import {OtpLoginComponent} from './otp-login-component/otp-login-component';
 import {RecoveryComponent} from './recovery-component/recovery-component';
 import {PasswordChangeComponent} from './password-change-component/password-change-component';
+import { AlbumsComponent } from './album/albums-component/albums-component';
+import { SongsComponent } from './song/songs-component/songs-component';
+import { SongDeleteComponent } from './song/song-delete-component/song-delete-component';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -43,12 +46,15 @@ export const routes: Routes = [
       {path: 'artists/add', component: ArtistAddComponent},
       {path: 'artists/put/:id', component: ArtistPutComponent},
 
+      {path: 'albums', component: AlbumsComponent},
       {path: 'albums/add', component: AlbumAddComponent},
       {path: 'albums/put/:id', component: AlbumPutComponent},
       {path: 'albums/:id/songs', component: SongsGetByAlbumComponent},
 
+      {path: 'songs', component: SongsComponent},
       {path: 'songs/add', component: SongAddComponent},
       {path: 'songs/put/:id', component: SongPutComponent},
+      {path: 'songs/delete/:id', component: SongDeleteComponent},
     ]
   },
 

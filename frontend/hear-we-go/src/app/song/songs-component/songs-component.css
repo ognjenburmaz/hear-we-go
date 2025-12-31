@@ -1,0 +1,92 @@
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #121212;
+  font-family: sans-serif;
+  color: #e0e0e0;
+}
+.container-card {
+  background-color: #1e1e1e;
+  padding: 40px;
+  margin-top: -20%;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 750px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-top: 3px solid #ffc107;
+  
+    display: flex;
+    flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.addSong {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffc107;
+  color: #121212;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.addSong:hover {
+  background-color: #e0a800;
+}
+  .table-songs td {
+  vertical-align: middle;
+  text-align: center; /* This centers the button horizontally */
+  padding: 12px;
+}
+
+.editSong {
+  display: inline-block;
+  padding: 8px 16px; /* Vertical and horizontal padding */
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  border-radius: 6px; /* Slightly rounder corners for a modern look */
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-decoration: none; /* In case it's a link */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width:max-content;
+}
+
+.editSong:hover {
+  background-color: #e0a800;
+}
+.table-songs{
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-top: 5%;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tr-th
+{
+     background-color: #ffc107 !important;
+    border-radius: 25px;
+    
+}
+tr:nth-child(odd) {background-color: rgb(49, 49, 49);}
+tr:nth-child(even) {background-color: rgb(33, 33, 33);}
+th{
+
+    color: #1e1e1e;
+}
+td{
+    color:    #e0e0e0;;
+}
+a{
+  width: 50%;
+  text-decoration: none;
+}
