@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -87,5 +88,9 @@ public class UserServiceImpl implements UserDetailsService {
 
     public Optional<User> findByEmail(String email) {
         return userRepository.findFirstByEmail(email);
+    }
+
+    public Optional<User> findByRecoveryHash(UUID recoveryHash) {
+        return userRepository.findFirstByRecoveryHash(recoveryHash);
     }
 }

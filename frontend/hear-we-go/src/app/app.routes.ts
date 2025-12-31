@@ -15,9 +15,11 @@ import {Profile} from './profile/profile';
 import {authGuard, guestGuard} from './auth-guard';
 import {OtpLoginComponent} from './otp-login-component/otp-login-component';
 import {RecoveryComponent} from './recovery-component/recovery-component';
+import {PasswordChangeComponent} from './password-change-component/password-change-component';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
+  {path: 'users/changepassword', component: PasswordChangeComponent},
 
   {
     path: '',
