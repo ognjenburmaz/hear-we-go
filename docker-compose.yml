@@ -151,6 +151,7 @@ services:
       - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - JAVA_TOOL_OPTIONS=-Xmx200m
       - JWT_SECRET=${JWT_SECRET}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     depends_on:
       - mongo
       - discovery-service

@@ -4,7 +4,6 @@ import com.streaming.users.dto.UserRegistrationRequest;
 import com.streaming.users.dto.UserRegistrationResponse;
 import com.streaming.users.model.User;
 import com.streaming.users.repository.UserRepository;
-import com.streaming.users.security.TokenUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,9 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -81,5 +80,17 @@ public class UserServiceImpl implements UserDetailsService {
         response.setPassword(user.getPasswordHash());
 
         return response;
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findFirstByEmail(email);
+    }
+
+    public Optional<User> findByRecoveryHash(UUID recoveryHash) {
+        return userRepository.findFirstByRecoveryHash(recoveryHash);
     }
 }
