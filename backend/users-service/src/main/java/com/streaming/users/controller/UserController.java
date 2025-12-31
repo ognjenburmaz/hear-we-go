@@ -1,9 +1,6 @@
 package com.streaming.users.controller;
 
-import com.streaming.users.dto.AuthRequest;
-import com.streaming.users.dto.EmailRequest;
-import com.streaming.users.dto.UserRegistrationRequest;
-import com.streaming.users.dto.UserRegistrationResponse;
+import com.streaming.users.dto.*;
 import com.streaming.users.model.User;
 import com.streaming.users.security.OtpAuthenticationToken;
 import com.streaming.users.security.TokenUtils;
@@ -26,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -116,7 +114,7 @@ public class UserController {
         user.setRecoveryHash(UUID.randomUUID());
         userServiceImpl.save(user);
 
-        String magicLink = "http://localhost/users/recover?recoveryHash=" + user.getRecoveryHash();
+        String magicLink = "http://localhost/users/changepassword?recoveryHash=" + user.getRecoveryHash();
 
         helper.setTo(user.getEmail());
         helper.setSubject("Resetovanje lozinke");
@@ -124,6 +122,7 @@ public class UserController {
                 "    <h1>Vas kod za resetovanje lozinke je: </h1>\n" +
                 "    <br>\n" +
                 "    <a href=\"" + magicLink + "\">" + magicLink + "</a>\n" +
+                "<br><h2>Ne delite ovaj link ni sa kim!</h2>" +
                 "</html>", true);
 
         try {
@@ -135,6 +134,24 @@ public class UserController {
 
 
         return ResponseEntity.ok(null);
+    }
+
+    @PatchMapping("/pswchange")
+    public ResponseEntity<?> changePassword(@RequestBody PswChangeRequest request) {
+        UUID recoveryHash = request.getRecoveryHash();
+        String newPassword = request.getNewPassword();
+
+        Optional<User> userOptional = userServiceImpl.findByRecoveryHash(recoveryHash);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setPasswordHash(passwordEncoder.encode(newPassword));
+            user.setRecoveryHash(null);
+            userServiceImpl.save(user);
+            return ResponseEntity.ok(null);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 
     @GetMapping("/all")

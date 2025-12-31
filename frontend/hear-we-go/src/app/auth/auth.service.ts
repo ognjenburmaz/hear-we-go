@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {EmailRequest} from './emailRequest';
+import {PswChangeRequest} from './pswRequest';
 
 interface AuthRequest {
   username: string | null;
@@ -85,10 +86,25 @@ export class AuthService {
           console.log("Request for email sent, response from endpoint: " + response);
         }),
         catchError(error => {
-          console.error('Request for email failed:', error);
+          console.error('Request for email failed: ', error);
           throw error;
         })
       );
+  }
+
+  changePassword(request: PswChangeRequest): Observable<any> {
+    const url = `${this.apiUrl}/pswchange`;
+    return this.http.patch<any>(url, request)
+      .pipe(
+        tap(response => {
+          console.log("Password changed, response from endpoint: " + response);
+          // this.router.navigate(['login'])
+        }),
+        catchError(error => {
+          console.error('Password change failed: ', error);
+          throw error;
+        })
+      )
   }
 
   register(registrationData: UserRegistrationRequest): Observable<User> {
