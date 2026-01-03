@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Artist, ArtistService } from '../artist-service';
+import { Artist, ArtistService } from '../../services/artist-service';
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-artists-component',

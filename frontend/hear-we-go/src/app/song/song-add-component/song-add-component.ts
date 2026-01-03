@@ -1,9 +1,9 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core'; 
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Song, SongService } from '../song-service';
-import { Album, AlbumService } from '../../album/album-service';
+import { Song, SongService } from '../../services/song-service';
+import { Album, AlbumService } from '../../services/album-service';
 
 
 @Component({
@@ -28,26 +28,26 @@ albums:Album[]=[];
       private serviceAlbums:AlbumService
     ) { }
 
-ngOnInit(): void 
+ngOnInit(): void
 {
- this.LoadAllAlbums(); 
+ this.LoadAllAlbums();
 }
 
 
 LoadAllAlbums():void
 {
-   
+
     this.serviceAlbums.getAll().subscribe
             ({
              next:(albums:Album[])=>{
-          
+
                     this.albums=albums;
                     this.cdr.detectChanges();
-          
+
                  },
                 error:(_)=>console.log("greska")
                  })
-       
+
 }
 
 
@@ -55,7 +55,7 @@ LoadAllAlbums():void
 
 onFileSelected(event: any) {
   const file: File = event.target.files[0];
-  
+
 
   if (file) {
     this.file = file;
@@ -64,7 +64,7 @@ onFileSelected(event: any) {
 }
      onSubmit(): void {
       this.errorMessage = '';
-  
+
       if (this.file==null || this.title==''|| this.albumId==''||this.genre==''|| this.durationSeconds==0) {
         this.errorMessage = 'Sva polja su obavezna!';
         return;
@@ -83,7 +83,7 @@ onFileSelected(event: any) {
           const formData = new FormData();
           formData.append('song',songBlob);
           formData.append('file',this.file);
-        
+
                this.service.create(formData).subscribe({
               next:(song: Song) => {
                 this.router.navigate(['songs'])

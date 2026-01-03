@@ -1,0 +1,31 @@
+<div class="notifications-card">
+  <h3>
+    Obaveštenja
+    <span *ngIf="hasUnread$ | async" class="unread-dot"></span>
+  </h3>
+
+  <div *ngIf="(notificationService.notifications$ | async)?.length === 0" class="empty-msg">
+    Nema novih obaveštenja.
+  </div>
+
+  <div *ngFor="let note of (notificationService.notifications$ | async)"
+       class="notification-item"
+       [class.unread]="!note.isRead">
+
+    <div class="note-header">
+      <span class="note-title">{{ note.title }}</span>
+      <span class="note-date">{{ note.createdAt | date:'short' }}</span>
+    </div>
+
+    <p class="note-msg">{{ note.message }}</p>
+
+    <div class="note-actions">
+      <button *ngIf="!note.isRead" (click)="markAsRead(note.id)" class="action-btn read-btn">
+        ✔ Pročitano
+      </button>
+      <button (click)="deleteNote(note.id)" class="action-btn delete-btn">
+        🗑 Obriši
+      </button>
+    </div>
+  </div>
+</div>
