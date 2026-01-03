@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef } from '@angular/core'; // <--- 1. Import
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

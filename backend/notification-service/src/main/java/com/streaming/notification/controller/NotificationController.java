@@ -18,10 +18,13 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
-        // 'Principal' comes from the Gateway's JWT (The "sub" field, usually username/email)
-        // If you store 'userId' in token, extract it. For now assuming username is the key.
-        String userId = principal.getName();
+        String userId = (principal != null) ? principal.getName() : null;
 
+        if (userId == null) {
+            userId = "admin";
+        }
+
+        System.out.println("Dohvatanje notifikacija za korisnika: {}"+ userId);
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
 

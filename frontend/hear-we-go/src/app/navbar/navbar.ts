@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { NotificationService } from '../services/notification-service'
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +12,10 @@ import { RouterModule } from '@angular/router';
   styleUrl: './navbar.css'
 })
 export class NavbarComponent {
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    public notificationService: NotificationService
+  ) {}
 
   onLogout(): void {
     this.authService.logout();

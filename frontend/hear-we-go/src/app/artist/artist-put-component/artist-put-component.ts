@@ -1,8 +1,8 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core'; 
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule ,ActivatedRoute} from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Artist, ArtistService } from '../artist-service';
+import { Artist, ArtistService } from '../../services/artist-service';
 
 
 @Component({
@@ -19,24 +19,24 @@ export class ArtistPutComponent implements OnInit {
     artist: Artist|undefined = undefined;
     artistId: string | null = null;
     artists: Artist[]=[];
-  
+
     constructor(
       private route:ActivatedRoute,
       private router: Router,
       private cdr: ChangeDetectorRef,
         private service : ArtistService
     ) { }
-  ngOnInit(): void 
+  ngOnInit(): void
   {
-     
+
     this.artistId = this.route.snapshot.paramMap.get('id');
     if(this.artistId!=null){
    this.service.getOne(this.artistId).subscribe
         ({
          next:(artist:Artist)=>{
-             
+
               this.artist=artist;
-        
+
               if(this.artist!=undefined)
            {
            this.name=this.artist.name
@@ -45,15 +45,15 @@ export class ArtistPutComponent implements OnInit {
             this.cdr.detectChanges();
            }
            this.cdr.detectChanges();
-           },  
+           },
           error:(_)=>console.log("greska")
            })
           }
-           
+
   }
     onSubmit(): void {
       this.errorMessage = '';
-  
+
       if (this.name=='' || this.biography=='' || this.genres.length==0) {
         this.errorMessage = 'Sva polja su obavezna!';
         return;

@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {  ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Song, SongService } from '../song-service';
+import { Song, SongService } from '../../services/song-service';
 
 
 @Component({
@@ -17,7 +17,7 @@ export class SongDeleteComponent implements OnInit {
       private cdr:ChangeDetectorRef,
       private service :SongService,
       private route:ActivatedRoute)
- 
+
   {
 
 }

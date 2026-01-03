@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {NgIf} from '@angular/common';
-import {AuthService} from '../auth/auth.service';
+import {AuthService} from '../services/auth.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {PswChangeRequest} from '../auth/pswRequest';
+import {PswChangeRequest} from '../DTOs/pswRequest';
 
 @Component({
   selector: 'app-password-change-component',
@@ -13,6 +13,7 @@ import {PswChangeRequest} from '../auth/pswRequest';
   ],
   templateUrl: './password-change-component.html',
   styleUrl: './password-change-component.css',
+  standalone: true
 })
 export class PasswordChangeComponent implements OnInit {
 
