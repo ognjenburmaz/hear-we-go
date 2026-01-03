@@ -1,9 +1,9 @@
 import {ChangeDetectorRef, Component} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgIf} from "@angular/common";
-import {AuthService} from '../auth/auth.service';
+import {AuthService} from '../services/auth.service';
 import {Router} from '@angular/router';
-import {EmailRequest} from '../auth/emailRequest';
+import {EmailRequest} from '../DTOs/emailRequest';
 
 @Component({
   selector: 'app-recovery-component',

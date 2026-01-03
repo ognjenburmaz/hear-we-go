@@ -3,8 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {EmailRequest} from './emailRequest';
-import {PswChangeRequest} from './pswRequest';
+import {EmailRequest} from '../DTOs/emailRequest';
+import {PswChangeRequest} from '../DTOs/pswRequest';
 
 interface AuthRequest {
   username: string | null;
