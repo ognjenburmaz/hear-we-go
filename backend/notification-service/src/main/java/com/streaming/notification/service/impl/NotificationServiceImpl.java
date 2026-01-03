@@ -28,11 +28,6 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     public List<NotificationResponse> getUserNotifications(String userId) {
-        // Privremeno povuci SVE da vidiš šta Java uopšte vidi
-        List<Notification> all = repository.findAll();
-        System.out.println("DEBUG: Ukupno u bazi ima: " + all.size());
-        all.forEach(n -> System.out.println("DEBUG: Korisnik u bazi: [" + n.getUserId() + "]"));
-
         return repository.findByUserId(userId)
                 .stream()
                 .map(mapper::toResponse)
