@@ -18,10 +18,16 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
-        // 'Principal' comes from the Gateway's JWT (The "sub" field, usually username/email)
-        // If you store 'userId' in token, extract it. For now assuming username is the key.
-        String userId = principal.getName();
+        // 1. Probaj iz principala
+        String userId = (principal != null) ? principal.getName() : null;
 
+        // 2. Ako je principal null, probaj da vidiš da li Gateway šalje header (često se tako radi)
+        if (userId == null) {
+            // Dodaj @RequestHeader(value = "X-Auth-User-Id", required = false) u argumente metode ako želiš profi
+            userId = "admin"; // Za testiranje dok ne središ Gateway
+        }
+
+        System.out.println("Dohvatanje notifikacija za korisnika: {}"+ userId);
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
 

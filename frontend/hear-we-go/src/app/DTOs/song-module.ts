@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SongAddComponent } from './song-add-component/song-add-component';
-import { SongPutComponent } from './song-put-component/song-put-component';
-import { SongsGetByAlbumComponent } from './songs-get-by-album-component/songs-get-by-album-component';
+import { SongAddComponent } from '../song/song-add-component/song-add-component';
+import { SongPutComponent } from '../song/song-put-component/song-put-component';
+import { SongsGetByAlbumComponent } from '../song/songs-get-by-album-component/songs-get-by-album-component';
 import { RouterModule } from '@angular/router';
 
 

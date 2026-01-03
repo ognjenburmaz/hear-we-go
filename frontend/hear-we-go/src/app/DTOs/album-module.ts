@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AlbumAddComponent } from './album-add-component/album-add-component';
-import { AlbumPutComponent } from './album-put-component/album-put-component';
+import { AlbumAddComponent } from '../album/album-add-component/album-add-component';
+import { AlbumPutComponent } from '../album/album-put-component/album-put-component';
 
 
 
@@ -22,5 +22,5 @@ import { AlbumPutComponent } from './album-put-component/album-put-component';
 })
 export class AlbumModule {
 
-  
+
  }

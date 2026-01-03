@@ -2,8 +2,10 @@
   <div class="nav-brand">StreamingApp</div>
   <div class="nav-links">
     <a routerLink="/home" *ngIf="authService.isAuthenticated()">Početna</a>
-    <a routerLink="/profile" *ngIf="authService.isAuthenticated()">Profil</a>
-
+    <a routerLink="/profile" *ngIf="authService.isAuthenticated()" class="profile-link">
+      Profil
+      <span *ngIf="(notificationService.unreadCount$ | async)! > 0" class="notification-dot"></span>
+    </a>
     <a routerLink="/login" *ngIf="!authService.isAuthenticated()">Prijava</a>
 
     <button (click)="onLogout()" *ngIf="authService.isAuthenticated()" class="btn-nav-logout">

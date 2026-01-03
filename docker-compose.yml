@@ -240,6 +240,7 @@ services:
       context: ./backend
       dockerfile: notification-service/Dockerfile
     container_name: notification-service
+    restart: always  # <--- OVO DODAJ (pokušavaće dok ne uspe)
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CASSANDRA_CONTACT_POINTS=scylla
