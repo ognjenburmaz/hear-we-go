@@ -19,7 +19,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Value("${spring.cassandra.port:9042}")
     private int port;
 
-    @Value("${spring.cassandra.keyspace-name:ratings_ks}")
+    @Value("${SPRING_CASSANDRA_KEYSPACE_NAME}")
     private String keyspaceName;
 
     @Override
