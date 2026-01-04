@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -146,6 +147,7 @@ public class UserController {
             User user = userOptional.get();
             user.setPasswordHash(passwordEncoder.encode(newPassword));
             user.setRecoveryHash(null);
+            user.setLastPasswordReset(LocalDateTime.now());
             userServiceImpl.save(user);
             return ResponseEntity.ok(null);
         } else {
