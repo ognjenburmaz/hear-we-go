@@ -14,6 +14,13 @@
         {{ errorMessage }}
       </div>
 
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+        <br>
+        <br>
+        <a (click)="resend()">Niste primili mejl?</a>
+      </div>
+
       <button class="btn-login" type="submit">Potvrdi</button>
     </form>
 

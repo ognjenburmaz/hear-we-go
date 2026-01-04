@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,7 +64,7 @@ public class UserController {
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
         String otp = otpService.generateOtp(authRequest.getUsername());
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        SimpleMailMessage message = new SimpleMailMessage(); // TODO dodati nekakav rate-limiting
         message.setTo(user.getEmail());
         message.setSubject("Vas jednokratni kod");
         message.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
@@ -108,7 +109,7 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
 
-        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessage message = mailSender.createMimeMessage();                       // TODO dodati nekakav rate-limiting
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         user.setRecoveryHash(UUID.randomUUID());
@@ -146,6 +147,7 @@ public class UserController {
             User user = userOptional.get();
             user.setPasswordHash(passwordEncoder.encode(newPassword));
             user.setRecoveryHash(null);
+            user.setLastPasswordReset(LocalDateTime.now());
             userServiceImpl.save(user);
             return ResponseEntity.ok(null);
         } else {
