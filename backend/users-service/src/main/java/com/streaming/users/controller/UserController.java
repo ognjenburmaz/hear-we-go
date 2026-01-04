@@ -63,7 +63,7 @@ public class UserController {
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
         String otp = otpService.generateOtp(authRequest.getUsername());
 
-        SimpleMailMessage message = new SimpleMailMessage();
+        SimpleMailMessage message = new SimpleMailMessage(); // TODO dodati nekakav rate-limiting
         message.setTo(user.getEmail());
         message.setSubject("Vas jednokratni kod");
         message.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
@@ -108,7 +108,7 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
 
-        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessage message = mailSender.createMimeMessage();                       // TODO dodati nekakav rate-limiting
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         user.setRecoveryHash(UUID.randomUUID());
