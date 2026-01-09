@@ -31,6 +31,12 @@ h3 { color: #ffc107; text-align: center; margin-bottom: 20px; }
 .note-date { color: #888; font-size: 0.8rem; }
 .note-msg { color: #e0e0e0; margin: 10px 0; font-size: 0.95rem; }
 
+.is-read-text {
+  text-decoration: line-through;
+  opacity: 0.5;
+  color: #888 !important;
+}
+
 .note-actions { display: flex; gap: 10px; }
 
 .action-btn {
@@ -46,3 +52,9 @@ h3 { color: #ffc107; text-align: center; margin-bottom: 20px; }
 
 .read-btn:hover { border-color: #ffc107; color: #ffc107; }
 .delete-btn:hover { border-color: #ff4d4d; color: #ff4d4d; }
+
+.empty-msg {
+  color: #888;
+  text-align: center;
+  padding: 20px;
+}
