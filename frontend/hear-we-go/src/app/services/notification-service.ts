@@ -80,7 +80,9 @@ export class NotificationService {
 
     const socket = new SockJS('http://localhost:8080/ws');
     this.stompClient = over(socket);
-    this.stompClient.debug = () => {};
+    this.stompClient.debug = (str: string) => {
+      console.log('STOMP DEBUG: ' + str);
+    };
 
     this.stompClient.connect({}, () => {
       console.log('WebSocket veza uspešno uspostavljena!');
