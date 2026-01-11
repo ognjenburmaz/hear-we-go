@@ -27,4 +27,15 @@ Thumbs.db
 mongo-data/
 hdfs-data/
 
+# Cassandra / Scylla data & scripts
+scylla_data/
+scylla-data/
+cassandra-data/
+.shiv/
+
+*.p12
+*.pem
+backend/ssl/
+backend/api-gateway/src/main/resources/ssl/
+
 .env
