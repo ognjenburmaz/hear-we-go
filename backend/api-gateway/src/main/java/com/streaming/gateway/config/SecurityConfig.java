@@ -37,7 +37,7 @@ public class SecurityConfig {
                 // OMOGUĆEN CORS na nivou Spring Security-a
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost", "http://localhost:4200")); // Dodaj port ako Angular trči na drugom
+                    config.setAllowedOrigins(List.of("https://localhost", "https://localhost:4200")); // Dodaj port ako Angular trči na drugom
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
@@ -45,9 +45,9 @@ public class SecurityConfig {
                 }))
                 .authorizeExchange(exchanges -> exchanges
                         // 1. WebSocket putanje
-                        .pathMatchers("/ws/**").permitAll()
-                        .pathMatchers("/ws/info/**").permitAll()
-                        .pathMatchers("/ws/*/websocket").permitAll()
+                        .pathMatchers("/api/ws/**", "/ws/**").permitAll()
+                        .pathMatchers("/api/ws/info/**", "/ws/info/**").permitAll()
+                        .pathMatchers("/api/users/login/**", "/api/users/register/**").permitAll()
 
                         // 2. Auth putanje
                         .pathMatchers("/api/users/login/*", "/api/users/register", "/api/users/recovery", "/api/users/pswchange").permitAll()
