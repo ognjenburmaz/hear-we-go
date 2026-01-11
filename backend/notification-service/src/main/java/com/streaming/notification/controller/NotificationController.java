@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -20,10 +21,6 @@ public class NotificationController {
     public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
         String userId = (principal != null) ? principal.getName() : null;
 
-        if (userId == null) {
-            userId = "admin";
-        }
-
         System.out.println("Dohvatanje notifikacija za korisnika: {}"+ userId);
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
@@ -33,5 +30,21 @@ public class NotificationController {
         notificationService.saveNotification(event);
     }
 
-    // Optional: Mark as read endpoint
+    @PatchMapping("/mark-as-read")
+    public ResponseEntity<Void> markAsRead(Principal principal, @RequestParam Instant createdAt) {
+
+        String userId = (principal != null) ? principal.getName() : null;
+        notificationService.markAsRead(userId, createdAt);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteNotification(Principal principal, @RequestParam Instant createdAt) {
+
+        String userId = (principal != null) ? principal.getName() : null;
+        notificationService.deleteNotification(userId, createdAt);
+
+        return ResponseEntity.noContent().build();
+    }
 }
