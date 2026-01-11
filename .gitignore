@@ -27,4 +27,7 @@ Thumbs.db
 mongo-data/
 hdfs-data/
 
+*.p12
+*.pem
+
 .env
