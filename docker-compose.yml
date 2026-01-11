@@ -117,12 +117,16 @@ services:
     container_name: api-gateway
     ports:
       - "${PORT_GATEWAY}:8080"
+    volumes:
+      - ./backend/api-gateway/src/main/resources/ssl:/ssl
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
       - SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED=true
       - JAVA_TOOL_OPTIONS=-Xmx200m
       - JWT_SECRET=${JWT_SECRET}
+      - SERVER_SSL_KEY_STORE=file:/ssl/keystore.p12
+      - SERVER_SSL_KEY_STORE_PASSWORD=password123
     depends_on:
       discovery-service:
         condition: service_healthy

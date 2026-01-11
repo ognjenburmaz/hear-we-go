@@ -78,7 +78,7 @@ export class NotificationService {
 
   initializeWebSocketConnection(userId: string): void {
 
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('https://localhost:8080/ws');
     this.stompClient = over(socket);
     this.stompClient.debug = (str: string) => {
       console.log('STOMP DEBUG: ' + str);
