@@ -115,7 +115,7 @@ public class UserController {
         user.setRecoveryHash(UUID.randomUUID());
         userServiceImpl.save(user);
 
-        String magicLink = "http://localhost/users/changepassword?recoveryHash=" + user.getRecoveryHash();
+        String magicLink = "https://localhost/users/changepassword?recoveryHash=" + user.getRecoveryHash();
 
         helper.setTo(user.getEmail());
         helper.setSubject("Resetovanje lozinke");
