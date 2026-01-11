@@ -41,3 +41,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# SSL privatni ključevi i keystore
+backend/api-gateway/src/main/resources/ssl/keystore.p12
+backend/ssl/localhost+2-key.pem
+backend/ssl/localhost+2.pem
