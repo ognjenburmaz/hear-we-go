@@ -27,4 +27,8 @@ Thumbs.db
 mongo-data/
 hdfs-data/
 
+#SSL
+backend/ssl/
+backend/api-gateway/src/main/resources/ssl/
+
 .env
