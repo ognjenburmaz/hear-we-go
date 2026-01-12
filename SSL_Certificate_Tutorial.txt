@@ -1,0 +1,43 @@
+(Instalirati mkcert i openssl za mkcert mozda ogi karisik zna kako tacno ide na windows ja nemam pojma kod mene je drugacije, openssl isto mada izgleda da to moze da radi samo ako se koristi git bash umesto cmd/powershell, nakon toga kucati komandu po komandu: )
+
+mkcert -install
+
+mkcert localhost 127.0.0.1 ::2
+
+openssl pkcs12 -export \
+  -in localhost+2.pem \
+  -inkey localhost+2-key.pem \
+  -out keystore.p12 \
+  -name localhost
+
+(sifra je 'changeit')
+
+keytool -storepasswd \
+  -keystore keystore.p12 \
+  -storetype PKCS12
+
+(prvo ukucati 'changeit' pa promeniti sifru na password123)
+
+
+keytool -changealias \
+  -keystore keystore.p12 \
+  -storetype PKCS12 \
+  -alias localhost \
+  -destalias springboot
+
+
+(Kopirati localhost+2.pem i localhost+2-key.pem u backend/ssl)
+
+(Kopirati keystore.p12 u backend/api-gateway/src/main/resources/ssl)
+
+cd backend/api-gateway/src/main/resources/ssl
+
+openssl pkcs12 -in keystore.p12 -nocerts -out server.key -nodes
+
+(sada je sifra password123)
+
+openssl pkcs12 -in keystore.p12 -clcerts -nokeys -out server.crt
+
+(sada je sifra password123)
+
+Restartovati browser na kraju
