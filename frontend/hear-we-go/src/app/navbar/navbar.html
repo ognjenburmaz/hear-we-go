@@ -1,7 +1,17 @@
 <nav class="navbar">
-  <div class="nav-brand">StreamingApp</div>
+  <div class="nav-brand">Hear We Go</div>
   <div class="nav-links">
-    <a routerLink="/home" *ngIf="authService.isAuthenticated()">Početna</a>
+    <div class="dropdown" *ngIf="isAdmin">
+      <button class="dropdown-toggle" (click)="toggleDropdown()">
+        Admin Panel ▼
+      </button>
+      <div class="dropdown-menu" [class.show]="dropdownOpen">
+        <a routerLink="/artists" (click)="closeDropdown()">Artists</a>
+        <a routerLink="/songs" (click)="closeDropdown()">Songs</a>
+        <a routerLink="/albums" (click)="closeDropdown()">Albums</a>
+      </div>
+    </div>
+    <a routerLink="/home" *ngIf="authService.isAuthenticated()" class="profile-link">Početna</a>
     <a routerLink="/profile" *ngIf="authService.isAuthenticated()" class="profile-link">
       Profil
       <span *ngIf="(notificationService.unreadCount$ | async)! > 0" class="notification-dot"></span>

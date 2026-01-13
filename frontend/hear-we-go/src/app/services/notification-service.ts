@@ -40,7 +40,7 @@ export class NotificationService {
   private updateState(notifications: NotificationResponse[]): void {
     this.notificationsSubject.next(notifications);
 
-    const unread = notifications.filter(n => !n.isRead).length;
+    const unread = notifications.filter(n => !n.read).length;
     this.unreadCountSubject.next(unread);
   }
 
@@ -50,7 +50,7 @@ export class NotificationService {
         next: () => {
           const currentNotifications = this.notificationsSubject.value.map(n => {
             if (n.createdAt === createdAt) {
-              return { ...n, isRead: true };
+              return { ...n, read: true };
             }
             return n;
           });
@@ -102,8 +102,16 @@ export class NotificationService {
 
   public addNewNotification(notification: NotificationResponse): void {
     const currentList = this.notificationsSubject.value;
-    const newList = [notification, ...currentList];
-    this.updateState(newList);
+
+    const exists = currentList.some(
+      n => n.createdAt === notification.createdAt
+    );
+
+    if (exists) {
+      return;
+    }
+
+    this.updateState([notification, ...currentList]);
   }
 
 

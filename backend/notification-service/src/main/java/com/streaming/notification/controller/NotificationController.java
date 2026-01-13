@@ -18,9 +18,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
-        String userId = (principal != null) ? principal.getName() : null;
-
+    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@RequestHeader("X-User-Id") String userId) {
         System.out.println("Dohvatanje notifikacija za korisnika: {}"+ userId);
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
@@ -31,18 +29,14 @@ public class NotificationController {
     }
 
     @PatchMapping("/mark-as-read")
-    public ResponseEntity<Void> markAsRead(Principal principal, @RequestParam Instant createdAt) {
-
-        String userId = (principal != null) ? principal.getName() : null;
+    public ResponseEntity<Void> markAsRead(@RequestHeader("X-User-Id") String userId, @RequestParam Instant createdAt) {
         notificationService.markAsRead(userId, createdAt);
 
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> deleteNotification(Principal principal, @RequestParam Instant createdAt) {
-
-        String userId = (principal != null) ? principal.getName() : null;
+    public ResponseEntity<Void> deleteNotification(@RequestHeader("X-User-Id") String userId, @RequestParam Instant createdAt) {
         notificationService.deleteNotification(userId, createdAt);
 
         return ResponseEntity.noContent().build();

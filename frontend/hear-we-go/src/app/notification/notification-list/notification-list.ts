@@ -23,7 +23,7 @@ export class NotificationListComponent implements OnInit {
     }
 
     this.hasUnread$ = this.notificationService.notifications$.pipe(
-      map(notes => notes.some(n => !n.isRead))
+      map(notes => notes.some(n => !n.read))
     );
 
   }

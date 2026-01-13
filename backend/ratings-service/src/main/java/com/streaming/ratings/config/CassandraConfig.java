@@ -13,7 +13,7 @@ import java.util.List;
 @Configuration
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
-    @Value("${spring.cassandra.contact-points:localhost}")
+    @Value("${spring.cassandra.contact-points:streaming-scylla}")
     private String contactPoints;
 
     @Value("${spring.cassandra.port:9042}")

@@ -3,6 +3,8 @@ package com.streaming.gateway.config;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -19,6 +23,8 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.util.List;
@@ -98,5 +104,28 @@ public class SecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 
         return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
+    }
+
+    @Bean
+    public GlobalFilter addUserIdHeaderFilter() {
+        return new GlobalFilter() {
+            @Override
+            public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+                return ReactiveSecurityContextHolder.getContext()
+                        .map(securityContext -> securityContext.getAuthentication())
+                        .cast(org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken.class)
+                        .map(jwtAuthToken -> {
+                            Jwt jwt = jwtAuthToken.getToken();
+                            String userId = jwt.getSubject();
+                            return exchange.mutate()
+                                    .request(exchange.getRequest().mutate()
+                                            .header("X-User-Id", userId)
+                                            .build())
+                                    .build();
+                        })
+                        .defaultIfEmpty(exchange)
+                        .flatMap(chain::filter);
+            }
+        };
     }
 }
