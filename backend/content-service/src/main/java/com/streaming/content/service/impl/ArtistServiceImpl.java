@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class ArtistServiceImpl implements ArtistService {
 
     private final ArtistRepository artistRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, ContentCreatedEvent> kafkaTemplate;
     private final ContentMapper mapper;
 
     public ArtistResponse createArtist(ArtistRequest request) {

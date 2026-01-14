@@ -32,7 +32,7 @@ public class ContentServiceImpl implements ContentService {
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
     private final ArtistRepository artistRepository;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, ContentCreatedEvent> kafkaTemplate;
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
 
