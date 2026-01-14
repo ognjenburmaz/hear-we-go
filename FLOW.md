@@ -61,3 +61,8 @@ koji ce omoguciti korisniku promenu lozinke. Uradjen i frontend i backend
 A.V.
 Namestio MailHog, kada se app pokrene u dockeru mail-ovi se nece slati na pravi mejl nego ce se nalaziti na
 ```http://localhost:8025/```, tako da ne mora svako da dodaje svoje mejlove medju user-e
+
+O.B. https setup prebacen na jednu skriptu uputstva u README mora biti java instalirana, 
+notifikacije zavrsene, rate limit impl s skriptom za simuliranje dos napada u nju treba ubaciti validan
+jwt token pre pokretanja, dodao navbar admin links, subscriptions back impl nije testiran flow,
+back validacija za user i content serv, repo cleanup
