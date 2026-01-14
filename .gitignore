@@ -35,7 +35,5 @@ cassandra-data/
 
 *.p12
 *.pem
-backend/ssl/
-backend/api-gateway/src/main/resources/ssl/
 
 .env
