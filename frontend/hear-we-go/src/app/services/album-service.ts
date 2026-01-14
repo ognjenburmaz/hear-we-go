@@ -17,6 +17,7 @@ export interface Album {
 export class AlbumService {
 
   private apiUrl = 'api/content/albums';
+  private apiUrlArtists = 'api/content/albums';
     constructor(private http: HttpClient, private router: Router) { }
 
     create(albumData:  Album): Observable<Album> {
@@ -60,6 +61,10 @@ export class AlbumService {
       {
           return this.http.get<Album[]>(this.apiUrl);
        } 
+       getAllByArtist(artistId:string) :Observable<Album[]>
+         {
+             return this.http.get<Album[]>(this.apiUrlArtists+'/'+artistId+'/albums');
+          }
       getOne(id:string) :Observable<Album> 
       {
           return this.http.get<Album>(this.apiUrl+'/'+id);

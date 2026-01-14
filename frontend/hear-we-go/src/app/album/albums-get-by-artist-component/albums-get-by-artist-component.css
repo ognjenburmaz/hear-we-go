@@ -1,0 +1,105 @@
+:root {
+    --bg-black: #000000;
+    --card-bg: #121212;
+    --primary-gold: #ffc107;
+    --dark-gold: #e0a800;
+    --text-white: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--bg-black);
+}
+
+.album-card {
+    background-color: var(--card-bg);
+    border: 1px solid #222;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.album-card:hover {
+    border-color: var(--primary-gold);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+.album-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.album-genre-tag {
+    background: var(--dark-gold);
+    color: black;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.album-id {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    font-family: monospace;
+}
+
+.album-title {
+    color: var(--primary-gold);
+    font-size: 1.4rem;
+    margin: 0 0 20px 0;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.album-info {
+    border-top: 1px solid #222;
+    padding-top: 15px;
+}
+
+.info-item {
+    margin-bottom: 12px;
+}
+
+.label {
+    display: block;
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.value {
+    color: var(--text-white);
+    font-size: 0.9rem;
+}
+
+.artist-pill-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.artist-pill {
+    font-size: 0.7rem;
+    border: 1px solid #444;
+    color: var(--text-dim);
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+
+@media (max-width: 1100px) { .album-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .album-grid { grid-template-columns: 1fr; } }

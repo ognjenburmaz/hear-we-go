@@ -54,3 +54,106 @@ h2 {
 .btn-logout:hover {
   background-color: #e0a800;
 }
+
+
+:root {
+    --bg-black: #000000;
+    --card-bg: #121212;
+    --primary-gold: #ffc107;
+    --dark-gold: #e0a800;
+    --text-white: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+.theme-wrapper {
+    background-color: var(--bg-black);
+    margin: 0;
+    padding: 40px;
+    font-family: 'Inter',  sans-serif;
+    min-height: 100vh;
+}
+
+
+.artist-grid {
+    display: grid;
+ 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 24px; 
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+
+@media (max-width: 1024px) {
+    .artist-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .artist-grid { grid-template-columns: 1fr; }
+}
+
+
+.artist-card {
+    background-color: var(--card-bg);
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.artist-card:hover {
+    border-color: var(--dark-gold);
+    transform: translateY(-5px);
+}
+
+.artist-id {
+    color: var(--dark-gold);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.artist-name {
+    color: var(--primary-gold);
+    font-size: 1.5rem;
+    margin: 0 0 16px 0;
+}
+
+.genre-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.genre-badge {
+    background-color: rgba(255, 193, 7, 0.05);
+    color: var(--primary-gold);
+    border: 1px solid var(--dark-gold);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.biography-section {
+    border-top: 1px solid #222;
+    padding-top: 16px;
+    margin-top: auto; /* Pushes bio to bottom if names are different lengths */
+}
+
+.biography-label {
+    color: var(--text-white);
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.biography-text {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}
