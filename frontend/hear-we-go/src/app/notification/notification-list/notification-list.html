@@ -1,31 +1,36 @@
 <div class="notifications-card">
   <h3>
     Obaveštenja
-    <span *ngIf="hasUnread$ | async" class="unread-dot"></span>
+    @if (hasUnread$ | async) {
+      <span class="unread-dot"></span>
+    }
   </h3>
 
-  <div *ngIf="(notificationService.notifications$ | async)?.length === 0" class="empty-msg">
-    Nema novih obaveštenja.
-  </div>
-
-  <div *ngFor="let note of (notificationService.notifications$ | async)"
-       class="notification-item"
-       [class.unread]="!note.read">
-
-    <div class="note-header">
-      <span class="note-title" [class.is-read-text]="note.read">{{ note.title }}</span>
-      <span class="note-date">{{ note.createdAt | date:'short' }}</span>
+  @if ((notificationService.notifications$ | async)?.length === 0) {
+    <div class="empty-msg">
+      Nema novih obaveštenja.
     </div>
+  }
 
-    <p class="note-msg" [class.is-read-text]="note.read">{{ note.message }}</p>
-
-    <div class="note-actions">
-      <button *ngIf="!note.read" (click)="markAsRead(note.createdAt)" class="action-btn read-btn">
-        ✔ Pročitano
-      </button>
-      <button (click)="deleteNote(note.createdAt, $event)" class="action-btn delete-btn">
-        🗑 Obriši
-      </button>
+  @for (note of (notificationService.notifications$ | async); track note) {
+    <div
+      class="notification-item"
+      [class.unread]="!note.read">
+      <div class="note-header">
+        <span class="note-title" [class.is-read-text]="note.read">{{ note.title }}</span>
+        <span class="note-date">{{ note.createdAt | date:'short' }}</span>
+      </div>
+      <p class="note-msg" [class.is-read-text]="note.read">{{ note.message }}</p>
+      <div class="note-actions">
+        @if (!note.read) {
+          <button (click)="markAsRead(note.createdAt)" class="action-btn read-btn">
+            ✔ Pročitano
+          </button>
+        }
+        <button (click)="deleteNote(note.createdAt, $event)" class="action-btn delete-btn">
+          🗑 Obriši
+        </button>
+      </div>
     </div>
-  </div>
+  }
 </div>

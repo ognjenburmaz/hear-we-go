@@ -1,12 +1,22 @@
-<div class="home-container">
-  <div class="home-card">
-    <h2>Dobrodošli!</h2>
-    <p class="subtitle">Uspešno ste prijavljeni na sistem.</p>
+<div class="theme-wrapper">
 
-    <div class="content">
-      <p>Hear We Go!</p>
-    </div>
-
-    <button (click)="onLogout()" class="btn-logout">Odjavi se</button>
+  <div class="artist-grid">
+    @for (artist of artists; track artist) {
+      <div class="artist-card" [routerLink]="['artists/', artist.id,'albums']">
+        <h2 class="artist-name">{{artist.name}}</h2>
+        <div class="genre-container">
+          @for (genre of artist.genres; track genre) {
+            <span class="genre-badge">{{genre}}</span>
+          }
+        </div>
+        <div class="biography-section">
+          <span class="biography-label">Biography</span>
+          <p class="biography-text">
+            {{artist.biography}}
+          </p>
+        </div>
+      </div>
+    }
   </div>
+
 </div>

@@ -54,3 +54,109 @@ h2 {
 .btn-logout:hover {
   background-color: #e0a800;
 }
+
+
+:root {
+    --bg-black: #000000;
+    --card-bg: #121212;
+    --primary-gold: #ffc107;
+    --dark-gold: #e0a800;
+    --text-white: #ffffff;
+    --text-dim: #b3b3b3;
+}
+
+.theme-wrapper {
+    background-color: var(--bg-black);
+    margin: 0;
+    padding: 40px;
+    font-family: 'Inter',  sans-serif;
+    min-height: 100vh;
+    background-color: #121212;
+}
+
+
+.artist-grid {
+    display: grid;
+ grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px; 
+    max-width: 1400px;
+    width: 95%;
+    margin: 40px auto;
+}
+
+
+@media (max-width: 1024px) {
+    .artist-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .artist-grid { grid-template-columns: 1fr; }
+}
+
+
+.artist-card {
+    background-color:#191919;
+    border: 1px solid #222;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+}
+
+.artist-card:hover {
+    border-color:#e0a800;
+    transform: translateY(-5px);
+}
+
+.artist-id {
+    color: #e0a800;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.artist-name {
+    color: #ffc107;
+    font-size: 1.5rem;
+    margin: 0 0 16px 0;
+}
+
+.genre-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.genre-badge {
+    background-color: rgba(255, 193, 7, 0.05);
+    color: #ffc107;
+    border: 1px solid #e0a800;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+}
+
+.biography-section {
+    border-top: 1px solid #222;
+    padding-top: 16px;
+    margin-top: auto; 
+}
+
+.biography-label {
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: block;
+}
+
+.biography-text {
+    color:#b3b3b3;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0;
+}

@@ -1,25 +1,37 @@
 <nav class="navbar">
   <div class="nav-brand">Hear We Go</div>
   <div class="nav-links">
-    <div class="dropdown" *ngIf="isAdmin">
-      <button class="dropdown-toggle" (click)="toggleDropdown()">
-        Admin Panel ▼
-      </button>
-      <div class="dropdown-menu" [class.show]="dropdownOpen">
-        <a routerLink="/artists" (click)="closeDropdown()">Artists</a>
-        <a routerLink="/songs" (click)="closeDropdown()">Songs</a>
-        <a routerLink="/albums" (click)="closeDropdown()">Albums</a>
+    @if (isAdmin) {
+      <div class="dropdown">
+        <button class="dropdown-toggle" (click)="toggleDropdown()">
+          Admin Panel ▼
+        </button>
+        <div class="dropdown-menu" [class.show]="dropdownOpen">
+          <a routerLink="/artists" (click)="closeDropdown()">Artists</a>
+          <a routerLink="/songs" (click)="closeDropdown()">Songs</a>
+          <a routerLink="/albums" (click)="closeDropdown()">Albums</a>
+        </div>
       </div>
-    </div>
-    <a routerLink="/home" *ngIf="authService.isAuthenticated()" class="profile-link">Početna</a>
-    <a routerLink="/profile" *ngIf="authService.isAuthenticated()" class="profile-link">
-      Profil
-      <span *ngIf="(notificationService.unreadCount$ | async)! > 0" class="notification-dot"></span>
-    </a>
-    <a routerLink="/login" *ngIf="!authService.isAuthenticated()">Prijava</a>
+    }
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/home" class="profile-link">Početna</a>
+    }
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/profile" class="profile-link">
+        Profil
+        @if ((notificationService.unreadCount$ | async)! > 0) {
+          <span class="notification-dot"></span>
+        }
+      </a>
+    }
+    @if (!authService.isAuthenticated()) {
+      <a routerLink="/login">Prijava</a>
+    }
 
-    <button (click)="onLogout()" *ngIf="authService.isAuthenticated()" class="btn-nav-logout">
-      Odjavi se
-    </button>
+    @if (authService.isAuthenticated()) {
+      <button (click)="onLogout()" class="btn-nav-logout">
+        Odjavi se
+      </button>
+    }
   </div>
 </nav>

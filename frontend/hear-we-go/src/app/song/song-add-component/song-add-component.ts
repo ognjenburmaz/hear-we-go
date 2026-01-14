@@ -1,6 +1,6 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Song, SongService } from '../../services/song-service';
 import { Album, AlbumService } from '../../services/album-service';
@@ -8,7 +8,7 @@ import { Album, AlbumService } from '../../services/album-service';
 
 @Component({
   selector: 'app-song-add-component',
-  imports: [CommonModule,FormsModule,RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './song-add-component.html',
   styleUrl: './song-add-component.css',
 })

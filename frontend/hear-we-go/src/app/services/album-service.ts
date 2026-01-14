@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { tap, catchError, map } from 'rxjs/operators';
@@ -17,6 +17,7 @@ export interface Album {
 export class AlbumService {
 
   private apiUrl = 'api/content/albums';
+  private apiUrlArtists = 'api/content/artists';
     constructor(private http: HttpClient, private router: Router) { }
 
     create(albumData:  Album): Observable<Album> {
@@ -60,6 +61,10 @@ export class AlbumService {
       {
           return this.http.get<Album[]>(this.apiUrl);
        } 
+       getAllByArtist(artistId:string) :Observable<Album[]>
+         {
+             return this.http.get<Album[]>(this.apiUrlArtists+'/'+artistId+'/albums');
+          }
       getOne(id:string) :Observable<Album> 
       {
           return this.http.get<Album>(this.apiUrl+'/'+id);

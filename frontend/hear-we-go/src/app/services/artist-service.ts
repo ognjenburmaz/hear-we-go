@@ -27,7 +27,7 @@ export class ArtistService
       return this.http.post<Artist>(this.apiUrl, artistData)
         .pipe(
           tap(artist => {
-            console.log('Creation successful:', artist);
+            console.log('Creation successful',artist);
   
             this.router.navigate(['/artists']);
           }),

@@ -14,9 +14,11 @@
         <input type="password" id="password" name="password" [(ngModel)]="password" class="form-control" required>
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button type="submit" class="btn-login">Prijavi se</button>
     </form>
@@ -24,8 +26,8 @@
     <div class="footer-links">
       <a routerLink="/register">Nemate nalog? Registracija</a>
       <br>
-      <br>
-      <a routerLink="/recovery">Zaboravili ste sifru?</a>
+        <br>
+          <a routerLink="/recovery">Zaboravili ste sifru?</a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>

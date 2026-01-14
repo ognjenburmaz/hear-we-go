@@ -4,6 +4,7 @@ import { SongAddComponent } from '../song/song-add-component/song-add-component'
 import { SongPutComponent } from '../song/song-put-component/song-put-component';
 import { SongsGetByAlbumComponent } from '../song/songs-get-by-album-component/songs-get-by-album-component';
 import { RouterModule } from '@angular/router';
+import { SongsGetByAlbumUserComponent } from '../song/songs-get-by-album-user-component/songs-get-by-album-user-component';
 
 
 
@@ -14,12 +15,14 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     SongAddComponent,
     SongPutComponent,
-    SongsGetByAlbumComponent
+    SongsGetByAlbumComponent,
+    SongsGetByAlbumUserComponent
   ],
   exports:[
     SongAddComponent,
     SongPutComponent,
-    SongsGetByAlbumComponent
+    SongsGetByAlbumComponent,
+    SongsGetByAlbumUserComponent
   ]
 })
 export class SongModule { }

@@ -1,13 +1,13 @@
 import { Component ,ChangeDetectorRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Song, SongService } from '../../services/song-service';
 import { Album, AlbumService } from '../../services/album-service';
 
 @Component({
   selector: 'app-song-put-component',
-  imports: [RouterModule,CommonModule,FormsModule],
+  imports: [RouterModule, FormsModule],
   templateUrl: './song-put-component.html',
   styleUrl: './song-put-component.css',
 })

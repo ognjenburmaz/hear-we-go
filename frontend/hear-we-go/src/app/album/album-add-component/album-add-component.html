@@ -1,6 +1,6 @@
 <div class="main-container">
   <div class="form-card">
-    
+
     <p class="subtitle">Dodajte novi album</p>
 
     <form (ngSubmit)="onSubmit()">
@@ -20,23 +20,27 @@
       </div>
 
       <div class="form-group">
-       <label for="artistIds">Umetnici (drzite ctrl za selektovanje vise umetnika)</label>
-  <select 
-    id="artistIds" 
-    name="artistIds" 
-    [(ngModel)]="artistIds" 
-    class="form-control" 
-    multiple 
-    required>
-    <option *ngFor="let artist of artists" [value]="artist.id">
-      {{ artist.name }}
-    </option>
-  </select>
+        <label for="artistIds">Umetnici (drzite ctrl za selektovanje vise umetnika)</label>
+        <select
+          id="artistIds"
+          name="artistIds"
+          [(ngModel)]="artistIds"
+          class="form-control"
+          multiple
+          required>
+          @for (artist of artists; track artist) {
+            <option [value]="artist.id">
+              {{ artist.name }}
+            </option>
+          }
+        </select>
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button type="submit" class="btn-submit">Submit</button>
     </form>

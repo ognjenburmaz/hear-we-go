@@ -19,6 +19,8 @@ import {PasswordChangeComponent} from './password-change-component/password-chan
 import { AlbumsComponent } from './album/albums-component/albums-component';
 import { SongsComponent } from './song/songs-component/songs-component';
 import { SongDeleteComponent } from './song/song-delete-component/song-delete-component';
+import { AlbumsGetByArtistComponent } from './album/albums-get-by-artist-component/albums-get-by-artist-component';
+import { SongsGetByAlbumUserComponent } from './song/songs-get-by-album-user-component/songs-get-by-album-user-component';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -45,11 +47,13 @@ export const routes: Routes = [
       {path: 'artists', component: ArtistsComponent},
       {path: 'artists/add', component: ArtistAddComponent},
       {path: 'artists/put/:id', component: ArtistPutComponent},
+      {path: 'home/artists/:id/albums', component: AlbumsGetByArtistComponent},
 
       {path: 'albums', component: AlbumsComponent},
       {path: 'albums/add', component: AlbumAddComponent},
       {path: 'albums/put/:id', component: AlbumPutComponent},
       {path: 'albums/:id/songs', component: SongsGetByAlbumComponent},
+      {path: 'home/albums/:id/songs', component: SongsGetByAlbumUserComponent},
 
       {path: 'songs', component: SongsComponent},
       {path: 'songs/add', component: SongAddComponent},
