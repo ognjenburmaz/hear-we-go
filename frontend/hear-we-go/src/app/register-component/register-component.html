@@ -29,9 +29,11 @@
         <input type="password" id="password" class="form-control" name="password" [(ngModel)]="password" required>
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button type="submit" class="btn-register">Register</button>
 

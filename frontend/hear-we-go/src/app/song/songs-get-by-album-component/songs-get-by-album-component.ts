@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
-import { Song, SongService } from '../song-service';
+import { Song, SongService } from '../../services/song-service';
 @Component({
   selector: 'app-songs-get-by-album-component',
-  imports: [CommonModule,RouterModule,FormsModule],
+  imports: [RouterModule, FormsModule],
   templateUrl: './songs-get-by-album-component.html',
   styleUrl: './songs-get-by-album-component.css',
 })
@@ -21,7 +21,7 @@ export class SongsGetByAlbumComponent implements OnInit
   {
 
   }
-  ngOnInit(): void 
+  ngOnInit(): void
         {
           this.albumId = this.route.snapshot.paramMap.get('id');
           this.LoadAllSongs();
@@ -32,11 +32,11 @@ export class SongsGetByAlbumComponent implements OnInit
              this.service.getAllByAlbum(this.albumId).subscribe
           ({
            next:(songs:Song[])=>{
-               
+
                 this.songs=songs;
                 this.cdr.detectChanges();
-            
-             },  
+
+             },
             error:(_)=>console.log("greska")
              })
             }

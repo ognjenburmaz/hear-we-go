@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/login/*", "/api/users/register", "/api/users/recovery", "/api/users/pswchange").permitAll()
+                        .requestMatchers("/api/users/login/*", "/api/users/register", "/api/users/recovery", "/api/users/pswchange","/ws/**").permitAll()
                         .anyRequest().permitAll()
                 );
 

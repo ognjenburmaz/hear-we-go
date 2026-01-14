@@ -3,8 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {EmailRequest} from './emailRequest';
-import {PswChangeRequest} from './pswRequest';
+import {EmailRequest} from '../DTOs/emailRequest';
+import {PswChangeRequest} from '../DTOs/pswRequest';
 
 interface AuthRequest {
   username: string | null;
@@ -137,6 +137,17 @@ export class AuthService {
       };
     } catch (e) {
       console.error("Greška pri čitanju tokena", e);
+      return null;
+    }
+  }
+  getUserId(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.id || payload.sub;
+    } catch (e) {
       return null;
     }
   }

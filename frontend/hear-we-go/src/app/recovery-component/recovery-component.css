@@ -101,3 +101,16 @@ label {
   font-size: 14px;
   text-align: center;
 }
+
+.success-message {
+  color: #000000;
+  background-color: #22df0d;
+  border: 1px solid #40ec1b;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+  cursor: grab;
+}

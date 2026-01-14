@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,6 +35,9 @@ public class ContentServiceImpl implements ContentService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
+
+    private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
+    private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
 
     @Transactional
     public AlbumResponse createAlbum(AlbumRequest request) {
@@ -92,6 +96,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     public SongResponse addSong(SongRequest request, MultipartFile file) {
+
+        validateFile(file);
 
         Album album = albumRepository.findById(request.getAlbumId())
                 .orElseThrow(() -> new IllegalArgumentException("Album not found"));
@@ -175,5 +181,31 @@ public class ContentServiceImpl implements ContentService {
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    private void validateFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty");
+        }
+
+        if (file.getSize() > 20 * 1024 * 1024) {
+            throw new IllegalArgumentException("File too large. Max 20MB");
+        }
+
+        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        if (filename.contains("..")) {
+            throw new SecurityException("Cannot store file with relative path outside current directory " + filename);
+        }
+
+        String contentType = file.getContentType();
+        if (!ALLOWED_MIME_TYPES.contains(contentType)) {
+            throw new IllegalArgumentException("Invalid file type: " + contentType);
+        }
+
+        boolean validExtension = ALLOWED_EXTENSIONS.stream()
+                .anyMatch(ext -> filename.toLowerCase().endsWith(ext));
+        if (!validExtension) {
+            throw new IllegalArgumentException("Invalid file extension");
+        }
     }
 }

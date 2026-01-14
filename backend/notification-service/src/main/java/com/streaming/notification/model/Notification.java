@@ -29,7 +29,7 @@ public class Notification {
     private String message;
 
     @Column("is_read")
-    private boolean isRead;
+    private boolean isRead = false;
 
     // "NEW_SONG", "NEW_ALBUM", "NEW_ARTIST"
     @Column("type")

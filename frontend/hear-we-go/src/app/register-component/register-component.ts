@@ -1,12 +1,12 @@
 import { Component, ChangeDetectorRef } from '@angular/core'; // <--- 1. Import
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
-import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
+
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-register-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './register-component.html',
   styleUrl: './register-component.css',
   standalone: true

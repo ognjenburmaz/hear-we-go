@@ -1,13 +1,13 @@
-import { Component ,ChangeDetectorRef, OnInit } from '@angular/core'; 
+import { Component ,ChangeDetectorRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
-import { Song, SongService } from '../song-service';
-import { Album, AlbumService } from '../../album/album-service';
+import { Song, SongService } from '../../services/song-service';
+import { Album, AlbumService } from '../../services/album-service';
 
 @Component({
   selector: 'app-song-put-component',
-  imports: [RouterModule,CommonModule,FormsModule],
+  imports: [RouterModule, FormsModule],
   templateUrl: './song-put-component.html',
   styleUrl: './song-put-component.css',
 })
@@ -31,9 +31,9 @@ errorMessage:string='';
     ) { }
     ngOnInit(): void {
       this.songId = this.route.snapshot.paramMap.get('id');
-      this.LoadAllAlbums(); 
+      this.LoadAllAlbums();
       this.LoadSelectedSong();
-      
+
     }
  LoadSelectedSong()
  {
@@ -41,9 +41,9 @@ errorMessage:string='';
    this.service.getOne(this.songId).subscribe
         ({
          next:(song:Song)=>{
-             
+
               this.song=song;
-        
+
               if(this.song!=undefined)
            {
            this.title=this.song.title
@@ -54,7 +54,7 @@ errorMessage:string='';
            }
            this.cdr.detectChanges();
 
-           },  
+           },
           error:(_)=>console.log("greska")
            })
           }
@@ -65,25 +65,25 @@ errorMessage:string='';
 
 LoadAllAlbums():void
 {
-   
+
     this.serviceAlbums.getAll().subscribe
             ({
              next:(albums:Album[])=>{
-          
+
                     this.albums=albums;
                     this.cdr.detectChanges();
-          
+
                  },
                 error:(_)=>console.log("greska")
                  })
-       
+
 }
 
 
 
      onSubmit(): void {
       this.errorMessage = '';
-  
+
       if ( this.title==''|| this.albumId==''||this.genre==''|| this.durationSeconds==0) {
         this.errorMessage = 'Sva polja su obavezna!';
         return;

@@ -10,16 +10,14 @@
         <input [(ngModel)]="otp" class="form-control" id="password" name="password" required type="text">
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button class="btn-login" type="submit">Prijavi se</button>
     </form>
-
-    <!--    <div class="footer-links">-->
-    <!--      <a routerLink="/register">Nemate nalog? Registracija</a>-->
-    <!--    </div>-->
   </div>
 </div>
 

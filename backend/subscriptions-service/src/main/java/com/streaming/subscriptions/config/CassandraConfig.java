@@ -11,13 +11,13 @@ import java.util.List;
 @Configuration
 public class CassandraConfig extends AbstractCassandraConfiguration {
 
-    @Value("${spring.cassandra.contact-points:localhost}")
+    @Value("${spring.cassandra.contact-points:streaming-scylla}")
     private String contactPoints;
 
     @Value("${spring.cassandra.port:9042}")
     private int port;
 
-    @Value("${spring.cassandra.keyspace-name:subscriptions_ks}")
+    @Value("${SPRING_CASSANDRA_KEYSPACE_NAME}")
     private String keyspaceName;
 
     @Override

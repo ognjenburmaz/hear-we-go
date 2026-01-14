@@ -1,15 +1,16 @@
-import { Component,ChangeDetectorRef, OnInit } from '@angular/core'; 
+import { Component,ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
-import { Album, AlbumService } from '../album-service';
-import { Artist, ArtistService } from '../../artist/artist-service';
+import { Album, AlbumService } from '../../services/album-service';
+import { Artist, ArtistService } from '../../services/artist-service';
 
 @Component({
   selector: 'app-album-add-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './album-add-component.html',
   styleUrl: './album-add-component.css',
+  standalone: true
 })
 export class AlbumAddComponent implements OnInit
  {
@@ -25,7 +26,7 @@ export class AlbumAddComponent implements OnInit
       private service:AlbumService,
       private serviceArtists: ArtistService
     ) { }
-    ngOnInit(): void 
+    ngOnInit(): void
     {
         this.GetAllArtists() ;
     }
@@ -37,17 +38,17 @@ export class AlbumAddComponent implements OnInit
        this.serviceArtists.getAll().subscribe
               ({
                next:(artists:Artist[])=>{
-      
+
                     this.artists=artists;
                     this.cdr.detectChanges();
-      
+
                  },
                 error:(_)=>console.log("greska")
                  })
     }
     onSubmit(): void {
       this.errorMessage = '';
-  
+
       if (this.title=='' || this.releaseDate==null || this.genre==''||this.artistIds.length==0) {
         this.errorMessage = 'Sva polja su obavezna!';
         return;
@@ -59,7 +60,7 @@ export class AlbumAddComponent implements OnInit
             genre:this.genre.trim(),
             artistIds:this.artistIds
           }
-      
+
                this.service.create(album).subscribe({
               next:(album: Album) => {
                 this.router.navigate(['albums'])

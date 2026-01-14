@@ -32,6 +32,11 @@ services:
     command: --smp 1 --memory 750M
     networks:
       - streaming-net
+    healthcheck:
+      test: [ "CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   neo4j:
     image: neo4j:latest
@@ -117,12 +122,14 @@ services:
     container_name: api-gateway
     ports:
       - "${PORT_GATEWAY}:8080"
+    volumes:
+      - ./certs:/app/certs
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+#      - SPRING_PROFILES_ACTIVE=docker
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
       - SPRING_CLOUD_GATEWAY_DISCOVERY_LOCATOR_ENABLED=true
-      - JAVA_TOOL_OPTIONS=-Xmx200m
       - JWT_SECRET=${JWT_SECRET}
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
       discovery-service:
         condition: service_healthy
@@ -136,14 +143,15 @@ services:
     container_name: discovery-service
     ports:
       - "${PORT_EUREKA}:8761"
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      # Limit Java Memory to 200MB to save RAM
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     networks:
       - streaming-net
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      test: [ "CMD", "curl", "-f", "-k", "https://localhost:8761/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -153,12 +161,14 @@ services:
       context: ./backend
       dockerfile: users-service/Dockerfile
     container_name: users-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/users-db
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
       - JWT_SECRET=${JWT_SECRET}
       - EMAIL_PASSWORD=${EMAIL_PASSWORD}
     depends_on:
@@ -172,16 +182,18 @@ services:
       context: ./backend
       dockerfile: content-service/Dockerfile
     container_name: content-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/content-db
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
       - HDFS_URI=hdfs://namenode:8020
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
       - mongo
       - redis
@@ -196,20 +208,25 @@ services:
       context: ./backend
       dockerfile: ratings-service/Dockerfile
     container_name: ratings-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CASSANDRA_CONTACT_POINTS=scylla
+      - SPRING_CASSANDRA_CONTACT_POINTS=streaming-scylla
       - SPRING_CASSANDRA_PORT=9042
       - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
       - SPRING_CASSANDRA_KEYSPACE_NAME=ratings_ks
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
-      - scylla
-      - discovery-service
-      - kafka
+      scylla:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+      kafka:
+        condition: service_started
     networks:
       - streaming-net
 
@@ -218,20 +235,25 @@ services:
       context: ./backend
       dockerfile: subscriptions-service/Dockerfile
     container_name: subscriptions-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CASSANDRA_CONTACT_POINTS=scylla
+      - SPRING_CASSANDRA_CONTACT_POINTS=streaming-scylla
       - SPRING_CASSANDRA_PORT=9042
       - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
       - SPRING_CASSANDRA_KEYSPACE_NAME=subscriptions_ks
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
-      - scylla
-      - discovery-service
-      - kafka
+      scylla:
+        condition: service_healthy
+      discovery-service:
+        condition: service_started
+      kafka:
+        condition: service_started
     networks:
       - streaming-net
 
@@ -240,20 +262,26 @@ services:
       context: ./backend
       dockerfile: notification-service/Dockerfile
     container_name: notification-service
+    volumes:
+      - ./certs:/app/certs
+    restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CASSANDRA_CONTACT_POINTS=scylla
+      - SPRING_CASSANDRA_CONTACT_POINTS=streaming-scylla
       - SPRING_CASSANDRA_PORT=9042
       - SPRING_CASSANDRA_LOCAL_DATACENTER=datacenter1
       - SPRING_CASSANDRA_KEYSPACE_NAME=notifications_ks
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
-      - scylla
-      - discovery-service
-      - kafka
+      discovery-service:
+        condition: service_started
+      kafka:
+        condition: service_started
+      scylla:
+        condition: service_healthy
     networks:
       - streaming-net
 
@@ -262,15 +290,17 @@ services:
       context: ./backend
       dockerfile: recommendation-service/Dockerfile
     container_name: recommendation-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_NEO4J_URI=bolt://neo4j:7687
       - SPRING_NEO4J_AUTHENTICATION_USERNAME=neo4j
       - SPRING_NEO4J_AUTHENTICATION_PASSWORD=password
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
       - neo4j
       - discovery-service
@@ -283,13 +313,15 @@ services:
       context: ./backend
       dockerfile: analytics-service/Dockerfile
     container_name: analytics-service
+    volumes:
+      - ./certs:/app/certs
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/analytics-db
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=https://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=false
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - JAVA_TOOL_OPTIONS=-Xmx200m
+      - JAVA_TOOL_OPTIONS=-Xmx200m -Djavax.net.ssl.trustStore=/app/certs/keystore.p12 -Djavax.net.ssl.trustStorePassword=password123 -Djavax.net.ssl.trustStoreType=PKCS12
     depends_on:
       - mongo
       - discovery-service
@@ -302,8 +334,11 @@ services:
       context: ./frontend/hear-we-go
       dockerfile: Dockerfile
     container_name: streaming-frontend
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - api-gateway
     networks:

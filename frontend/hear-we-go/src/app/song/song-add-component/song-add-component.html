@@ -1,10 +1,10 @@
 <div class="main-container">
   <div class="form-card">
-    
+
     <p class="subtitle">Dodajte novu pesmu</p>
 
     <form (ngSubmit)="onSubmit()">
-        <div class="form-group">
+      <div class="form-group">
         <label for="title">Naziv</label>
         <input type="text" id="title" name="title" [(ngModel)]="title" class="form-control" required>
       </div>
@@ -21,34 +21,38 @@
 
       <div class="form-group">
         <label for="albumId">Album</label>
-   
-  <select 
-    id="albumId" 
-    name="albumId" 
-    [(ngModel)]="albumId" 
-    class="form-control" 
-    required>
-    <option *ngFor="let album of albums" [value]="album.id">
-      {{ album.title }}
-    </option>
-  </select>
-            
+
+        <select
+          id="albumId"
+          name="albumId"
+          [(ngModel)]="albumId"
+          class="form-control"
+          required>
+          @for (album of albums; track album) {
+            <option [value]="album.id">
+              {{ album.title }}
+            </option>
+          }
+        </select>
+
       </div>
       <div class="form-group">
         <label for="name">Mp3 fajl</label>
         <input type="file" id="file" name="file" (change)="onFileSelected($event)" class="form-control" required>
       </div>
 
-    
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-     
-      
+
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+
 
       <button type="submit" class="btn-submit">Submit</button>
     </form>
-</div>
+  </div>
 </div>
 

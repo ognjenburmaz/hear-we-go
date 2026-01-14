@@ -1,12 +1,12 @@
 import {ChangeDetectorRef, Component} from '@angular/core'; // <--- 1. Importuj ChangeDetectorRef
 import {Router, RouterModule} from '@angular/router';
-import {AuthService} from '../auth/auth.service';
-import {CommonModule} from '@angular/common';
+import {AuthService} from '../services/auth.service';
+
 import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-login-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './login-component.html',
   styleUrl: './login-component.css',
   standalone: true

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -17,11 +18,8 @@ public class NotificationController {
     private final NotificationService notificationService;
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getMyNotifications(Principal principal) {
-        // 'Principal' comes from the Gateway's JWT (The "sub" field, usually username/email)
-        // If you store 'userId' in token, extract it. For now assuming username is the key.
-        String userId = principal.getName();
-
+    public ResponseEntity<List<NotificationResponse>> getMyNotifications(@RequestHeader("X-User-Id") String userId) {
+        System.out.println("Dohvatanje notifikacija za korisnika: {}"+ userId);
         return ResponseEntity.ok(notificationService.getUserNotifications(userId));
     }
 
@@ -30,5 +28,17 @@ public class NotificationController {
         notificationService.saveNotification(event);
     }
 
-    // Optional: Mark as read endpoint
+    @PatchMapping("/mark-as-read")
+    public ResponseEntity<Void> markAsRead(@RequestHeader("X-User-Id") String userId, @RequestParam Instant createdAt) {
+        notificationService.markAsRead(userId, createdAt);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteNotification(@RequestHeader("X-User-Id") String userId, @RequestParam Instant createdAt) {
+        notificationService.deleteNotification(userId, createdAt);
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,32 +1,34 @@
 <div class="main-container">
   <div class="container-card">
-    
-   
-      <button class="addArtist" (click)="navigateToAdd()">Dodaj Album</button>
-    
-     <table  class="table-artists">
-  <thead>
-   <tr class="tr-th">
-                <th>Naziv</th>
-                <th>Zanr</th>
-                <th>Datum Objave</th>
-                <th>Izmeni</th>
-                <th>Pesme</th>
-            </tr>
-  </thead>
-  <tbody>
-   
-    <tr *ngFor="let album of albums">
-              <td>{{album.title}}</td>
-              <td>{{album.genre}}</td>
-              <td>{{album.releaseDate}}</td>
-              <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/put', album.id]">Izmeni Album</button></td>
-              <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/', album.id,'songs']">Pesme</button></td>
-            </tr>
-  </tbody>
-</table>
 
-    
+
+    <button class="addArtist" (click)="navigateToAdd()">Dodaj Album</button>
+
+    <table  class="table-artists">
+      <thead>
+        <tr class="tr-th">
+          <th>Naziv</th>
+          <th>Zanr</th>
+          <th>Datum Objave</th>
+          <th>Izmeni</th>
+          <th>Pesme</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        @for (album of albums; track album) {
+          <tr>
+            <td>{{album.title}}</td>
+            <td>{{album.genre}}</td>
+            <td>{{album.releaseDate}}</td>
+            <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/put', album.id]">Izmeni Album</button></td>
+            <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/', album.id,'songs']">Pesme</button></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+
 
   </div>
 </div>

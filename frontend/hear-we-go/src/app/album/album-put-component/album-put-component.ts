@@ -1,15 +1,16 @@
-import { CommonModule} from '@angular/common';
-import { Component,ChangeDetectorRef, OnInit } from '@angular/core'; 
+
+import { Component,ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule,Router, ActivatedRoute } from '@angular/router';
-import { Album, AlbumService } from '../album-service';
-import { Artist, ArtistService } from '../../artist/artist-service';
+import { Album, AlbumService } from '../../services/album-service';
+import { Artist, ArtistService } from '../../services/artist-service';
 
 @Component({
   selector: 'app-album-put-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './album-put-component.html',
   styleUrl: './album-put-component.css',
+  standalone: true
 })
 export class AlbumPutComponent implements OnInit{
 title!: string;
@@ -21,7 +22,7 @@ title!: string;
     album:Album|undefined=undefined;
 
     artists:Artist[]=[]
-  
+
     constructor(
        private route:ActivatedRoute,
       private router: Router,
@@ -29,7 +30,7 @@ title!: string;
        private service:AlbumService,
        private serviceArtists:ArtistService
     ) { }
-  ngOnInit(): void 
+  ngOnInit(): void
   {
     this.GetAllArtists();
       this.albumId = this.route.snapshot.paramMap.get('id');
@@ -37,9 +38,9 @@ title!: string;
    this.service.getOne(this.albumId).subscribe
         ({
          next:(album:Album)=>{
-             
+
               this.album=album;
-        
+
               if(this.album!=undefined)
            {
            this.title=this.album.title
@@ -50,29 +51,29 @@ title!: string;
            }
            this.cdr.detectChanges();
 
-           },  
+           },
           error:(_)=>console.log("greska")
            })
           }
 
-          
+
   }
    GetAllArtists():void
     {
        this.serviceArtists.getAll().subscribe
               ({
                next:(artists:Artist[])=>{
-      
+
                     this.artists=artists;
                     this.cdr.detectChanges();
-      
+
                  },
                 error:(_)=>console.log("greska")
                  })
     }
     onSubmit(): void {
       this.errorMessage = '';
-  
+
       if (this.title=='' || this.releaseDate==null || this.genre==''||this.artistIds.length==0) {
         this.errorMessage = 'Sva polja su obavezna!';
         return;

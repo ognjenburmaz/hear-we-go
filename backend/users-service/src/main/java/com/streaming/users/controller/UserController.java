@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,7 +67,7 @@ public class UserController {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject("Vas jednokratni kod");
-        message.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
+        message.setText("Vas kod je: " + otp + "\nKod istice za 5 minuta.");
 
         try {
             mailSender.send(message);
@@ -114,7 +115,7 @@ public class UserController {
         user.setRecoveryHash(UUID.randomUUID());
         userServiceImpl.save(user);
 
-        String magicLink = "http://localhost/users/changepassword?recoveryHash=" + user.getRecoveryHash();
+        String magicLink = "https://localhost/users/changepassword?recoveryHash=" + user.getRecoveryHash();
 
         helper.setTo(user.getEmail());
         helper.setSubject("Resetovanje lozinke");
@@ -146,6 +147,7 @@ public class UserController {
             User user = userOptional.get();
             user.setPasswordHash(passwordEncoder.encode(newPassword));
             user.setRecoveryHash(null);
+            user.setLastPasswordReset(LocalDateTime.now());
             userServiceImpl.save(user);
             return ResponseEntity.ok(null);
         } else {
