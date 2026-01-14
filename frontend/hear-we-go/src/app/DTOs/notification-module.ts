@@ -3,7 +3,7 @@ export interface NotificationResponse {
   title: string;
   message: string;
   createdAt: string;
-  isRead: boolean;
+  read: boolean;
   type: string;
   referenceId: string;
 }

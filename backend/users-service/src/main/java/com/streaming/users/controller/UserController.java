@@ -67,7 +67,7 @@ public class UserController {
         SimpleMailMessage message = new SimpleMailMessage(); // TODO dodati nekakav rate-limiting
         message.setTo(user.getEmail());
         message.setSubject("Vas jednokratni kod");
-        message.setText("Vas kod je: " + otp + " \n Kod istice za 5 minuta.");
+        message.setText("Vas kod je: " + otp + "\nKod istice za 5 minuta.");
 
         try {
             mailSender.send(message);
