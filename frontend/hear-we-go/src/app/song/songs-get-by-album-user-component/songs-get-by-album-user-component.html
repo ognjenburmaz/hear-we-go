@@ -1,24 +1,28 @@
 <div class="page-wrapper">
 
-  <div class="album-hero" *ngIf="album">
-    <div class="album-meta">
-      <span class="genre-pill">{{ album.genre }}</span>
-      <h1 class="album-title">{{ album.title }}</h1>
-      <p class="album-sub">Released on {{ album.releaseDate | date:'longDate' }}</p>
+  @if (album) {
+    <div class="album-hero">
+      <div class="album-meta">
+        <span class="genre-pill">{{ album.genre }}</span>
+        <h1 class="album-title">{{ album.title }}</h1>
+        <p class="album-sub">Released on {{ album.releaseDate | date:'longDate' }}</p>
+      </div>
     </div>
-  </div>
+  }
 
   <div class="tracklist-section">
     <h2 class="section-title">Tracks</h2>
     <div class="song-list">
-      <div class="song-item" *ngFor="let song of songs; let i = index">
-        <span class="track-index">{{ i + 1 }}</span>
-        <div class="song-main">
-          <span class="song-name">{{ song.title }}</span>
-          <span class="song-genre-tag">{{ song.genre }}</span>
+      @for (song of songs; track song; let i = $index) {
+        <div class="song-item">
+          <span class="track-index">{{ i + 1 }}</span>
+          <div class="song-main">
+            <span class="song-name">{{ song.title }}</span>
+            <span class="song-genre-tag">{{ song.genre }}</span>
+          </div>
+          <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
         </div>
-        <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
-      </div>
+      }
     </div>
   </div>
 </div>

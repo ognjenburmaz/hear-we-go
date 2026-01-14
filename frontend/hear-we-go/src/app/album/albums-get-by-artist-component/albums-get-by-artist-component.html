@@ -1,27 +1,28 @@
+<div class="theme-wrapper">
 <div class="album-grid">
-  <div class="album-card" *ngFor="let album of albums" [routerLink]="['home/albums/', album.id,'songs']">
-    
-    <div class="album-header">
-      <span class="album-genre-tag">{{ album.genre }}</span>
-    </div>
-
-    <h2 class="album-title">{{ album.title }}</h2>
-    
-    <div class="album-info">
-      <div class="info-item">
-        <span class="label">Released</span>
-        <span class="value">{{ album.releaseDate | date:'mediumDate' }}</span>
+  @for (album of albums; track album) {
+    <div class="album-card" [routerLink]="['/home/albums/', album.id,'songs']">
+      <div class="album-header">
+        <span class="album-genre-tag">{{ album.genre }}</span>
       </div>
-      
-      <div class="info-item">
-        <span class="label">Contributors</span>
-        <div class="artist-pill-container">
-          <span class="artist-pill" *ngFor="let artistId of album.artistIds">
-            ID: {{ artistId }}
-          </span>
+      <h2 class="album-title">{{ album.title }}</h2>
+      <div class="album-info">
+        <div class="info-item">
+          <span class="label">Released</span>
+          <span class="value">{{ album.releaseDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Contributors</span>
+          <div class="artist-pill-container">
+            @for (artistId of album.artistIds; track artistId) {
+              <span class="artist-pill">
+                ID: {{ artistId }}
+              </span>
+            }
+          </div>
         </div>
       </div>
     </div>
-
-  </div>
+  }
+</div>
 </div>

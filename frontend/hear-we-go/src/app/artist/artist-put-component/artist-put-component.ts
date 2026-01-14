@@ -1,13 +1,13 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule ,ActivatedRoute} from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Artist, ArtistService } from '../../services/artist-service';
 
 
 @Component({
   selector: 'app-artist-put-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './artist-put-component.html',
   styleUrl: './artist-put-component.css',
 })

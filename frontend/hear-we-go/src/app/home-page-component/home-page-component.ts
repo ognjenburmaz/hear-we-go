@@ -1,14 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Router } from 'express';
+
+import {Router, RouterModule } from '@angular/router';
 import { Artist, ArtistService } from '../services/artist-service';
 
 @Component({
   selector: 'app-home-page-component',
   standalone: true,
-  imports: [CommonModule,RouterModule],
+  imports: [RouterModule],
   templateUrl: './home-page-component.html',
   styleUrl: './home-page-component.css',
 })

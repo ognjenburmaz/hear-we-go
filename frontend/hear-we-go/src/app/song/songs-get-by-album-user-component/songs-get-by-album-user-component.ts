@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import {Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { Song, SongService } from '../../services/song-service';
-import { Router } from 'express';
 import { Album, AlbumService } from '../../services/album-service';
 
 @Component({

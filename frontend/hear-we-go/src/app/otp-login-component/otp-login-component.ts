@@ -2,16 +2,15 @@ import {ChangeDetectorRef, Component} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {Router, RouterLink} from '@angular/router';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {NgIf} from '@angular/common';
+
 
 @Component({
   selector: 'app-otp-login-component',
   imports: [
     FormsModule,
-    NgIf,
     ReactiveFormsModule,
     RouterLink
-  ],
+],
   templateUrl: './otp-login-component.html',
   styleUrl: './otp-login-component.css',
 })

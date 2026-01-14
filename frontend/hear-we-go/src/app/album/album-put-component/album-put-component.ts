@@ -1,4 +1,4 @@
-import { CommonModule} from '@angular/common';
+
 import { Component,ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule,Router, ActivatedRoute } from '@angular/router';
@@ -7,7 +7,7 @@ import { Artist, ArtistService } from '../../services/artist-service';
 
 @Component({
   selector: 'app-album-put-component',
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule],
   templateUrl: './album-put-component.html',
   styleUrl: './album-put-component.css',
   standalone: true

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../services/auth.service';
 import {NotificationListComponent} from '../notification/notification-list/notification-list';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, NotificationListComponent],
+  imports: [NotificationListComponent],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })

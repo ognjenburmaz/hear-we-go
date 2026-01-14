@@ -1,12 +1,12 @@
 import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Album, AlbumService } from '../../services/album-service';
 
 @Component({
   selector: 'app-albums-component',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule],
   templateUrl: './albums-component.html',
   styleUrl: './albums-component.css',
 })

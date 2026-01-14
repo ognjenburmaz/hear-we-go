@@ -17,7 +17,7 @@ export interface Album {
 export class AlbumService {
 
   private apiUrl = 'api/content/albums';
-  private apiUrlArtists = 'api/content/albums';
+  private apiUrlArtists = 'api/content/artists';
     constructor(private http: HttpClient, private router: Router) { }
 
     create(albumData:  Album): Observable<Album> {

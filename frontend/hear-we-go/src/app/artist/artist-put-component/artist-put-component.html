@@ -1,6 +1,6 @@
 <div class="main-container">
   <div class="form-card">
-    
+
     <p class="subtitle">Izmenite umetnika</p>
 
     <form (ngSubmit)="onSubmit()">
@@ -19,9 +19,11 @@
         <input type="text" id="genres" name="genres" [(ngModel)]="genres" class="form-control" required>
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
 
       <button type="submit" class="btn-submit">Submit</button>
     </form>

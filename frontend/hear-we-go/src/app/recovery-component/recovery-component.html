@@ -10,20 +10,24 @@
         <input [(ngModel)]="email" class="form-control" id="email" name="email" required type="email">
       </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+      @if (errorMessage) {
+        <div class="error-message">
+          {{ errorMessage }}
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="success-message">
+          {{ successMessage }}
+          <br>
+            <br>
+              <a (click)="resend()">Niste primili mejl?</a>
+            </div>
+          }
+
+          <button class="btn-login" type="submit">Potvrdi</button>
+        </form>
+
       </div>
-
-      <div *ngIf="successMessage" class="success-message">
-        {{ successMessage }}
-        <br>
-        <br>
-        <a (click)="resend()">Niste primili mejl?</a>
-      </div>
-
-      <button class="btn-login" type="submit">Potvrdi</button>
-    </form>
-
-  </div>
-</div>
+    </div>
 

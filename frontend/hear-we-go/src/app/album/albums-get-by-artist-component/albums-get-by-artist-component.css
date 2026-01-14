@@ -6,17 +6,24 @@
     --text-white: #ffffff;
     --text-dim: #b3b3b3;
 }
-
+.theme-wrapper {
+    background-color: var(--bg-black);
+    margin: 0;
+    padding: 40px;
+    font-family: 'Inter',  sans-serif;
+    min-height: 100vh;
+    background-color: #121212;
+}
 .album-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     padding: 20px;
-    background-color: var(--bg-black);
+   
 }
 
 .album-card {
-    background-color: var(--card-bg);
+    background-color:  #191919;
     border: 1px solid #222;
     border-radius: 12px;
     padding: 20px;
@@ -27,7 +34,7 @@
 }
 
 .album-card:hover {
-    border-color: var(--primary-gold);
+    border-color:  #ffc107;
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.5);
 }
@@ -40,7 +47,7 @@
 }
 
 .album-genre-tag {
-    background: var(--dark-gold);
+    background:  #e0a800;
     color: black;
     font-size: 0.7rem;
     font-weight: bold;
@@ -50,13 +57,13 @@
 }
 
 .album-id {
-    color: var(--text-dim);
+    color:#b3b3b3;
     font-size: 0.75rem;
     font-family: monospace;
 }
 
 .album-title {
-    color: var(--primary-gold);
+    color:  #ffc107;
     font-size: 1.4rem;
     margin: 0 0 20px 0;
     font-weight: 700;
@@ -74,14 +81,14 @@
 
 .label {
     display: block;
-    color: var(--text-dim);
+    color: #b3b3b3;
     font-size: 0.75rem;
     text-transform: uppercase;
     margin-bottom: 4px;
 }
 
 .value {
-    color: var(--text-white);
+    color: #ffffff;
     font-size: 0.9rem;
 }
 
@@ -95,7 +102,7 @@
 .artist-pill {
     font-size: 0.7rem;
     border: 1px solid #444;
-    color: var(--text-dim);
+    color: #b3b3b3;
     padding: 2px 6px;
     border-radius: 3px;
 }

@@ -1,5 +1,5 @@
 .page-wrapper {
-    background-color: #000;
+    background-color: #121212;
     min-height: 100vh;
     padding: 40px;
     font-family: 'Inter', sans-serif;
@@ -7,7 +7,7 @@
 }
 
 .back-link {
-    color: var(--dark-gold);
+    color: #e0a800;
     text-decoration: none;
     font-size: 0.9rem;
     display: inline-block;
@@ -15,14 +15,14 @@
 }
 
 .album-hero {
-    background: linear-gradient(135deg, #121212 0%, #000 100%);
-    border-left: 5px solid var(--primary-gold);
+    background: linear-gradient(135deg, #191919 0%, #000 100%);
+    border-left: 5px solid #ffc107;
     padding: 40px;
     margin-bottom: 40px;
 }
 
 .genre-pill {
-    background: var(--dark-gold);
+    background: #e0a800;
     color: black;
     padding: 4px 12px;
     border-radius: 4px;
@@ -32,7 +32,7 @@
 
 .album-title {
     font-size: 3.5rem;
-    color: var(--primary-gold);
+    color: #ffc107;
     margin: 15px 0;
 }
 
@@ -43,7 +43,7 @@
 .section-title {
     border-bottom: 1px solid #222;
     padding-bottom: 10px;
-    color: var(--text-dim);
+    color:#b3b3b3;
 }
 
 .song-item {
@@ -77,8 +77,8 @@
 
 .song-genre-tag {
     font-size: 0.7rem;
-    border: 1px solid var(--dark-gold);
-    color: var(--dark-gold);
+    border: 1px solid #e0a800;
+    color: #e0a800;
     padding: 2px 6px;
     border-radius: 3px;
 }

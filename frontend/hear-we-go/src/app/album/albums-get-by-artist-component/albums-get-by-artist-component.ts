@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
-import { Router } from 'express';
+import {Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { Album, AlbumService } from '../../services/album-service';
 
 @Component({
@@ -26,9 +25,9 @@ export class AlbumsGetByArtistComponent implements OnInit{
     ngOnInit(): void 
     {
       this.artistId = this.route.snapshot.paramMap.get('id');
-                this.LoadAllSongs();
+                this.LoadAllAlbums();
               }
-              LoadAllSongs():void
+              LoadAllAlbums():void
               {
                 if(this.artistId!=null){
                    this.service.getAllByArtist(this.artistId).subscribe
