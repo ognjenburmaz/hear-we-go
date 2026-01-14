@@ -6,7 +6,7 @@ db.users.insertMany([
         email: "velickovicaleksa555@gmail.com",
         firstName: "Aleksa",
         lastName: "Velickovic",
-        passwordHash: "$2a$08$uPQ8FCcgcR2VqykhXdKW2OdVY9GIarOtVQJf4iTVur53aegBFA.A6",
+        passwordHash: "$2y$10$OFPT0FcURNXGpHnVNKSu2Ox.7kkT1Ii0JjjBc/RVsiB17pLlfI2JK",
         role: "USER",
         active: true,
         lastPasswordReset: new Date("2025-01-01T12:00:00Z")
@@ -16,7 +16,7 @@ db.users.insertMany([
         email: "a.velickovic333@gmail.com",
         firstName: "Test",
         lastName: "User",
-        passwordHash: "$2a$10$eImiTXuWVxfM37uY4JANjQ==",
+        passwordHash: "$2y$10$L2ZvWUzS1iifI8Gh9NxDnuZU09GeClN9IfII68S/U/UrYQLHORiwm",
         role: "USER",
         active: true,
         lastPasswordReset: new Date("2025-02-01T09:30:00Z")
@@ -26,19 +26,19 @@ db.users.insertMany([
         email: "aleksavelickovic555@gmail.com",
         firstName: "Admin",
         lastName: "Korisnik",
-        passwordHash: "$2a$08$zkU3ED/TwsqjdBzMAJsLaumT.Lpy4Gky2KFXyE2.19dRh5WpYbSfO",
+        passwordHash: "$2y$10$FNSNzwxBvqfSlPgSdUbZvOmrUUtaXd0j7nOyfeMZElAWDfm/3ZxIy",
         role: "ADMIN",
         active: true,
         lastPasswordReset: new Date("2025-02-01T09:30:00Z")
     },
     {
-            username: "milan",
-            email: "maricmilan0414@gmail.com",
-            firstName: "Admin",
-            lastName: "Korisnik",
-            passwordHash: "$2a$08$NgGWXY6E3BwjUZ2Lj.MSIeEwYcUDr.pQzdL3KrFzWEO2QExBe8dsu",
-            role: "ADMIN",
-            active: true,
-            lastPasswordReset: new Date("2025-02-01T09:30:00Z")
-        }
+        username: "milan",
+        email: "maricmilan0414@gmail.com",
+        firstName: "Admin",
+        lastName: "Korisnik",
+        passwordHash: "$2y$10$FNSNzwxBvqfSlPgSdUbZvOmrUUtaXd0j7nOyfeMZElAWDfm/3ZxIy",
+        role: "ADMIN",
+        active: true,
+        lastPasswordReset: new Date("2025-02-01T09:30:00Z")
+    }
 ]);
