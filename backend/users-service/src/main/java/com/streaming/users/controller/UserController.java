@@ -52,7 +52,7 @@ public class UserController {
 
     @PostMapping("/login/psw")
     public ResponseEntity<EmailDTO> pswlogin(@RequestBody AuthRequest authRequest) {
-
+        // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -84,6 +84,7 @@ public class UserController {
 
     @PostMapping("/login/otp")
     public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest) {
+        // TODO nek ovde vraca neki UserDTO (ili u login/psw?)
 
         Authentication authentication =
                 authenticationManager.authenticate(

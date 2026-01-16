@@ -7,6 +7,21 @@
       <div class="info-group">
         <label>Korisničko ime (Email)</label>
         <div class="info-value">{{ userData.username }}</div>
+        <button (click)="changePsw()">Promenite sifru</button>
+        @if (errorMessage) {
+          <div class="error-message">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="success-message">
+            {{ successMessage }}
+            <br>
+            <br>
+            <a (click)="resend()">Niste primili mejl?</a>
+          </div>
+        }
       </div>
     }
 
