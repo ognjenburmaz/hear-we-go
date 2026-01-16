@@ -69,16 +69,16 @@ back validacija za user i content serv, repo cleanup
 
 A.V
 TODO:
-Omogućiti korisniku da promeni lozinku. Da bi se lozinka promenila, mora biti bar 1 dan stara.
+~~Omogućiti korisniku da promeni lozinku. Da bi se lozinka promenila, mora biti bar 1 dan stara.
 U svrhu promene lozinke implementirati imejl-bazirani reset lozinke sa poznatom imejl adresom i
-kratkotrajnim linkom.
+kratkotrajnim linkom.~~
 
-Potrebno je demonstrirati auditabilnost korisničkog naloga
+~~Potrebno je demonstrirati auditabilnost korisničkog naloga
 onemogućavanjem prijave na sistem na određeno vreme nakon isteka roka važenja
 lozinke. Maksimalni period važenja aktivne lozinke je 60 dana
-(na odbrani simulirati periode za izmenu na kraće).
+(na odbrani simulirati periode za izmenu na kraće).~~
 
-Implementirati potvrdu registracije.
+Implementirati potvrdu registracije. (?)
 
 znaci sad kad ima validacija na back na front se ne pokazuju dobre poruke npr sifra ti je pre kratka
 ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim

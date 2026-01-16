@@ -11,6 +11,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -51,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/login/psw")
-    public ResponseEntity<EmailDTO> pswlogin(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
         // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
         authenticationManager.authenticate(
@@ -62,6 +64,16 @@ public class UserController {
         );
 
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
+
+        if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "PASSWORD_TOO_OLD",
+                            "message", "The password is older than 60 days"
+                    ));
+        }
+
         String otp = otpService.generateOtp(authRequest.getUsername());
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -110,7 +122,20 @@ public class UserController {
         if (userServiceImpl.findByEmail(email).isPresent()) {
             user = userServiceImpl.findByEmail(email).get();
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "EMAIL_NOT_FOUND",
+                            "message", "User with this email does not exist"
+                    ));
+        }
+        if (user.getLastPasswordReset().plusDays(1).isAfter(LocalDateTime.now())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "RESET_TOO_SOON",
+                            "message", "Password reset already requested recently"
+                    ));
         }
 
         MimeMessage message = mailSender.createMimeMessage();

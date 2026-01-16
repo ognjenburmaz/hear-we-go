@@ -41,7 +41,20 @@ export class Profile implements OnInit {
       },
       error: (err) => {
         console.error('Link sending error:', err);
-        this.errorMessage = 'Uneseni mejl nije pronadjen!';
+        const code = err.error?.code;
+
+        switch (code) {
+          case 'EMAIL_NOT_FOUND':
+            this.errorMessage = 'Uneseni mejl nije pronadjen!';
+            break;
+
+          case 'RESET_TOO_SOON':
+            this.errorMessage = 'Ne mozete resetovati lozinku vise od jedanput dnevno!';
+            break;
+
+          default:
+            this.errorMessage = 'Nesto je poslo po zlu :(';
+        }
 
         this.cdr.detectChanges();
       }
@@ -68,8 +81,25 @@ export class Profile implements OnInit {
         // this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Link sending error:', err);
-        this.errorMessage = 'Uneseni mejl nije pronadjen!';
+
+        const code = err.error?.code;
+
+        switch (code) {
+          case 'EMAIL_NOT_FOUND':
+            this.errorMessage = 'Uneseni mejl nije pronadjen!';
+            break;
+
+          case 'RESET_TOO_SOON':
+            this.errorMessage = 'Ne mozete resetovati lozinku vise od jedanput dnevno!';
+            break;
+
+          default:
+            this.errorMessage = 'Nesto je poslo po zlu :(';
+        }
+
+
+        // console.error('Link sending error:', err);
+        // this.errorMessage = 'Uneseni mejl nije pronadjen!';
 
         this.cdr.detectChanges();
       }

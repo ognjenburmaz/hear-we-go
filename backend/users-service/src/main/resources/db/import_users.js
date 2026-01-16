@@ -32,6 +32,16 @@ db.users.insertMany([
         lastPasswordReset: new Date("2025-02-01T09:30:00Z")
     },
     {
+        username: "adminold",
+        email: "akica208@gmail.com",
+        firstName: "Admin",
+        lastName: "Korisnik",
+        passwordHash: "$2y$10$FNSNzwxBvqfSlPgSdUbZvOmrUUtaXd0j7nOyfeMZElAWDfm/3ZxIy",
+        role: "ADMIN",
+        active: true,
+        lastPasswordReset: new Date("2021-02-01T09:30:00Z")
+    },
+    {
         username: "milan",
         email: "maricmilan0414@gmail.com",
         firstName: "Admin",

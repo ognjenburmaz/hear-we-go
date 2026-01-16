@@ -18,6 +18,10 @@
         <div class="error-message">
           {{ errorMessage }}
         </div>
+        @if (errorMessage == 'Vreme vazenja vase lozinke je isteklo, promenite je klikom na dugme ispod:') {
+          <br>
+          <a routerLink="/recovery">Resetuj lozinku</a>
+        }
       }
 
       <button type="submit" class="btn-login">Prijavi se</button>
@@ -26,8 +30,8 @@
     <div class="footer-links">
       <a routerLink="/register">Nemate nalog? Registracija</a>
       <br>
-        <br>
-          <a routerLink="/recovery">Zaboravili ste sifru?</a>
-        </div>
-      </div>
+      <br>
+      <a routerLink="/recovery">Zaboravili ste sifru?</a>
     </div>
+  </div>
+</div>
