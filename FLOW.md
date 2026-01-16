@@ -70,6 +70,6 @@ back validacija za user i content serv, repo cleanup
 A.V
 TODO:
 znaci sad kad ima validacija na back na front se ne pokazuju dobre poruke npr sifra ti je pre kratka
-ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim oko ovoga nisam sig npr u konzolu
+ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim ~~oko ovoga nisam sig npr u konzolu
 browsera vrati pogresan kod konkretno dns primer kad se pravi umetnik baci eror i zaledi na toj str a
-umetnik je kreiran normalno
+umetnik je kreiran normalno~~
