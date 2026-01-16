@@ -83,7 +83,7 @@ Implementirati potvrdu registracije. (?)
 znaci sad kad ima validacija na back na front se ne pokazuju dobre poruke npr sifra ti je pre kratka
 ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim
 
-Srediti enviroment varijable
+~~Srediti enviroment varijable~~
 
 ~~oko ovoga nisam sig npr u konzolu
 browsera vrati pogresan kod konkretno dns primer kad se pravi umetnik baci eror i zaledi na toj str a

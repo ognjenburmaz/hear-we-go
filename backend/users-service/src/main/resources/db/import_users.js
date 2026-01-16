@@ -29,7 +29,7 @@ db.users.insertMany([
         passwordHash: "$2y$10$FNSNzwxBvqfSlPgSdUbZvOmrUUtaXd0j7nOyfeMZElAWDfm/3ZxIy",
         role: "ADMIN",
         active: true,
-        lastPasswordReset: new Date("2025-02-01T09:30:00Z")
+        lastPasswordReset: new Date("2026-01-01T09:30:00Z")
     },
     {
         username: "adminold",
