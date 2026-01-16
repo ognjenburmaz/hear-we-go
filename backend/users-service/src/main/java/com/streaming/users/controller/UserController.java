@@ -1,6 +1,7 @@
 package com.streaming.users.controller;
 
 import com.streaming.users.dto.*;
+import com.streaming.users.model.RegistrationStatus;
 import com.streaming.users.model.User;
 import com.streaming.users.security.OtpAuthenticationToken;
 import com.streaming.users.security.TokenUtils;
@@ -24,10 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -52,6 +50,17 @@ public class UserController {
         return ResponseEntity.ok(userServiceImpl.registerUser(request));
     }
 
+    @GetMapping("/requests")
+    public ResponseEntity<List<User>> getPendingRegistrations() {
+        List<User> pendingRegistrations = new ArrayList<>();
+        for (User user : userServiceImpl.findAll()) {
+            if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+                pendingRegistrations.add(user);
+            }
+        }
+        return ResponseEntity.ok(pendingRegistrations);
+    }
+
     @PostMapping("/login/psw")
     public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
         // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
@@ -71,6 +80,24 @@ public class UserController {
                     .body(Map.of(
                             "code", "PASSWORD_TOO_OLD",
                             "message", "The password is older than 60 days"
+                    ));
+        }
+
+        if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "PENDING_REGISTRATION",
+                            "message", "Wait for the admin to approve your registration"
+                    ));
+        }
+
+        if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "DENIED_REGISTRATION",
+                            "message", "Your registration has been denied!"
                     ));
         }
 

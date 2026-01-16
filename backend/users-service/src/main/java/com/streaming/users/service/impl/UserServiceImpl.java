@@ -2,6 +2,7 @@ package com.streaming.users.service.impl;
 
 import com.streaming.users.dto.UserRegistrationRequest;
 import com.streaming.users.dto.UserRegistrationResponse;
+import com.streaming.users.model.RegistrationStatus;
 import com.streaming.users.model.User;
 import com.streaming.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserDetailsService {
 
         user.setActive(true);
         user.setLastPasswordReset(LocalDateTime.now());
+
+        user.setRegistrationStatus(RegistrationStatus.PENDING);
 
         User savedUser = userRepository.save(user);
 
