@@ -61,14 +61,16 @@ export class AuthService {
       );
   }
 
-  pswlogin(credentials: AuthRequest): Observable<any> {
+  pswlogin(credentials: AuthRequest): Observable<User> {
     const url = `${this.apiUrl}/login/psw`;
-    return this.http.post<any>(url, credentials)
+    return this.http.post<User>(url, credentials)
       .pipe(
         tap(response => {
           // const token = response.jwt;
           // localStorage.setItem('authToken', token);
           console.log("Login succesful, response from endpoint: " + response);
+          console.log("EMAIL: " + response.email)
+          localStorage.setItem("email", response.email)
           // this.router.navigate(['/home']);
         }),
         catchError(error => {
@@ -140,6 +142,7 @@ export class AuthService {
       return null;
     }
   }
+
   getUserId(): string | null {
     const token = this.getToken();
     if (!token) return null;

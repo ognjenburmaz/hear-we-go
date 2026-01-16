@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @PostMapping("/login/psw")
-    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<EmailDTO> pswlogin(@RequestBody AuthRequest authRequest) {
 
 
         authenticationManager.authenticate(
@@ -76,7 +76,10 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-        return ResponseEntity.ok(null);
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setEmail(user.getEmail());
+
+        return ResponseEntity.ok(emailDTO);
     }
 
     @PostMapping("/login/otp")
