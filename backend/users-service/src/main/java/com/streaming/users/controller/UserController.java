@@ -61,6 +61,53 @@ public class UserController {
         return ResponseEntity.ok(pendingRegistrations);
     }
 
+    @PatchMapping("/requests/accept/{email}")
+    public ResponseEntity<User> acceptRegistration(@PathVariable String email) {
+        Optional<User> optionalUser = userServiceImpl.findByEmail(email);
+        User user = optionalUser.get();
+        user.setRegistrationStatus(RegistrationStatus.APPROVED);
+        userServiceImpl.save(user);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Vas zahtev za registraciju je prihvacen!");
+        message.setText("Vas zahtev je prihvacen, datum i vreme kreiranje naloga: " + LocalDateTime.now());
+
+        try {
+            mailSender.send(message);
+            System.out.println("Poslat MEJL!");
+        } catch (Exception ex) {
+            System.err.println("Greška pri slanju mejla: " + ex.getMessage());
+        }
+
+
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/requests/reject/{email}")
+    public ResponseEntity<User> denyRegistration(@PathVariable String email) {
+        Optional<User> optionalUser = userServiceImpl.findByEmail(email);
+        User user = optionalUser.get();
+        user.setRegistrationStatus(RegistrationStatus.DENIED);
+        userServiceImpl.save(user);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Vas zahtev za registraciju je odbijen!");
+        message.setText("Vas zahtev za registraciju je nazalost odbijen :(");
+
+        try {
+            mailSender.send(message);
+            System.out.println("Poslat MEJL!");
+        } catch (Exception ex) {
+            System.err.println("Greška pri slanju mejla: " + ex.getMessage());
+        }
+
+
+        return ResponseEntity.ok(user);
+    }
+
+
     @PostMapping("/login/psw")
     public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
         // TODO nek ovde vraca neki UserDTO (ili u login/otp?)

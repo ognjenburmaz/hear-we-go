@@ -26,6 +26,7 @@ import {RegistrationRequests} from './registration-requests/registration-request
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path: 'users/changepassword', component: PasswordChangeComponent},
+  {path: 'requests', component: RegistrationRequests},
 
   {
     path: '',
@@ -60,8 +61,6 @@ export const routes: Routes = [
       {path: 'songs/add', component: SongAddComponent},
       {path: 'songs/put/:id', component: SongPutComponent},
       {path: 'songs/delete/:id', component: SongDeleteComponent},
-
-      {path: '/requests', component: RegistrationRequests}
     ]
   },
 
