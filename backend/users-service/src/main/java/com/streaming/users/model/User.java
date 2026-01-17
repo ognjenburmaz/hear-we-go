@@ -24,4 +24,5 @@ public class User {
     private String role;
     private boolean active;
     private LocalDateTime lastPasswordReset;
+    private RegistrationStatus registrationStatus;
 }

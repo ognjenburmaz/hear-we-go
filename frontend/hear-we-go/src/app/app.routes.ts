@@ -16,15 +16,17 @@ import {authGuard, guestGuard} from './auth-guard';
 import {OtpLoginComponent} from './otp-login-component/otp-login-component';
 import {RecoveryComponent} from './recovery-component/recovery-component';
 import {PasswordChangeComponent} from './password-change-component/password-change-component';
-import { AlbumsComponent } from './album/albums-component/albums-component';
-import { SongsComponent } from './song/songs-component/songs-component';
-import { SongDeleteComponent } from './song/song-delete-component/song-delete-component';
-import { AlbumsGetByArtistComponent } from './album/albums-get-by-artist-component/albums-get-by-artist-component';
-import { SongsGetByAlbumUserComponent } from './song/songs-get-by-album-user-component/songs-get-by-album-user-component';
+import {AlbumsComponent} from './album/albums-component/albums-component';
+import {SongsComponent} from './song/songs-component/songs-component';
+import {SongDeleteComponent} from './song/song-delete-component/song-delete-component';
+import {AlbumsGetByArtistComponent} from './album/albums-get-by-artist-component/albums-get-by-artist-component';
+import {SongsGetByAlbumUserComponent} from './song/songs-get-by-album-user-component/songs-get-by-album-user-component';
+import {RegistrationRequests} from './registration-requests/registration-requests';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path: 'users/changepassword', component: PasswordChangeComponent},
+  {path: 'requests', component: RegistrationRequests},
 
   {
     path: '',

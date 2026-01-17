@@ -66,3 +66,25 @@ O.B. https setup prebacen na jednu skriptu uputstva u README mora biti java inst
 notifikacije zavrsene, rate limit impl s skriptom za simuliranje dos napada u nju treba ubaciti validan
 jwt token pre pokretanja, dodao navbar admin links, subscriptions back impl nije testiran flow,
 back validacija za user i content serv, repo cleanup
+
+A.V
+TODO:
+~~Omogućiti korisniku da promeni lozinku. Da bi se lozinka promenila, mora biti bar 1 dan stara.
+U svrhu promene lozinke implementirati imejl-bazirani reset lozinke sa poznatom imejl adresom i
+kratkotrajnim linkom.~~
+
+~~Potrebno je demonstrirati auditabilnost korisničkog naloga
+onemogućavanjem prijave na sistem na određeno vreme nakon isteka roka važenja
+lozinke. Maksimalni period važenja aktivne lozinke je 60 dana
+(na odbrani simulirati periode za izmenu na kraće).~~
+
+Implementirati potvrdu registracije. (?)
+
+znaci sad kad ima validacija na back na front se ne pokazuju dobre poruke npr sifra ti je pre kratka
+ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim
+
+~~Srediti enviroment varijable~~
+
+~~oko ovoga nisam sig npr u konzolu
+browsera vrati pogresan kod konkretno dns primer kad se pravi umetnik baci eror i zaledi na toj str a
+umetnik je kreiran normalno~~

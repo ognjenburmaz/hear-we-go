@@ -1,0 +1,34 @@
+<table>
+  <thead>
+  <tr>
+    <th>Email</th>
+    <th>Adresa</th>
+    <th>Status</th>
+    <!--    <th>Datum</th>-->
+    <th>Akcija</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (User of registrationRequests; track User.id) {
+      <tr>
+        <td>{{ User.email }}</td>
+        <td>{{ User.firstName }}</td>
+        <td>{{ User.lastName }}</td>
+        <!--        <td>{{ User.createdAt[2] }}.{{ User.createdAt[1] }}-->
+        <!--          .{{ User.createdAt[0] }}-->
+        <!--        </td>-->
+        <td>
+          @if (User.registrationStatus == "PENDING") {
+            <button (click)="accept(User.email)" matButton="outlined">Prihvati</button>
+            <button (click)="reject(User.email)" matButton="outlined">Odbij</button>
+
+          } @else {
+            <p>Status je {{ User.registrationStatus }} !</p>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+
