@@ -37,3 +37,4 @@ cassandra-data/
 *.pem
 
 .env
+/MRS.mp4
