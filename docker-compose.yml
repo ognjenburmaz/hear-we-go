@@ -10,7 +10,7 @@ services:
       - "${PORT_MONGO}:27017"
     volumes:
       - mongo_data:/data/db
-      - ./backend/users-service/src/main/resources/db:/docker-entrypoint-initdb.d
+      - ./backend/common-lib/src/main/resources/db:/docker-entrypoint-initdb.d
     networks:
       - streaming-net
     environment:

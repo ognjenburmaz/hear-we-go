@@ -1,6 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 
 import {AuthService} from '../services/auth.service';
+import {SubscriptionService, UserSubscription } from '../services/subscription-service';
 import {NotificationListComponent} from '../notification/notification-list/notification-list';
 import {EmailRequest} from '../DTOs/emailRequest';
 
@@ -14,20 +15,48 @@ import {EmailRequest} from '../DTOs/emailRequest';
 export class Profile implements OnInit {
   userData: any = null;
   email!: string | null;
+  subscriptions: UserSubscription[] = [];
   emailRequest: EmailRequest = {
     email: this.email
   }
   errorMessage: string = '';
   successMessage: string = '';
 
-  constructor(private authService: AuthService, private cdr: ChangeDetectorRef) {
-  }
+  constructor(private authService: AuthService,
+              private cdr: ChangeDetectorRef,
+              private subService: SubscriptionService) {}
 
   ngOnInit(): void {
     this.userData = this.authService.getUserInfo();
     this.email = localStorage.getItem("email")
     this.emailRequest.email = this.email;
+    this.loadSubscriptions();
     console.log('Podaci sa profila:', this.userData);
+  }
+
+  loadSubscriptions() {
+    this.subService.getMySubscriptions().subscribe({
+      next: (data) => {
+        this.subscriptions = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to load subscriptions', err)
+    });
+  }
+
+  unfollow(targetId: string) {
+    if(!confirm('Are you sure you want to unfollow?')) return;
+
+    this.subService.unsubscribe(targetId).subscribe({
+      next: () => {
+        this.subscriptions = this.subscriptions.filter(s => s.targetId !== targetId);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error unsubscribing', err);
+        this.errorMessage = "Failed to unfollow. Try again.";
+      }
+    });
   }
 
   changePsw(): void {
@@ -36,8 +65,6 @@ export class Profile implements OnInit {
         console.log('Link sent!', response);
         this.successMessage = 'Poslali smo vam mejl sa linkom za resetovanje lozinke'
         this.cdr.detectChanges();
-
-        // this.router.navigate(['/login']);
       },
       error: (err) => {
         console.error('Link sending error:', err);
@@ -77,8 +104,6 @@ export class Profile implements OnInit {
         console.log('Link sent!', response);
         this.successMessage = 'Mejl je ponovo poslat! Ako ne vidite mejl, proverite spam folder'
         this.cdr.detectChanges();
-
-        // this.router.navigate(['/login']);
       },
       error: (err) => {
 
@@ -96,10 +121,6 @@ export class Profile implements OnInit {
           default:
             this.errorMessage = 'Nesto je poslo po zlu :(';
         }
-
-
-        // console.error('Link sending error:', err);
-        // this.errorMessage = 'Uneseni mejl nije pronadjen!';
 
         this.cdr.detectChanges();
       }

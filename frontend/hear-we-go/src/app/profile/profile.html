@@ -1,42 +1,81 @@
 <div class="profile-container">
-  <div class="profile-card">
-    <h2>Korisnički Profil</h2>
-    <p class="subtitle">Pregled tvojih podataka</p>
 
-    @if (userData) {
-      <div class="info-group">
-        <label>Korisničko ime (Email)</label>
-        <div class="info-value">{{ userData.username }}</div>
-        <button (click)="changePsw()">Promenite sifru</button>
-        @if (errorMessage) {
-          <div class="error-message">
-            {{ errorMessage }}
-          </div>
-        }
+  <div class="content-wrapper">
 
-        @if (successMessage) {
-          <div class="success-message">
-            {{ successMessage }}
-            <br>
-            <br>
-            <a (click)="resend()">Niste primili mejl?</a>
-          </div>
-        }
-      </div>
-    }
+    <div class="profile-card">
+      <h2>Korisnički Profil</h2>
+      <p class="subtitle">Pregled tvojih podataka</p>
 
-    @if (userData) {
-      <div class="info-group">
-        <label>Uloga</label>
-        <div class="info-value role-badge">{{ userData.role }}</div>
-      </div>
-    }
+      @if (userData) {
+        <div class="info-group">
+          <label>Korisničko ime (Email)</label>
+          <div class="info-value">{{ userData.username }}</div>
+          <button class="action-btn" (click)="changePsw()">Promenite sifru</button>
 
-    @if (!userData) {
-      <div class="error-message">
-        Nema podataka o korisniku. Molimo ulogujte se.
-      </div>
-    }
+          @if (errorMessage) {
+            <div class="error-message">{{ errorMessage }}</div>
+          }
+
+          @if (successMessage) {
+            <div class="success-message">
+              {{ successMessage }} <br><br>
+              <a (click)="resend()">Niste primili mejl?</a>
+            </div>
+          }
+        </div>
+
+        <div class="info-group">
+          <label>Uloga</label>
+          <div class="info-value role-badge">{{ userData.role }}</div>
+        </div>
+      }
+
+      @if (!userData) {
+        <div class="error-message">Nema podataka o korisniku.</div>
+      }
+    </div>
+
+    <div class="profile-card subscription-card">
+      <h2>Praćenja</h2>
+      <p class="subtitle">Umetnici i Žanrovi koje pratiš</p>
+
+      @if (subscriptions.length > 0) {
+        <div class="table-responsive">
+          <table class="sub-table">
+            <thead>
+            <tr>
+              <th>Naziv</th>
+              <th>Tip</th>
+              <th>Akcija</th>
+            </tr>
+            </thead>
+            <tbody>
+              @for (sub of subscriptions; track sub.targetId) {
+                <tr>
+                  <td>
+                    <span class="target-name">{{ sub.targetName }}</span>
+                  </td>
+                  <td>
+                    <span class="type-badge" [class.artist]="sub.type === 'ARTIST'" [class.genre]="sub.type === 'GENRE'">
+                      {{ sub.type }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="unfollow-btn" (click)="unfollow(sub.targetId)">
+                      Otprati
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="no-data">Trenutno ne pratite nikoga.</p>
+      }
+    </div>
+
   </div>
+
   <app-notification-list></app-notification-list>
 </div>

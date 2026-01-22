@@ -1,5 +1,5 @@
 <nav class="navbar">
-  <div class="nav-brand">Hear We Go</div>
+  <a routerLink="/home" class="nav-brand">Hear We Go</a>
   <div class="nav-links">
     @if (isAdmin) {
       <div class="dropdown">
@@ -13,9 +13,6 @@
           <a (click)="closeDropdown()" routerLink="/requests">Registration Requests</a>
         </div>
       </div>
-    }
-    @if (authService.isAuthenticated()) {
-      <a routerLink="/home" class="profile-link">Početna</a>
     }
     @if (authService.isAuthenticated()) {
       <a routerLink="/profile" class="profile-link">

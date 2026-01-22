@@ -1,6 +1,8 @@
-<table>
+<div class="main-container">
+  <div class="container-card">
+<table class="table-requests">
   <thead>
-  <tr>
+  <tr class="tr-th">
     <th>Email</th>
     <th>Adresa</th>
     <th>Status</th>
@@ -14,13 +16,10 @@
         <td>{{ User.email }}</td>
         <td>{{ User.firstName }}</td>
         <td>{{ User.lastName }}</td>
-        <!--        <td>{{ User.createdAt[2] }}.{{ User.createdAt[1] }}-->
-        <!--          .{{ User.createdAt[0] }}-->
-        <!--        </td>-->
         <td>
           @if (User.registrationStatus == "PENDING") {
-            <button (click)="accept(User.email)" matButton="outlined">Prihvati</button>
-            <button (click)="reject(User.email)" matButton="outlined">Odbij</button>
+            <button class="accept" (click)="accept(User.email)" matButton="outlined">Prihvati</button>
+            <button class="reject" (click)="reject(User.email)" matButton="outlined">Odbij</button>
 
           } @else {
             <p>Status je {{ User.registrationStatus }} !</p>
@@ -30,5 +29,6 @@
     }
   </tbody>
 </table>
-
+  </div>
+</div>
 
