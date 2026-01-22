@@ -18,19 +18,19 @@ public class SubscriptionController {
     private final SubscriptionService service;
 
     @PostMapping
-    public ResponseEntity<Void> subscribe(@RequestBody SubscriptionRequest request, Principal principal) {
-        service.subscribe(principal.getName(), request);
+    public ResponseEntity<Void> subscribe(@RequestBody SubscriptionRequest request, @RequestHeader("X-User-Id") String userId) {
+        service.subscribe(userId, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{targetId}")
-    public ResponseEntity<Void> unsubscribe(@PathVariable String targetId, Principal principal) {
-        service.unsubscribe(principal.getName(), targetId);
+    public ResponseEntity<Void> unsubscribe(@PathVariable String targetId, @RequestHeader("X-User-Id") String userId) {
+        service.unsubscribe(userId, targetId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping
-    public ResponseEntity<List<UserSubscription>> getMySubscriptions(Principal principal) {
-        return ResponseEntity.ok(service.getUserSubscriptions(principal.getName()));
+    public ResponseEntity<List<UserSubscription>> getMySubscriptions(@RequestHeader("X-User-Id") String userId) {
+        return ResponseEntity.ok(service.getUserSubscriptions(userId));
     }
 }

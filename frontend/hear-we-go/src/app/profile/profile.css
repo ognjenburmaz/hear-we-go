@@ -1,62 +1,141 @@
+/* Container adjustments */
 .profile-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Align to top instead of center */
   min-height: 100vh;
   background-color: #121212;
   font-family: sans-serif;
   color: #e0e0e0;
+  padding: 40px 20px; /* Add padding for scroll */
+  box-sizing: border-box;
 }
 
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between cards */
+  width: 100%;
+  max-width: 500px; /* Made slightly wider for the table */
+}
+
+/* Card Styles */
 .profile-card {
   background-color: #1e1e1e;
   padding: 40px;
   border-radius: 8px;
   width: 100%;
-  max-width: 380px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   border-top: 3px solid #ffc107;
-}
-
-h2 {
-  margin: 0 0 10px;
-  color: #ffc107;
-  text-align: center;
-}
-
-.subtitle {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #b0b0b0;
-  font-size: 0.9rem;
-}
-
-.info-group {
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  color: #ffc107;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.info-value {
-  width: 100%;
-  padding: 12px;
-  background-color: #2c2c2c;
-  border: 1px solid #444;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 1.1rem;
   box-sizing: border-box;
 }
 
-.role-badge {
+/* Standardizing Buttons */
+.action-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #333;
   color: #ffc107;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  cursor: pointer;
   font-weight: bold;
+  transition: all 0.3s ease;
 }
 
+.action-btn:hover {
+  background-color: #ffc107;
+  color: #121212;
+}
+
+/* --- TABLE STYLES --- */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.sub-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.sub-table th {
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 2px solid #444;
+  color: #b0b0b0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.sub-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #333;
+  vertical-align: middle;
+}
+
+.sub-table tr:last-child td {
+  border-bottom: none;
+}
+
+.target-name {
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Type Badges */
+.type-badge {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.type-badge.artist {
+  background-color: rgba(29, 185, 84, 0.2);
+  color: #1db954; /* Spotify Greenish */
+  border: 1px solid #1db954;
+}
+
+.type-badge.genre {
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffc107; /* Yellow */
+  border: 1px solid #ffc107;
+}
+
+/* Unfollow Button */
+.unfollow-btn {
+  background-color: transparent;
+  color: #ff5252; /* Red */
+  border: 1px solid #ff5252;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: 0.2s;
+}
+
+.unfollow-btn:hover {
+  background-color: #ff5252;
+  color: white;
+}
+
+.no-data {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* Existing typography */
+h2 { margin: 0 0 10px; color: #ffc107; text-align: center; }
+.subtitle { text-align: center; margin-bottom: 30px; color: #b0b0b0; font-size: 0.9rem; }
+.info-group { margin-bottom: 20px; }
+label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: #ffc107; text-transform: uppercase; letter-spacing: 1px; }
+.info-value { width: 100%; padding: 12px; background-color: #2c2c2c; border: 1px solid #444; border-radius: 4px; color: #fff; font-size: 1.1rem; box-sizing: border-box; }
+.role-badge { color: #ffc107; font-weight: bold; }
+.error-message { color: #ff5252; margin-top: 10px; font-size: 0.9rem; text-align: center; }
+.success-message { color: #4caf50; margin-top: 10px; font-size: 0.9rem; text-align: center; }
+a { color: #ffc107; cursor: pointer; text-decoration: underline; }
