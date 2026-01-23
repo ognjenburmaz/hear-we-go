@@ -39,6 +39,7 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
       this.token = localStorage.getItem("authToken")
       this.currentSongName = localStorage.getItem("currentSongName")
       this.currentSongId = localStorage.getItem("currentSongId")
+      const audio = document.getElementById(`globalAudioPlayer`) as HTMLAudioElement;
       fetch(`/api/content/songs/${this.currentSongId}/audio`, {
         method: 'GET',
         headers: {
@@ -48,11 +49,13 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
         .then(res => res.blob())
         .then(blob => {
           const url = URL.createObjectURL(blob);
-          const audio = document.getElementById(`globalAudioPlayer`) as HTMLAudioElement;
           audio.src = url;
-          audio.play();
+          // audio.play();
           this.cdr.detectChanges()
         });
+      audio.play().catch(err => {
+        console.warn('Autoplay blocked:', err);
+      });
       this.cdr.detectChanges();
       this.token = localStorage.getItem("authToken")
     });
