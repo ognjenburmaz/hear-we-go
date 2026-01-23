@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,5 +69,17 @@ public class ArtistServiceImpl implements ArtistService {
 
     public List<Artist> searchArtists(String name) {
         return artistRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<ArtistResponse> getArtistsByGenres(List<String> genres) {
+        List<java.util.regex.Pattern> patterns = genres.stream()
+                .map(g -> java.util.regex.Pattern.compile("^" + java.util.regex.Pattern.quote(g) + "$",
+                        java.util.regex.Pattern.CASE_INSENSITIVE))
+                .toList();
+
+        return artistRepository.findByGenresInList(patterns)
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
     }
 }
