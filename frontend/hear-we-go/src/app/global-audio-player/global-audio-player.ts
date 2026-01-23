@@ -22,6 +22,7 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
   // token: currentSong any = null;
   currentSongId?: string | null;
   private sub!: Subscription;
+  private token?: string | undefined | null
 
   constructor(private router: Router,
               private cdr: ChangeDetectorRef,
@@ -35,8 +36,25 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.sub = this.changeService.trigger$.subscribe(() => {
       this.time = new Date().toLocaleTimeString();
+      this.token = localStorage.getItem("authToken")
       this.currentSongName = localStorage.getItem("currentSongName")
+      this.currentSongId = localStorage.getItem("currentSongId")
+      fetch(`/api/content/songs/${this.currentSongId}/audio`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${this.token}`
+        }
+      })
+        .then(res => res.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          const audio = document.getElementById(`globalAudioPlayer`) as HTMLAudioElement;
+          audio.src = url;
+          audio.play();
+          this.cdr.detectChanges()
+        });
       this.cdr.detectChanges();
+      this.token = localStorage.getItem("authToken")
     });
     // this.currentSongName = localStorage.getItem("currentSongName")
     // this.currentSongId = localStorage.getItem("currentSongId")
