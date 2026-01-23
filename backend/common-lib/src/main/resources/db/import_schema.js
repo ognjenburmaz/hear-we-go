@@ -105,9 +105,9 @@ db2.albums.insertMany([
 
 db2.songs.insertMany([
     {
-        "_id": "song-301",
+        "_id": "song-01",
         "title": "Dependency Injection Blues",
-        "durationSeconds": 210,
+        "durationSeconds": 42,
         "genre": "Rock",
         "albumId": album1Id,
         "artistIds": [artist1Id],
@@ -115,9 +115,9 @@ db2.songs.insertMany([
         "_class": "com.streaming.content.model.Song"
     },
     {
-        "_id": "song-302",
+        "_id": "song-02",
         "title": "Null Pointer Ballad",
-        "durationSeconds": 185,
+        "durationSeconds": 42,
         "genre": "Indie",
         "albumId": album1Id,
         "artistIds": [artist1Id],
@@ -126,9 +126,9 @@ db2.songs.insertMany([
     },
 
     {
-        "_id": "song-303",
+        "_id": "song-03",
         "title": "Cyberpunk City",
-        "durationSeconds": 300,
+        "durationSeconds": 42,
         "genre": "Synthwave",
         "albumId": album2Id,
         "artistIds": [artist2Id],
@@ -136,9 +136,9 @@ db2.songs.insertMany([
         "_class": "com.streaming.content.model.Song"
     },
     {
-        "_id": "song-304",
+        "_id": "song-04",
         "title": "Binary Sunset",
-        "durationSeconds": 240,
+        "durationSeconds": 42,
         "genre": "Electronic",
         "albumId": album2Id,
         "artistIds": [artist2Id],

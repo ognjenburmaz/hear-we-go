@@ -102,6 +102,35 @@ services:
     networks:
       - streaming-net
 
+  #  # One-shot uploader
+  #  hdfs-uploader:
+  #    image: bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
+  #    container_name: hdfs-uploader
+  #    depends_on:
+  #      - namenode
+  #      - datanode
+  #    environment:
+  #      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
+  #    volumes:
+  #      - ./sample-mp3s:/local-mp3s:ro
+  #    networks:
+  #      - streaming-net
+  #    entrypoint: [ "/bin/bash", "-c" ]
+  #    command: >
+  #      "
+  #      echo 'Waiting for HDFS...';
+  #      until hdfs dfs -ls / >/dev/null 2>&1; do echo '.'; sleep 5; done;
+  #
+  #      echo 'Creating /music directory';
+  #      hdfs dfs -mkdir -p /music;
+  #
+  #      echo 'Uploading MP3';
+  #      hdfs dfs -put -f /local-mp3s/sample-42s.mp3 /music/sample-42s.mp3;
+  #
+  #      echo 'Done';
+  #      sleep 2
+  #      "
+
   mailhog:
     image: mailhog/mailhog:latest
     container_name: streaming-mailhog

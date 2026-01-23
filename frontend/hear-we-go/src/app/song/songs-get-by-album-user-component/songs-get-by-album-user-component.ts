@@ -47,17 +47,31 @@ export class SongsGetByAlbumUserComponent implements OnInit {
             'Authorization': `Bearer ${this.token}`
           }
         })
-          .then(res => res.blob())
+          .then(res => {
+            if (!res.ok) {
+              // handle 404 or other errors
+              console.warn(`Audio not found for song ${song.id}, status: ${res.status}`);
+              this.cdr.detectChanges(); // <-- run change detection even on 404
+              return null; // stop processing
+            }
+            return res.blob();
+          })
           .then(blob => {
+            if (!blob) return; // skip if previous step failed
             const url = URL.createObjectURL(blob);
             const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
             audio.src = url;
             // audio.play();
-            this.cdr.detectChanges()
+            this.cdr.detectChanges(); // run change detection after setting src
+          })
+          .catch(err => {
+            console.error(`Error fetching audio for song ${song.id}:`, err);
+            this.cdr.detectChanges(); // also run detectChanges on network/fetch errors
           });
       }
     });
   }
+
 
   FindAlbum() {
     if (this.albumId != null) {
