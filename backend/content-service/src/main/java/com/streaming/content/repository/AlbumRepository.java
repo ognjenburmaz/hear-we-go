@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface AlbumRepository extends MongoRepository<Album,String> {
     List<Album> findByArtistIdsContaining(String artistId);
+    List<Album> findTop3ByTitleContainingIgnoreCase(String genre);
 }

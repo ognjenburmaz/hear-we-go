@@ -1,10 +1,7 @@
 package com.streaming.content.service.impl;
 
 import com.streaming.common.event.ContentCreatedEvent;
-import com.streaming.content.dto.AlbumRequest;
-import com.streaming.content.dto.AlbumResponse;
-import com.streaming.content.dto.SongRequest;
-import com.streaming.content.dto.SongResponse;
+import com.streaming.content.dto.*;
 import com.streaming.content.model.Album;
 import com.streaming.content.model.Artist;
 import com.streaming.content.model.Song;
@@ -246,5 +243,47 @@ public class ContentServiceImpl implements ContentService {
         if (!validExtension) {
             throw new IllegalArgumentException("Invalid file extension");
         }
+    }
+
+    public SearchResponse searchEverything(String query) {
+
+        List<ArtistResponse> artists = artistRepository.findTop3ByNameContainingIgnoreCase(query)
+                .stream()
+                .map(artist -> {
+                    ArtistResponse res = new  ArtistResponse();
+                    res.setId(artist.getId());
+                    res.setName(artist.getName());
+                    res.setBiography(artist.getBiography());
+                    res.setGenres(artist.getGenres());
+                    return res;
+                })
+                .toList();
+
+        List<AlbumResponse> albums = albumRepository.findTop3ByTitleContainingIgnoreCase(query)
+                .stream()
+                .map(album -> {
+                    AlbumResponse res = new  AlbumResponse();
+                    res.setId(album.getId());
+                    res.setTitle(album.getTitle());
+                    res.setReleaseDate(album.getReleaseDate());
+                    res.setGenre(album.getGenre());
+                    res.setArtistIds(album.getArtistIds());
+                    return res;
+                })
+                .toList();
+
+        List<SongResponse> songs = songRepository.findTop3ByTitleContainingIgnoreCase(query)
+                .stream()
+                .map(song -> {
+                    SongResponse res = new  SongResponse();
+                    res.setId(song.getId());
+                    res.setTitle(song.getTitle());
+                    res.setAlbumId(song.getAlbumId());
+                    res.setArtistIds(song.getArtistIds());
+                    return res;
+                })
+                .toList();
+
+        return new SearchResponse(artists, albums, songs);
     }
 }

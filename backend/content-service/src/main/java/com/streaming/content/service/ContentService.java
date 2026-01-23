@@ -9,6 +9,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
+import com.streaming.content.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -38,4 +39,6 @@ public interface ContentService {
     List<SongResponse> getAllSongs();
 
     List<SongResponse> getSongsInAlbum(String albumId);
+
+    SearchResponse searchEverything(String query);
 }
