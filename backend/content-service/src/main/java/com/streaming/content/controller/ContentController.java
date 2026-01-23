@@ -5,6 +5,7 @@ import com.streaming.content.model.*;
 import com.streaming.content.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,13 @@ public class ContentController {
     }
 
     @GetMapping("/artists")
-    public ResponseEntity<List<ArtistResponse>> getAllArtists() {
+    public ResponseEntity<List<ArtistResponse>> getAllArtists(
+            @RequestParam(value = "genre", required = false) List<String> genres) {
+
+        if (genres != null && !genres.isEmpty()) {
+            return ResponseEntity.ok(artistService.getArtistsByGenres(genres));
+        }
+
         return ResponseEntity.ok(artistService.getAllArtists());
     }
 
@@ -110,5 +117,13 @@ public class ContentController {
     public ResponseEntity<Void> deleteSong(@PathVariable String id) {
         contentService.deleteSong(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponse> globalSearch(@RequestParam String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return ResponseEntity.ok(new SearchResponse(List.of(), List.of(), List.of()));
+        }
+        return ResponseEntity.ok(contentService.searchEverything(query));
     }
 }

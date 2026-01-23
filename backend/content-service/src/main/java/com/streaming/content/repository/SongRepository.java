@@ -8,4 +8,5 @@ import java.util.List;
 public interface SongRepository extends MongoRepository<Song,String> {
     List<Song> findByAlbumId(String albumId);
     List<Song> findByTitleContainingIgnoreCase(String title);
+    List<Song> findTop3ByTitleContainingIgnoreCase(String title);
 }

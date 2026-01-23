@@ -1,9 +1,6 @@
 package com.streaming.content.service;
 
-import com.streaming.content.dto.AlbumRequest;
-import com.streaming.content.dto.AlbumResponse;
-import com.streaming.content.dto.SongRequest;
-import com.streaming.content.dto.SongResponse;
+import com.streaming.content.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -30,4 +27,6 @@ public interface ContentService {
     List<SongResponse> getAllSongs();
 
     List<SongResponse> getSongsInAlbum(String albumId);
+
+    SearchResponse searchEverything(String query);
 }
