@@ -33,41 +33,29 @@ export class SongsGetByAlbumUserComponent implements OnInit {
     this.token = localStorage.getItem("authToken");
   }
 
-  async LoadAllSongs(): Promise<void> {
-    this.service.getAllByAlbum(this.albumId).subscribe(async songs => {
+
+  LoadAllSongs(): void {
+    this.service.getAllByAlbum(this.albumId).subscribe(songs => {
       this.songs = songs;
 
       for (const song of this.songs) {
-        const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
-
-        try {
-          const res = await fetch(`/api/content/songs/${song.id}/audio`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${this.token}`
-            }
-          });
-
-          if (!res.ok) {
-            console.warn(`Failed to fetch audio for song ${song.id}: ${res.status}`);
-            audio.src = '';
-            continue;
+        fetch(`/api/content/songs/${song.id}/audio`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
           }
-
-          const blob = await res.blob();
-          const url = URL.createObjectURL(blob);
-          audio.src = url;
-
-        } catch (err) {
-          console.error(`Error fetching audio for song ${song.id}`, err);
-          audio.src = ''
-        } finally {
-          this.cdr.detectChanges();
-        }
+        })
+          .then(res => res.blob())
+          .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
+            audio.src = url;
+            // audio.play();
+            this.cdr.detectChanges()
+          });
       }
     });
   }
-
 
   FindAlbum() {
     if (this.albumId != null) {
