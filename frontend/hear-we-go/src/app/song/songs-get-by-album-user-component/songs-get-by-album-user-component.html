@@ -20,7 +20,8 @@
             <span class="song-name">{{ song.title }}</span>
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
-          <button (click)="setCurrentlyPlayingSong(song.title, song.id)">Pusti</button>
+          <button (click)="setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre)">Pusti
+          </button>
           <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
           <!--          <audio id="audioPlayer{{ song.id }}" controls src="https://localhost/api/content/songs/{{ song.id }}/audio"></audio>-->
           <audio controls id="audioPlayer{{ song.id }}"></audio>

@@ -1,2 +1,36 @@
-<h3>Now playing: {{ this.currentSongName }} </h3>
-<audio controls id="globalAudioPlayer"></audio>
+<audio id="globalAudioPlayer"></audio>
+
+@if (currentSongName != null) {
+  <div class="audio-player">
+    <div class="song-info">
+      Now playing: <strong>{{ currentSongName }}</strong>
+      <br/>
+      <span class="genre-badge">{{ currentSongGenre }}</span>
+    </div>
+
+
+    <div class="controls">
+      <button (click)="seek(-10)">⏪</button>
+      <button (click)="togglePlay()">
+        {{ isPlaying ? '⏸' : '▶️' }}
+      </button>
+      <button (click)="seek(10)">⏩</button>
+    </div>
+
+    <div class="timeline">
+      <span>{{ currentTime | date:'mm:ss' }}</span>
+
+      <input
+        (input)="onSeek($event)"
+        [max]="duration"
+        [value]="currentSeconds"
+        min="0"
+        type="range"
+      />
+
+      <span>{{ duration | date:'mm:ss' }}</span>
+    </div>
+  </div>
+}
+
+
