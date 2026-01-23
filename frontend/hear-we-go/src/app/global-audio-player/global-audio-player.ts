@@ -55,6 +55,7 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
         });
       audio.play().catch(err => {
         console.warn('Autoplay blocked:', err);
+        // TODO autoplay is only working the first time after refresh
       });
       this.cdr.detectChanges();
       this.token = localStorage.getItem("authToken")
