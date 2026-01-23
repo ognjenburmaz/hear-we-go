@@ -105,44 +105,44 @@ db2.albums.insertMany([
 
 db2.songs.insertMany([
     {
-        "_id": "song-301",
+        "_id": "song-01",
         "title": "Dependency Injection Blues",
-        "durationSeconds": 210,
+        "durationSeconds": 42,
         "genre": "Rock",
         "albumId": album1Id,
         "artistIds": [artist1Id],
-        "audioFilePath": "hdfs://namenode:8020/music/placeholder_rock_1.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
     {
-        "_id": "song-302",
+        "_id": "song-02",
         "title": "Null Pointer Ballad",
-        "durationSeconds": 185,
+        "durationSeconds": 42,
         "genre": "Indie",
         "albumId": album1Id,
         "artistIds": [artist1Id],
-        "audioFilePath": "hdfs://namenode:8020/music/placeholder_rock_2.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
 
     {
-        "_id": "song-303",
+        "_id": "song-03",
         "title": "Cyberpunk City",
-        "durationSeconds": 300,
+        "durationSeconds": 42,
         "genre": "Synthwave",
         "albumId": album2Id,
         "artistIds": [artist2Id],
-        "audioFilePath": "hdfs://namenode:8020/music/placeholder_synth_1.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
     {
-        "_id": "song-304",
+        "_id": "song-04",
         "title": "Binary Sunset",
-        "durationSeconds": 240,
+        "durationSeconds": 42,
         "genre": "Electronic",
         "albumId": album2Id,
         "artistIds": [artist2Id],
-        "audioFilePath": "hdfs://namenode:8020/music/placeholder_synth_2.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     }
 ]);

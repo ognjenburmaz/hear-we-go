@@ -20,7 +20,13 @@
             <span class="song-name">{{ song.title }}</span>
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
-          <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
+          <span class="song-time" style="margin-inline-end: 15px">{{ formatDuration(song.durationSeconds) }}</span>
+          <button (click)="setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre)"
+                  style="margin-left: 15px"> ▶
+          </button>
+          <!--          <audio id="audioPlayer{{ song.id }}" controls src="https://localhost/api/content/songs/{{ song.id }}/audio"></audio>-->
+          <!--          <audio controls id="audioPlayer{{ song.id }}"></audio>-->
+
         </div>
       }
     </div>
