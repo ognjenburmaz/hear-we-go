@@ -176,6 +176,10 @@ public class ContentServiceImpl implements ContentService {
         return mapper.toResponse(song);
     }
 
+    public Song getSongObjectById(String id) {
+        return songRepository.findById(id).get();
+    }
+
     public List<SongResponse> getSongsInAlbum(String albumId) {
         return songRepository.findByAlbumId(albumId)
                 .stream()

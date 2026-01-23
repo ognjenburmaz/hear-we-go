@@ -21,6 +21,9 @@
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
           <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
+          <!--          <audio id="audioPlayer{{ song.id }}" controls src="https://localhost/api/content/songs/{{ song.id }}/audio"></audio>-->
+          <audio controls id="audioPlayer{{ song.id }}"></audio>
+
         </div>
       }
     </div>

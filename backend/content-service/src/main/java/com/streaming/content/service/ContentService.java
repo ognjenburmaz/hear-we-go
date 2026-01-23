@@ -4,6 +4,7 @@ import com.streaming.content.dto.AlbumRequest;
 import com.streaming.content.dto.AlbumResponse;
 import com.streaming.content.dto.SongRequest;
 import com.streaming.content.dto.SongResponse;
+import com.streaming.content.model.Song;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,6 +27,8 @@ public interface ContentService {
     void deleteSong(String id);
 
     SongResponse getSongById(String id);
+
+    Song getSongObjectById(String id);
 
     List<SongResponse> getAllSongs();
 

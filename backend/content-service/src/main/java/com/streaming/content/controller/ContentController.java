@@ -1,15 +1,24 @@
 package com.streaming.content.controller;
 
 import com.streaming.content.dto.*;
-import com.streaming.content.model.*;
-import com.streaming.content.service.*;
+import com.streaming.content.model.Song;
+import com.streaming.content.service.ArtistService;
+import com.streaming.content.service.ContentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -19,6 +28,8 @@ public class ContentController {
 
     private final ArtistService artistService;
     private final ContentService contentService;
+    private final ApplicationContext ctx;
+    private final FileSystem hdfs;
 
 // --- ARTISTS ---
 
@@ -26,6 +37,14 @@ public class ContentController {
     public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request) {
         return ResponseEntity.ok(artistService.createArtist(request));
     }
+
+    @GetMapping("/debug/beans")
+    public List<String> beans() {
+        return Arrays.stream(ctx.getBeanDefinitionNames())
+                .filter(b -> b.toLowerCase().contains("file"))
+                .toList();
+    }
+
 
     @GetMapping("/artists")
     public ResponseEntity<List<ArtistResponse>> getAllArtists() {
@@ -45,9 +64,9 @@ public class ContentController {
     }
 
     @GetMapping("/artists/{artistId}/albums")
-        public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
+    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
         return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
-        }
+    }
     // --- ALBUMS ---
 
     @PostMapping("/albums")
@@ -73,7 +92,6 @@ public class ContentController {
     }
 
 
-
     // --- SONGS ---
 
     @PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -92,6 +110,26 @@ public class ContentController {
     @GetMapping("/songs/{id}")
     public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
         return ResponseEntity.ok(contentService.getSongById(id));
+    }
+
+    @GetMapping("/songs/{id}/audio")
+    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) throws IOException {
+        Song song = contentService.getSongObjectById(id);
+        Path path = new Path(song.getAudioFilePath());
+
+        if (!hdfs.exists(path)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        StreamingResponseBody body = outputStream -> {
+            try (FSDataInputStream in = hdfs.open(path)) {
+                IOUtils.copyBytes(in, outputStream, 8192, false);
+            }
+        };
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf("audio/mpeg"))
+                .body(body);
     }
 
     @PutMapping("/songs/{id}")

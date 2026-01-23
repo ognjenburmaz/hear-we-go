@@ -18,6 +18,7 @@ public class HdfsConfig {
     public org.apache.hadoop.conf.Configuration hadoopConfiguration() {
         org.apache.hadoop.conf.Configuration configuration = new org.apache.hadoop.conf.Configuration();
         configuration.set("fs.defaultFS", hdfsUri);
+        configuration.set("dfs.client.use.datanode.hostname", "true");
         return configuration;
     }
 

@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { tap, catchError, map } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {Router} from '@angular/router';
+import {catchError, tap} from 'rxjs/operators';
+
 export interface Song {
   id?: string;
   title: string;
@@ -56,20 +57,23 @@ export class SongService {
           );
       }
 
-      getAllByAlbum(albumId:string) :Observable<Song[]>
+  getAllByAlbum(albumId: string | null): Observable<Song[]>
   {
       return this.http.get<Song[]>(this.apiUrlAlbums+'/'+albumId+'/songs');
    }
-    getAll() :Observable<Song[]> 
+
+  getAll(): Observable<Song[]>
          {
              return this.http.get<Song[]>(this.apiUrl);
-          } 
-         getOne(id:string) :Observable<Song> 
+         }
+
+  getOne(id: string): Observable<Song>
          {
              return this.http.get<Song>(this.apiUrl+'/'+id);
-          } 
-          delete(id:string) :Observable<Song> 
+         }
+
+  delete(id: string): Observable<Song>
          {
              return this.http.delete<Song>(this.apiUrl+'/'+id);
-          } 
+         }
 }

@@ -111,6 +111,25 @@ services:
     networks:
       - streaming-net
 
+  #  hdfs-uploader:
+  #    image: bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
+  #    depends_on:
+  #      - namenode
+  #    volumes:
+  #      - ./example-mp3s:/example-mp3s
+  #    entrypoint: >
+  #      bash -c "
+  #        echo 'Uploading MP3s to HDFS...' &&
+  #        hdfs dfs -mkdir -p /music &&
+  #        for f in /example-mp3s/*.mp3; do
+  #          hdfs dfs -put -f $f /music/
+  #        done &&
+  #        echo 'Upload complete.'
+  #      "
+  #    networks:
+  #      - streaming-net
+
+
   # ==========================================
   # 2. MICROSERVICES
   # ==========================================
