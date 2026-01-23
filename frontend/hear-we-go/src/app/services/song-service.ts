@@ -5,7 +5,7 @@ import {Router} from '@angular/router';
 import {catchError, tap} from 'rxjs/operators';
 
 export interface Song {
-  id?: string;
+  id?: string | undefined | any;
   title: string;
   durationSeconds: number;
   genre: string;

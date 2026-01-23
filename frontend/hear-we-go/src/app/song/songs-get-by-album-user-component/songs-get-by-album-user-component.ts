@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {Song, SongService} from '../../services/song-service';
 import {Album, AlbumService} from '../../services/album-service';
+import {SongChangeService} from '../../services/song-change-service';
 
 @Component({
   selector: 'app-songs-get-by-album-user-component',
@@ -22,7 +23,8 @@ export class SongsGetByAlbumUserComponent implements OnInit {
               private cdr: ChangeDetectorRef,
               private service: SongService,
               private albumService: AlbumService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private changeService: SongChangeService) {
 
   }
 
@@ -74,6 +76,12 @@ export class SongsGetByAlbumUserComponent implements OnInit {
         error: (_) => console.log("greska")
       })
     }
+  }
+
+  setCurrentlyPlayingSong(name: string, id: string): void {
+    localStorage.setItem("currentSongName", name);
+    localStorage.setItem("currentSongId", id)
+    this.changeService.requestChange()
   }
 
   formatDuration(seconds: number): string {

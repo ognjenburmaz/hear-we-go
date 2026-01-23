@@ -1,13 +1,15 @@
-import { Component, signal } from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {NavbarComponent} from './navbar/navbar';
+import {GlobalAudioPlayer} from './global-audio-player/global-audio-player';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
   imports: [
     RouterOutlet,
-    NavbarComponent
+    NavbarComponent,
+    GlobalAudioPlayer
   ],
   styleUrl: './app.css'
 })
