@@ -1,4 +1,4 @@
-package com.streaming.content.dto;
+package com.streaming.common.dto;
 
 import lombok.Data;
 import java.util.List;

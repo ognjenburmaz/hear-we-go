@@ -1,11 +1,10 @@
 package com.streaming.content.controller;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.*;
 import com.streaming.content.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.streaming.common.grpc";
+
+service ContentServiceGrpc {
+  rpc CheckSongExists (SongIdRequest) returns (SongExistsResponse);
+
+  rpc GetSongDetailsBatch (SongIdsRequest) returns (SongListResponse);
+
+  rpc CheckArtistExists (ArtistIdRequest) returns (ArtistExistsResponse);
+}
+
+message SongIdRequest {
+  string songId = 1;
+}
+
+message SongExistsResponse {
+  bool exists = 1;
+  string title = 2;
+}
+
+message SongIdsRequest {
+  repeated string songIds = 1;
+}
+
+message SongListResponse {
+  repeated GrpcSong songs = 1;
+}
+
+message GrpcSong {
+  string id = 1;
+  string title = 2;
+  string artistName = 3;
+  string genre = 4;
+  string coverUrl = 5;
+}
+
+message ArtistIdRequest {
+  string artistId = 1;
+}
+
+message ArtistExistsResponse {
+  bool exists = 1;
+  string name = 2;
+}

@@ -1,5 +1,6 @@
 package com.streaming.content.service.impl;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.common.event.ContentCreatedEvent;
 import com.streaming.content.dto.*;
 import com.streaming.content.model.Album;
@@ -11,6 +12,7 @@ import com.streaming.content.repository.SongRepository;
 import com.streaming.content.service.ContentService;
 import com.streaming.content.service.HdfsStorageService;
 import com.streaming.content.util.ContentMapper;
+import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -168,9 +171,14 @@ public class ContentServiceImpl implements ContentService {
     }
 
     public SongResponse getSongById(String id) {
-        Song song = songRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
-        return mapper.toResponse(song);
+        try {
+            if(Objects.equals(id, "67")) {Thread.sleep(4500);}
+            Song song = songRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
+            return mapper.toResponse(song);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ServiceUnavailableException();}
     }
 
     public List<SongResponse> getSongsInAlbum(String albumId) {

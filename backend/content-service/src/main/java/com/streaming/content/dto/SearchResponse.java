@@ -1,5 +1,6 @@
 package com.streaming.content.dto;
 
+import com.streaming.common.dto.SongResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

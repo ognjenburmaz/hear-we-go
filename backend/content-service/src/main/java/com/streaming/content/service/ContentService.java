@@ -1,5 +1,6 @@
 package com.streaming.content.service;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 

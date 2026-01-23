@@ -1,5 +1,6 @@
 package com.streaming.content.util;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
 import com.streaming.content.model.*;
 import org.springframework.stereotype.Component;
