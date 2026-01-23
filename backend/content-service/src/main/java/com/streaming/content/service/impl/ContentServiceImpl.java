@@ -15,13 +15,22 @@ import com.streaming.content.service.ContentService;
 import com.streaming.content.service.HdfsStorageService;
 import com.streaming.content.util.ContentMapper;
 import lombok.RequiredArgsConstructor;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -94,14 +103,11 @@ public class ContentServiceImpl implements ContentService {
         return mapper.toResponse(saved);
     }
 
+    //    @SuppressWarnings("all")
     @Transactional
     public SongResponse addSong(SongRequest request, MultipartFile file) {
 
         validateFile(file);
-
-        Album album = albumRepository.findById(request.getAlbumId())
-                .orElseThrow(() -> new IllegalArgumentException("Album not found"));
-
         String hdfsPath;
         try {
             hdfsPath = hdfsStorageService.saveFile(file);
@@ -109,8 +115,38 @@ public class ContentServiceImpl implements ContentService {
             throw new RuntimeException("Failed to upload audio file", e);
         }
 
+        File tempFile = null;
+        int durationInSeconds = -1;
+        try {
+//
+            tempFile = Files.createTempFile("temp-audio-", file.getOriginalFilename()).toFile();
+//
+            file.transferTo(tempFile);
+
+            AudioFile audioFile = AudioFileIO.read(tempFile);
+            AudioHeader audioHeader = audioFile.getAudioHeader();
+
+            durationInSeconds = audioHeader.getTrackLength();
+
+        } catch (CannotReadException |
+                 TagException |
+                 ReadOnlyFileException |
+                 IOException |
+                 InvalidAudioFrameException e) {
+
+            throw new IllegalArgumentException("Invalid or unreadable audio file", e);
+//        } finally {
+//            if (tempFile != null && tempFile.exists()) {
+//                tempFile.delete();
+//            }
+        }
+        Album album = albumRepository.findById(request.getAlbumId())
+                .orElseThrow(() -> new IllegalArgumentException("Album not found"));
+
+
         Song songEntity = mapper.toEntity(request);
 
+        songEntity.setDurationSeconds(durationInSeconds);
         songEntity.setArtistIds(album.getArtistIds());
         songEntity.setAudioFilePath(hdfsPath);
 

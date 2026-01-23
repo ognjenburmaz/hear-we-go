@@ -5,8 +5,13 @@ import com.streaming.content.dto.AlbumResponse;
 import com.streaming.content.dto.SongRequest;
 import com.streaming.content.dto.SongResponse;
 import com.streaming.content.model.Song;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ContentService {
@@ -20,7 +25,7 @@ public interface ContentService {
 
     List<AlbumResponse> getAlbumsByArtist(String artistId);
 
-    SongResponse addSong(SongRequest song, MultipartFile file);
+    SongResponse addSong(SongRequest song, MultipartFile file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException;
 
     SongResponse updateSong(String id, SongRequest request);
 

@@ -10,6 +10,10 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +102,7 @@ public class ContentController {
     public ResponseEntity<SongResponse> addSong(
             @RequestPart("song") @Valid SongRequest request,
             @RequestPart("file") MultipartFile file
-    ) {
+    ) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 

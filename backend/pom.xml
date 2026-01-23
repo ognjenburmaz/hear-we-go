@@ -54,6 +54,14 @@
                 <scope>import</scope>
             </dependency>
 
+            <!-- Source: https://mvnrepository.com/artifact/org/jaudiotagger -->
+            <dependency>
+                <groupId>org</groupId>
+                <artifactId>jaudiotagger</artifactId>
+                <version>2.0.3</version>
+                <scope>compile</scope>
+            </dependency>
+
             <!-- MapStruct (Recommended for mapping Entity <-> DTO) -->
             <dependency>
                 <groupId>org.mapstruct</groupId>
@@ -89,6 +97,9 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                    <compilerArgs>
+                        <arg>-Xlint:none</arg> <!-- disables all lint warnings, including unchecked exceptions -->
+                    </compilerArgs>
                     <annotationProcessorPaths>
                         <!-- Lombok Processor -->
                         <path>
@@ -103,6 +114,7 @@
                             <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <failOnWarning>false</failOnWarning>
                 </configuration>
             </plugin>
         </plugins>
