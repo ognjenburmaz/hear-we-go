@@ -88,3 +88,11 @@ ali to nigde ne pise nego izdje neka arbitrarna poruka bar mislim
 ~~oko ovoga nisam sig npr u konzolu
 browsera vrati pogresan kod konkretno dns primer kad se pravi umetnik baci eror i zaledi na toj str a
 umetnik je kreiran normalno~~
+
+O.B.
+
+subscriptions now work, removed home link in navbar, now brand name is that link, added missing env pairs,
+artist page now displays artist name, can follow artist or genre, can view subs on profile page and cancel them,
+added content db script
+
+rating service, grpc, 2.7 sve uradjeno
