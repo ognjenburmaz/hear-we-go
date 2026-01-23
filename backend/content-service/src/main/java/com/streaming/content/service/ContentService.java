@@ -9,6 +9,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 

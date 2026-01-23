@@ -55,4 +55,17 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
                         .withSimpleReplication(1)
         );
     }
+
+    @Override
+    protected List<String> getStartupScripts() {
+        return Collections.singletonList(
+                "CREATE TABLE IF NOT EXISTS " + keyspaceName + ".ratings (" +
+                        "song_id text, " +
+                        "user_id text, " +
+                        "value int, " +
+                        "created_at timestamp, " +
+                        "PRIMARY KEY ((song_id), user_id)" +
+                        ");"
+        );
+    }
 }

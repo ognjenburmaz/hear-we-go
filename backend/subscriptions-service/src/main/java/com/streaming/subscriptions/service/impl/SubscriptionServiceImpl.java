@@ -7,6 +7,7 @@ import com.streaming.subscriptions.model.TargetSubscriber;
 import com.streaming.subscriptions.model.UserSubscription;
 import com.streaming.subscriptions.repository.TargetSubscriberRepository;
 import com.streaming.subscriptions.repository.UserSubscriptionRepository;
+import com.streaming.subscriptions.service.ContentValidationService;
 import com.streaming.subscriptions.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final UserSubscriptionRepository userRepo;
     private final TargetSubscriberRepository targetRepo;
+    private final ContentValidationService validationService;
     private final KafkaTemplate<String, NotificationDispatchEvent> kafkaTemplate;
 
     @Override
     public void subscribe(String userId, SubscriptionRequest request) {
+        if ("ARTIST".equalsIgnoreCase(request.getType())) {
+            boolean exists = validationService.doesArtistExist(request.getTargetId());
+            if (!exists) {
+                throw new IllegalArgumentException("Artist with ID " + request.getTargetId() + " does not exist.");
+            }
+        }
+
         if ("GENRE".equalsIgnoreCase(request.getType())) {
             request.setTargetId(request.getTargetId().toUpperCase());
         }

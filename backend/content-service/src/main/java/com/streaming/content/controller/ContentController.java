@@ -1,7 +1,7 @@
 package com.streaming.content.controller;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.*;
 import com.streaming.content.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

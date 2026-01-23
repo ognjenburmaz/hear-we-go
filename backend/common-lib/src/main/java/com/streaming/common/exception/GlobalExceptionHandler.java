@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.naming.ServiceUnavailableException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,5 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({SecurityException.class, IllegalArgumentException.class})
     public ResponseEntity<String> handleSecurityException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<String> handleServiceUnavailable(ServiceUnavailableException ex) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body("Service temporarily unavailable. Please retry later.");
     }
 }
