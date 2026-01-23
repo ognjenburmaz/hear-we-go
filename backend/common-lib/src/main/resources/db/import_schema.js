@@ -111,7 +111,7 @@ db2.songs.insertMany([
         "genre": "Rock",
         "albumId": album1Id,
         "artistIds": [artist1Id],
-        "audioFilePath": "hdfs://namenode:8020/music/song-301.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
     {
@@ -121,7 +121,7 @@ db2.songs.insertMany([
         "genre": "Indie",
         "albumId": album1Id,
         "artistIds": [artist1Id],
-        "audioFilePath": "hdfs://namenode:8020/music/song-302.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
 
@@ -132,7 +132,7 @@ db2.songs.insertMany([
         "genre": "Synthwave",
         "albumId": album2Id,
         "artistIds": [artist2Id],
-        "audioFilePath": "hdfs://namenode:8020/music/song-303.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     },
     {
@@ -142,7 +142,7 @@ db2.songs.insertMany([
         "genre": "Electronic",
         "albumId": album2Id,
         "artistIds": [artist2Id],
-        "audioFilePath": "hdfs://namenode:8020/music/song-304.mp3",
+        "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
         "_class": "com.streaming.content.model.Song"
     }
 ]);
