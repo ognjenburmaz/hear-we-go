@@ -1,10 +1,8 @@
 package com.streaming.content.service.impl;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.common.event.ContentCreatedEvent;
-import com.streaming.content.dto.AlbumRequest;
-import com.streaming.content.dto.AlbumResponse;
-import com.streaming.content.dto.SongRequest;
-import com.streaming.content.dto.SongResponse;
+import com.streaming.content.dto.*;
 import com.streaming.content.model.Album;
 import com.streaming.content.model.Artist;
 import com.streaming.content.model.Song;
@@ -14,15 +12,30 @@ import com.streaming.content.repository.SongRepository;
 import com.streaming.content.service.ContentService;
 import com.streaming.content.service.HdfsStorageService;
 import com.streaming.content.util.ContentMapper;
+import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.fs.Path;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.AudioHeader;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.hadoop.fs.FileSystem;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +48,7 @@ public class ContentServiceImpl implements ContentService {
     private final KafkaTemplate<String, ContentCreatedEvent> kafkaTemplate;
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
+    private final FileSystem fileSystem;
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
@@ -98,19 +112,45 @@ public class ContentServiceImpl implements ContentService {
     public SongResponse addSong(SongRequest request, MultipartFile file) {
 
         validateFile(file);
-
-        Album album = albumRepository.findById(request.getAlbumId())
-                .orElseThrow(() -> new IllegalArgumentException("Album not found"));
-
         String hdfsPath;
         try {
             hdfsPath = hdfsStorageService.saveFile(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload audio file", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
+        File tempFile = null;
+        int durationInSeconds = -1;
+        try {
+
+            tempFile = Files.createTempFile("temp-audio-", file.getOriginalFilename()).toFile();
+
+            file.transferTo(tempFile);
+
+            AudioFile audioFile = AudioFileIO.read(tempFile);
+            AudioHeader audioHeader = audioFile.getAudioHeader();
+
+            durationInSeconds = audioHeader.getTrackLength();
+
+        } catch (CannotReadException |
+                 TagException |
+                 ReadOnlyFileException |
+                 IOException |
+                 InvalidAudioFrameException e) {
+
+            throw new IllegalArgumentException("Invalid or unreadable audio file", e);
+//        } finally {
+//            if (tempFile != null && tempFile.exists()) {
+//                tempFile.delete();
+//            }
+        }
+        Album album = albumRepository.findById(request.getAlbumId())
+                .orElseThrow(() -> new IllegalArgumentException("Album not found"));
+
 
         Song songEntity = mapper.toEntity(request);
 
+        songEntity.setDurationSeconds(durationInSeconds);
         songEntity.setArtistIds(album.getArtistIds());
         songEntity.setAudioFilePath(hdfsPath);
 
@@ -171,9 +211,35 @@ public class ContentServiceImpl implements ContentService {
     }
 
     public SongResponse getSongById(String id) {
-        Song song = songRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
-        return mapper.toResponse(song);
+        try {
+            if(Objects.equals(id, "67")) {Thread.sleep(4500);}
+            Song song = songRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
+            return mapper.toResponse(song);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ServiceUnavailableException();}
+    }
+
+    public InputStream getSongAudioStream(String songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        String hdfsPathStr = song.getAudioFilePath();
+        if (hdfsPathStr == null) {
+            throw new RuntimeException("No audio file linked to this song");
+        }
+
+        try {
+            Path path = new Path(hdfsPathStr);
+            if (!fileSystem.exists(path)) {
+                throw new FileNotFoundException("File missing in HDFS: " + hdfsPathStr);
+            }
+
+            return fileSystem.open(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<SongResponse> getSongsInAlbum(String albumId) {
@@ -207,5 +273,47 @@ public class ContentServiceImpl implements ContentService {
         if (!validExtension) {
             throw new IllegalArgumentException("Invalid file extension");
         }
+    }
+
+    public SearchResponse searchEverything(String query) {
+
+        List<ArtistResponse> artists = artistRepository.findTop3ByNameContainingIgnoreCase(query)
+                .stream()
+                .map(artist -> {
+                    ArtistResponse res = new  ArtistResponse();
+                    res.setId(artist.getId());
+                    res.setName(artist.getName());
+                    res.setBiography(artist.getBiography());
+                    res.setGenres(artist.getGenres());
+                    return res;
+                })
+                .toList();
+
+        List<AlbumResponse> albums = albumRepository.findTop3ByTitleContainingIgnoreCase(query)
+                .stream()
+                .map(album -> {
+                    AlbumResponse res = new  AlbumResponse();
+                    res.setId(album.getId());
+                    res.setTitle(album.getTitle());
+                    res.setReleaseDate(album.getReleaseDate());
+                    res.setGenre(album.getGenre());
+                    res.setArtistIds(album.getArtistIds());
+                    return res;
+                })
+                .toList();
+
+        List<SongResponse> songs = songRepository.findTop3ByTitleContainingIgnoreCase(query)
+                .stream()
+                .map(song -> {
+                    SongResponse res = new  SongResponse();
+                    res.setId(song.getId());
+                    res.setTitle(song.getTitle());
+                    res.setAlbumId(song.getAlbumId());
+                    res.setArtistIds(song.getArtistIds());
+                    return res;
+                })
+                .toList();
+
+        return new SearchResponse(artists, albums, songs);
     }
 }

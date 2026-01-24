@@ -13,7 +13,7 @@
   <div class="tracklist-section">
     <h2 class="section-title">Tracks</h2>
     <div class="song-list">
-      @for (song of songs; track song; let i = $index) {
+      @for (song of songs; track song.id; let i = $index) {
         <div class="song-item">
           <span class="track-index">{{ i + 1 }}</span>
           <div class="song-main">
@@ -21,6 +21,9 @@
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
           <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
+
+          <!-- Call playSong directly -->
+          <button class="play-btn" (click)="playSong(song)"> ▶ </button>
         </div>
       }
     </div>

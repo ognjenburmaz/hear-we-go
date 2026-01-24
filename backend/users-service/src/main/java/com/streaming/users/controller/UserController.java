@@ -1,6 +1,7 @@
 package com.streaming.users.controller;
 
 import com.streaming.users.dto.*;
+import com.streaming.users.model.RegistrationStatus;
 import com.streaming.users.model.User;
 import com.streaming.users.security.OtpAuthenticationToken;
 import com.streaming.users.security.TokenUtils;
@@ -11,6 +12,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,9 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -50,9 +50,67 @@ public class UserController {
         return ResponseEntity.ok(userServiceImpl.registerUser(request));
     }
 
+    @GetMapping("/requests")
+    public ResponseEntity<List<User>> getPendingRegistrations() {
+        List<User> pendingRegistrations = new ArrayList<>();
+        for (User user : userServiceImpl.findAll()) {
+            if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+                pendingRegistrations.add(user);
+            }
+        }
+        return ResponseEntity.ok(pendingRegistrations);
+    }
+
+    @PatchMapping("/requests/accept/{email}")
+    public ResponseEntity<User> acceptRegistration(@PathVariable String email) {
+        Optional<User> optionalUser = userServiceImpl.findByEmail(email);
+        User user = optionalUser.get();
+        user.setRegistrationStatus(RegistrationStatus.APPROVED);
+        userServiceImpl.save(user);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Vas zahtev za registraciju je prihvacen!");
+        message.setText("Vas zahtev je prihvacen, datum i vreme kreiranje naloga: " + LocalDateTime.now());
+
+        try {
+            mailSender.send(message);
+            System.out.println("Poslat MEJL!");
+        } catch (Exception ex) {
+            System.err.println("Greška pri slanju mejla: " + ex.getMessage());
+        }
+
+
+        return ResponseEntity.ok(user);
+    }
+
+    @PatchMapping("/requests/reject/{email}")
+    public ResponseEntity<User> denyRegistration(@PathVariable String email) {
+        Optional<User> optionalUser = userServiceImpl.findByEmail(email);
+        User user = optionalUser.get();
+        user.setRegistrationStatus(RegistrationStatus.DENIED);
+        userServiceImpl.save(user);
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(user.getEmail());
+        message.setSubject("Vas zahtev za registraciju je odbijen!");
+        message.setText("Vas zahtev za registraciju je nazalost odbijen :(");
+
+        try {
+            mailSender.send(message);
+            System.out.println("Poslat MEJL!");
+        } catch (Exception ex) {
+            System.err.println("Greška pri slanju mejla: " + ex.getMessage());
+        }
+
+
+        return ResponseEntity.ok(user);
+    }
+
+
     @PostMapping("/login/psw")
     public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
-
+        // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -62,6 +120,34 @@ public class UserController {
         );
 
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
+
+        if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "PASSWORD_TOO_OLD",
+                            "message", "The password is older than 60 days"
+                    ));
+        }
+
+        if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "PENDING_REGISTRATION",
+                            "message", "Wait for the admin to approve your registration"
+                    ));
+        }
+
+        if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "DENIED_REGISTRATION",
+                            "message", "Your registration has been denied!"
+                    ));
+        }
+
         String otp = otpService.generateOtp(authRequest.getUsername());
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -76,11 +162,15 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-        return ResponseEntity.ok(null);
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setEmail(user.getEmail());
+
+        return ResponseEntity.ok(emailDTO);
     }
 
     @PostMapping("/login/otp")
     public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest) {
+        // TODO nek ovde vraca neki UserDTO (ili u login/psw?)
 
         Authentication authentication =
                 authenticationManager.authenticate(
@@ -106,7 +196,20 @@ public class UserController {
         if (userServiceImpl.findByEmail(email).isPresent()) {
             user = userServiceImpl.findByEmail(email).get();
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "EMAIL_NOT_FOUND",
+                            "message", "User with this email does not exist"
+                    ));
+        }
+        if (user.getLastPasswordReset().plusDays(1).isAfter(LocalDateTime.now())) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "RESET_TOO_SOON",
+                            "message", "Password reset already requested recently"
+                    ));
         }
 
         MimeMessage message = mailSender.createMimeMessage();

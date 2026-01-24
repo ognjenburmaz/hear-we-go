@@ -1,4 +1,7 @@
 <app-navbar></app-navbar>
 <div class="container">
   <router-outlet></router-outlet>
+  @if (localStorage.getItem("authToken") != null) {
+    <app-global-audio-player></app-global-audio-player>
+  }
 </div>

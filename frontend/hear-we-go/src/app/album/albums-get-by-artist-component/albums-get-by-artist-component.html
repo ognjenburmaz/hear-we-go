@@ -1,28 +1,56 @@
 <div class="theme-wrapper">
-<div class="album-grid">
-  @for (album of albums; track album) {
-    <div class="album-card" [routerLink]="['/home/albums/', album.id,'songs']">
-      <div class="album-header">
-        <span class="album-genre-tag">{{ album.genre }}</span>
-      </div>
-      <h2 class="album-title">{{ album.title }}</h2>
-      <div class="album-info">
-        <div class="info-item">
-          <span class="label">Released</span>
-          <span class="value">{{ album.releaseDate | date:'mediumDate' }}</span>
+
+  <div class="header-section">
+    <h1 class="artist">All albums by: {{ artistName }}</h1>
+
+    <!-- Action Buttons Row -->
+    <div class="actions-row">
+
+      <!-- 1. Follow Artist Button -->
+      <button
+        class="follow artist-btn"
+        [class.following]="isArtistSubscribed"
+        (click)="toggleArtistSubscription()">
+        {{ isArtistSubscribed ? 'Unfollow Artist' : 'Follow Artist' }}
+      </button>
+
+      <!-- 2. Follow Genre Buttons (Loop) -->
+      @for (genre of uniqueGenres; track genre) {
+        <button
+          class="follow genre-btn"
+          [class.following]="genreSubscriptionStatus[genre]"
+          (click)="toggleGenreSubscription(genre)">
+          {{ genreSubscriptionStatus[genre] ? 'Unfollow ' + genre : 'Follow ' + genre }}
+        </button>
+      }
+
+    </div>
+  </div>
+
+  <div class="album-grid">
+    @for (album of albums; track album) {
+      <div class="album-card" [routerLink]="['/home/albums/', album.id,'songs']">
+        <div class="album-header">
+          <span class="album-genre-tag">{{ album.genre }}</span>
         </div>
-        <div class="info-item">
-          <span class="label">Contributors</span>
-          <div class="artist-pill-container">
-            @for (artistId of album.artistIds; track artistId) {
-              <span class="artist-pill">
-                ID: {{ artistId }}
-              </span>
-            }
+        <h2 class="album-title">{{ album.title }}</h2>
+        <div class="album-info">
+          <div class="info-item">
+            <span class="label">Released</span>
+            <span class="value">{{ album.releaseDate | date:'mediumDate' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Contributors</span>
+            <div class="artist-pill-container">
+              @for (artistId of album.artistIds; track artistId) {
+                <span class="artist-pill">
+                  ID: {{ artistId }}
+                </span>
+              }
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  }
-</div>
+    }
+  </div>
 </div>

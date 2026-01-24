@@ -58,6 +58,14 @@
     background: #121212;
 }
 
+.song-item .play-btn {
+  opacity: 0;
+}
+
+.song-item:hover .play-btn {
+  opacity: 1;
+}
+
 .track-index {
     width: 40px;
     color: #444;
@@ -84,6 +92,38 @@
 }
 
 .song-time {
-    color: #666;
+  color: #666;
     font-family: monospace;
+  padding-right: 5px;
+}
+
+/* PLAY/PAUSE Button */
+
+.play-btn {
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: #e0a800;
+  color: #000;
+
+  font-size: 16px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.play-btn:hover {
+  transform: scale(1.08);
+  background: #ffc107;
+}
+
+.play-btn:active {
+  transform: scale(0.95);
 }

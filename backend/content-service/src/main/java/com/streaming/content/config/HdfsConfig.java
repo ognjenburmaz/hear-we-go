@@ -1,5 +1,6 @@
 package com.streaming.content.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.fs.FileSystem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.io.IOException;
 import java.net.URI;
 
+@Slf4j
 @Configuration
 public class HdfsConfig {
 
@@ -18,6 +20,8 @@ public class HdfsConfig {
     public org.apache.hadoop.conf.Configuration hadoopConfiguration() {
         org.apache.hadoop.conf.Configuration configuration = new org.apache.hadoop.conf.Configuration();
         configuration.set("fs.defaultFS", hdfsUri);
+        configuration.set("dfs.client.use.datanode.hostname", "true");
+        configuration.set("dfs.datanode.use.datanode.hostname", "true");
         return configuration;
     }
 

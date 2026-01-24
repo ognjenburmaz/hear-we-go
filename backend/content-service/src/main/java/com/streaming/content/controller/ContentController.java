@@ -1,17 +1,29 @@
 package com.streaming.content.controller;
 
+import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.*;
+import com.streaming.content.model.Song;
 import com.streaming.content.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/content")
 @RequiredArgsConstructor
@@ -19,6 +31,8 @@ public class ContentController {
 
     private final ArtistService artistService;
     private final ContentService contentService;
+    private final ApplicationContext ctx;
+    private final FileSystem hdfs;
 
 // --- ARTISTS ---
 
@@ -28,7 +42,13 @@ public class ContentController {
     }
 
     @GetMapping("/artists")
-    public ResponseEntity<List<ArtistResponse>> getAllArtists() {
+    public ResponseEntity<List<ArtistResponse>> getAllArtists(
+            @RequestParam(value = "genre", required = false) List<String> genres) {
+
+        if (genres != null && !genres.isEmpty()) {
+            return ResponseEntity.ok(artistService.getArtistsByGenres(genres));
+        }
+
         return ResponseEntity.ok(artistService.getAllArtists());
     }
 
@@ -45,9 +65,9 @@ public class ContentController {
     }
 
     @GetMapping("/artists/{artistId}/albums")
-        public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
+    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
         return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
-        }
+    }
     // --- ALBUMS ---
 
     @PostMapping("/albums")
@@ -73,14 +93,12 @@ public class ContentController {
     }
 
 
-
     // --- SONGS ---
 
     @PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SongResponse> addSong(
             @RequestPart("song") @Valid SongRequest request,
-            @RequestPart("file") MultipartFile file
-    ) {
+            @RequestPart("file") MultipartFile file) {
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 
@@ -92,6 +110,33 @@ public class ContentController {
     @GetMapping("/songs/{id}")
     public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
         return ResponseEntity.ok(contentService.getSongById(id));
+    }
+
+    @GetMapping("/songs/{id}/audio")
+    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) {
+        try {
+            InputStream audioStream = contentService.getSongAudioStream(id);
+
+            StreamingResponseBody responseBody = outputStream -> {
+                try (InputStream is = audioStream) {
+                    is.transferTo(outputStream);
+                } catch (IOException e) {
+                    log.error("Error during HDFS streaming for song {}: {}", id, e.getMessage());
+                }
+            };
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("audio/mpeg"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(responseBody);
+
+        } catch (RuntimeException e) {
+            log.warn("Song or file not found: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("FATAL ERROR streaming song {}: ", id, e);
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/songs/{id}")
@@ -110,5 +155,13 @@ public class ContentController {
     public ResponseEntity<Void> deleteSong(@PathVariable String id) {
         contentService.deleteSong(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SearchResponse> globalSearch(@RequestParam String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return ResponseEntity.ok(new SearchResponse(List.of(), List.of(), List.of()));
+        }
+        return ResponseEntity.ok(contentService.searchEverything(query));
     }
 }

@@ -14,4 +14,6 @@ public interface ArtistService {
     ArtistResponse updateArtist(String id, ArtistRequest request);
 
     ArtistResponse getArtistById(String id);
+
+    List<ArtistResponse> getArtistsByGenres(List<String> genres);
 }

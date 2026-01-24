@@ -7,13 +7,16 @@ import com.streaming.subscriptions.model.TargetSubscriber;
 import com.streaming.subscriptions.model.UserSubscription;
 import com.streaming.subscriptions.repository.TargetSubscriberRepository;
 import com.streaming.subscriptions.repository.UserSubscriptionRepository;
+import com.streaming.subscriptions.service.ContentValidationService;
 import com.streaming.subscriptions.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -22,44 +25,71 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final UserSubscriptionRepository userRepo;
     private final TargetSubscriberRepository targetRepo;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ContentValidationService validationService;
+    private final KafkaTemplate<String, NotificationDispatchEvent> kafkaTemplate;
 
+    @Override
     public void subscribe(String userId, SubscriptionRequest request) {
-        if (userRepo.existsByUserIdAndTargetId(userId, request.getTargetId())) {
-            throw new RuntimeException("Already subscribed");
+        if (!"ARTIST".equalsIgnoreCase(request.getType()) && !"GENRE".equalsIgnoreCase(request.getType()))
+            throw new RuntimeException("Type must be either ARTIST or GENRE");
+
+        else if ("ARTIST".equalsIgnoreCase(request.getType())) {
+            boolean exists = validationService.doesArtistExist(request.getTargetId());
+            if (!exists) {
+                throw new IllegalArgumentException("Artist with ID " + request.getTargetId() + " does not exist.");
+            }
         }
 
-        // Save for User Profile (CQRS: Store name here so we don't query Content Service later)
+        else
+            request.setTargetId(request.getTargetId().toUpperCase());
+
+        if (userRepo.existsByUserIdAndTargetId(userId, request.getTargetId())) {
+            throw new RuntimeException("Already subscribed to " + request.getTargetName());
+        }
+
         UserSubscription userSub = new UserSubscription(
-                userId, request.getTargetId(), request.getTargetName(), request.getType()
+                userId, request.getTargetId(), request.getTargetName(), request.getType().toUpperCase()
         );
         userRepo.save(userSub);
 
         TargetSubscriber targetSub = new TargetSubscriber(request.getTargetId(), userId);
         targetRepo.save(targetSub);
 
-        log.info("User {} subscribed to {}", userId, request.getTargetName());
+        log.info("User {} subscribed to {} ({})", userId, request.getTargetName(), request.getType());
     }
 
+    @Override
     public void unsubscribe(String userId, String targetId) {
         userRepo.deleteByUserIdAndTargetId(userId, targetId);
         targetRepo.deleteByTargetIdAndUserId(targetId, userId);
+        log.info("User {} unsubscribed from {}", userId, targetId);
     }
 
+    @Override
     public List<UserSubscription> getUserSubscriptions(String userId) {
         return userRepo.findByUserId(userId);
     }
 
-
+    @Override
     public void processContentEvent(ContentCreatedEvent event) {
         log.info("Processing new content: {} by {}", event.getTitle(), event.getArtistName());
 
-        List<TargetSubscriber> artistSubscribers = targetRepo.findByTargetId(event.getArtistId());
+        Set<String> uniqueUserIdsToNotify = new HashSet<>();
 
-        // Find subscribers for the Genre (if applicable)
-        // List<TargetSubscriber> genreSubscribers = targetRepo.findByTargetId(event.getGenre());
+        if (event.getArtistId() != null) {
+            List<TargetSubscriber> artistSubs = targetRepo.findByTargetId(event.getArtistId());
+            artistSubs.forEach(sub -> uniqueUserIdsToNotify.add(sub.getUserId()));
+        }
 
-        artistSubscribers.forEach(sub -> sendNotification(sub.getUserId(), event));
+        if (event.getGenre() != null && !event.getGenre().isEmpty()) {
+            String normalizedGenre = event.getGenre().toUpperCase();
+            List<TargetSubscriber> genreSubs = targetRepo.findByTargetId(normalizedGenre);
+            genreSubs.forEach(sub -> uniqueUserIdsToNotify.add(sub.getUserId()));
+        }
+
+        uniqueUserIdsToNotify.forEach(userId -> sendNotification(userId, event));
+
+        log.info("Sent notifications to {} users", uniqueUserIdsToNotify.size());
     }
 
     private void sendNotification(String userId, ContentCreatedEvent event) {

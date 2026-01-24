@@ -41,7 +41,28 @@ export class LoginComponent {
       },
       error: (err) => {
         console.error('Login error:', err);
-        this.errorMessage = 'Pogrešno korisničko ime ili lozinka.';
+        const code = err.error?.code;
+
+        switch (code) {
+          case 'PASSWORD_TOO_OLD':
+            this.errorMessage = 'Vreme vazenja vase lozinke je isteklo, promenite je klikom na dugme ispod:';
+            break;
+
+          case 'PENDING_REGISTRATION':
+            this.errorMessage = 'Molimo sacekajte da admini obrade Vas zahtev za registraciju!';
+            break;
+
+          case 'DENIED_REGISTRATION':
+            this.errorMessage = 'Vas zahtev za registraciju je odbijen :(';
+            break;
+
+          // case 'RESET_TOO_SOON':
+          //   this.errorMessage = 'Ne mozete resetovati lozinku vise od jedanput dnevno!';
+          //   break;
+
+          default:
+            this.errorMessage = 'Nesto je poslo po zlu :(';
+        }
 
         this.cdr.detectChanges();
       }

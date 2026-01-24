@@ -1,0 +1,34 @@
+<div class="main-container">
+  <div class="container-card">
+<table class="table-requests">
+  <thead>
+  <tr class="tr-th">
+    <th>Email</th>
+    <th>Adresa</th>
+    <th>Status</th>
+    <!--    <th>Datum</th>-->
+    <th>Akcija</th>
+  </tr>
+  </thead>
+  <tbody>
+    @for (User of registrationRequests; track User.id) {
+      <tr>
+        <td>{{ User.email }}</td>
+        <td>{{ User.firstName }}</td>
+        <td>{{ User.lastName }}</td>
+        <td>
+          @if (User.registrationStatus == "PENDING") {
+            <button class="accept" (click)="accept(User.email)" matButton="outlined">Prihvati</button>
+            <button class="reject" (click)="reject(User.email)" matButton="outlined">Odbij</button>
+
+          } @else {
+            <p>Status je {{ User.registrationStatus }} !</p>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+  </div>
+</div>
+

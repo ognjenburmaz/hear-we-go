@@ -19,7 +19,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     @Value("${spring.cassandra.port:9042}")
     private int port;
 
-    @Value("${SPRING_CASSANDRA_KEYSPACE_NAME}")
+    @Value("${SPRING_CASSANDRA_KEYSPACE_NAME_RATINGS}")
     private String keyspaceName;
 
     @Override
@@ -53,6 +53,19 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
                 CreateKeyspaceSpecification.createKeyspace(keyspaceName)
                         .ifNotExists()
                         .withSimpleReplication(1)
+        );
+    }
+
+    @Override
+    protected List<String> getStartupScripts() {
+        return Collections.singletonList(
+                "CREATE TABLE IF NOT EXISTS " + keyspaceName + ".ratings (" +
+                        "song_id text, " +
+                        "user_id text, " +
+                        "value int, " +
+                        "created_at timestamp, " +
+                        "PRIMARY KEY ((song_id), user_id)" +
+                        ");"
         );
     }
 }

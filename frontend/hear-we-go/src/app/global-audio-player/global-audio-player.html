@@ -1,0 +1,35 @@
+<audio id="globalAudioPlayer" style="display: none;" preload="metadata"></audio>
+
+@if (currentSongId) {
+  <div class="audio-player-container">
+    <!-- Close Button -->
+    <button class="close-player-btn" (click)="closePlayer()">✕</button>
+
+    <div class="audio-player-card">
+      <div class="song-info">
+        <span class="song-title">{{ currentSongName }}</span>
+        <span class="genre-tag">{{ currentSongGenre }}</span>
+      </div>
+
+      <div class="player-controls">
+        <button class="icon-btn" (click)="seek(-10)">⏪</button>
+        <button class="main-play-btn" (click)="togglePlay()">
+          @if (isPlaying) { <span>⏸</span> } @else { <span>▶️</span> }
+        </button>
+        <button class="icon-btn" (click)="seek(10)">⏩</button>
+      </div>
+
+      <div class="timeline-box">
+        <span class="time-text">{{ currentTime | date:'m:ss' }}</span>
+        <input
+          type="range"
+          class="modern-slider"
+          [max]="duration || 0"
+          [value]="currentSeconds"
+          (input)="onSeek($event)"
+        />
+        <span class="time-text">{{ formatSecondsToDate(duration) | date:'m:ss' }}</span>
+      </div>
+    </div>
+  </div>
+}

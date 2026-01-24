@@ -21,10 +21,14 @@ public class HdfsStorageServiceImpl implements HdfsStorageService {
     private final FileSystem fileSystem;
     private final String BASE_PATH = "/music/";
 
-    public String saveFile(MultipartFile file) throws IOException {
+    public String saveFile(MultipartFile file) {
         Path directoryPath = new Path(BASE_PATH);
-        if (!fileSystem.exists(directoryPath)) {
-            fileSystem.mkdirs(directoryPath);
+        try {
+            if (!fileSystem.exists(directoryPath)) {
+                fileSystem.mkdirs(directoryPath);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         String originalFilename = file.getOriginalFilename();
@@ -40,6 +44,8 @@ public class HdfsStorageServiceImpl implements HdfsStorageService {
              FSDataOutputStream outputStream = fileSystem.create(filePath)) {
 
             inputStream.transferTo(outputStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         log.info("Saved file to HDFS at: {}", filePath);
