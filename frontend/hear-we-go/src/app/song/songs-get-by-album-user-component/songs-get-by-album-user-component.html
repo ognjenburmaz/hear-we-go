@@ -13,20 +13,17 @@
   <div class="tracklist-section">
     <h2 class="section-title">Tracks</h2>
     <div class="song-list">
-      @for (song of songs; track song; let i = $index) {
+      @for (song of songs; track song.id; let i = $index) {
         <div class="song-item">
           <span class="track-index">{{ i + 1 }}</span>
           <div class="song-main">
             <span class="song-name">{{ song.title }}</span>
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
-          <span class="song-time" style="margin-inline-end: 15px">{{ formatDuration(song.durationSeconds) }}</span>
-          <button (click)="setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre)"
-                  style="margin-left: 15px"> ▶
-          </button>
-          <!--          <audio id="audioPlayer{{ song.id }}" controls src="https://localhost/api/content/songs/{{ song.id }}/audio"></audio>-->
-          <!--          <audio controls id="audioPlayer{{ song.id }}"></audio>-->
+          <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
 
+          <!-- Call playSong directly -->
+          <button class="play-btn" (click)="playSong(song)"> ▶ </button>
         </div>
       }
     </div>

@@ -30,16 +30,18 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public void subscribe(String userId, SubscriptionRequest request) {
-        if ("ARTIST".equalsIgnoreCase(request.getType())) {
+        if (!"ARTIST".equalsIgnoreCase(request.getType()) && !"GENRE".equalsIgnoreCase(request.getType()))
+            throw new RuntimeException("Type must be either ARTIST or GENRE");
+
+        else if ("ARTIST".equalsIgnoreCase(request.getType())) {
             boolean exists = validationService.doesArtistExist(request.getTargetId());
             if (!exists) {
                 throw new IllegalArgumentException("Artist with ID " + request.getTargetId() + " does not exist.");
             }
         }
 
-        if ("GENRE".equalsIgnoreCase(request.getType())) {
+        else
             request.setTargetId(request.getTargetId().toUpperCase());
-        }
 
         if (userRepo.existsByUserIdAndTargetId(userId, request.getTargetId())) {
             throw new RuntimeException("Already subscribed to " + request.getTargetName());
