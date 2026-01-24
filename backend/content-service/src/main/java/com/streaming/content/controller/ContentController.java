@@ -2,8 +2,8 @@ package com.streaming.content.controller;
 
 import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.Song;
 import com.streaming.content.service.*;
+import com.streaming.content.model.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +11,12 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.TagException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -98,7 +102,8 @@ public class ContentController {
     @PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SongResponse> addSong(
             @RequestPart("song") @Valid SongRequest request,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file
+    ) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 

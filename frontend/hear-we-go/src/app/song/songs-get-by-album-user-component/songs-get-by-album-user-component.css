@@ -83,6 +83,11 @@
     color: white;
 }
 
+.song-name-playing {
+  font-size: 1.1rem;
+  color: green;
+}
+
 .song-genre-tag {
     font-size: 0.7rem;
     border: 1px solid #e0a800;

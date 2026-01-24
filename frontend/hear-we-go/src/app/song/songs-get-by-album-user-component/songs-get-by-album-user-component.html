@@ -17,7 +17,11 @@
         <div class="song-item">
           <span class="track-index">{{ i + 1 }}</span>
           <div class="song-main">
-            <span class="song-name">{{ song.title }}</span>
+            @if (song.title == localStorage.getItem("currentSongName")) {
+              <span class="song-name-playing">{{ song.title }}</span>
+            } @else {
+              <span class="song-name">{{ song.title }}</span>
+            }
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
           <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
