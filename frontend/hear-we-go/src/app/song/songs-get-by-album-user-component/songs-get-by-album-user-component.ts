@@ -79,4 +79,6 @@ export class SongsGetByAlbumUserComponent implements OnInit {
 
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
+
+  protected readonly localStorage = localStorage;
 }
