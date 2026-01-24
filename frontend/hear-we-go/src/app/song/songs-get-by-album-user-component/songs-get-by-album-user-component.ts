@@ -89,7 +89,6 @@ export class SongsGetByAlbumUserComponent implements OnInit {
         })
           .then(res => {
             if (!res.ok) {
-              // handle 404 or other errors
               console.warn(`Audio not found for song ${song.id}, status: ${res.status}`);
               this.cdr.detectChanges();
               return null;
@@ -97,7 +96,7 @@ export class SongsGetByAlbumUserComponent implements OnInit {
             return res.blob();
           })
           .then(blob => {
-            if (!blob) return; // skip if previous step failed
+            if (!blob) return;
             const url = URL.createObjectURL(blob);
             const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
             audio.src = url;
