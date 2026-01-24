@@ -14,6 +14,7 @@ import com.streaming.content.dto.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 public interface ContentService {
@@ -27,7 +28,7 @@ public interface ContentService {
 
     List<AlbumResponse> getAlbumsByArtist(String artistId);
 
-    SongResponse addSong(SongRequest song, MultipartFile file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException;
+    SongResponse addSong(SongRequest song, MultipartFile file);
 
     SongResponse updateSong(String id, SongRequest request);
 
@@ -35,7 +36,7 @@ public interface ContentService {
 
     SongResponse getSongById(String id);
 
-    Song getSongObjectById(String id);
+    InputStream getSongAudioStream(String songId);
 
     List<SongResponse> getAllSongs();
 

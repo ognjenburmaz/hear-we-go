@@ -88,6 +88,8 @@ services:
       - "8020:8020"
     networks:
       - streaming-net
+    volumes:
+      - namenode_data:/hadoop/dfs/name
 
   # HDFS Datanode
   datanode:
@@ -101,6 +103,8 @@ services:
       - namenode
     networks:
       - streaming-net
+    volumes:
+      - datanode_data:/hadoop/dfs/data
 
   #  # One-shot uploader
   #  hdfs-uploader:
@@ -329,6 +333,8 @@ services:
 
 volumes:
   mongo_data:
+  namenode_data:
+  datanode_data:
 
 networks:
   streaming-net:

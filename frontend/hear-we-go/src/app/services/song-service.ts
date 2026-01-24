@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Router} from '@angular/router';
 import {catchError, tap} from 'rxjs/operators';
@@ -76,4 +76,18 @@ export class SongService {
          {
              return this.http.delete<Song>(this.apiUrl+'/'+id);
          }
+
+  getAudioBlob(songId: string) {
+    const token = localStorage.getItem('authToken');
+
+    return this.http.get(
+      `/api/content/songs/${songId}/audio`,
+      {
+        responseType: 'blob',
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${token}`
+        })
+      }
+    );
+  }
 }
