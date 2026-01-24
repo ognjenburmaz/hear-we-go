@@ -1,69 +1,133 @@
-.audio-player {
+.audio-player-container {
   position: fixed;
-  bottom: 20px;
+  bottom: 25px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 9999; /* Higher than everything else */
+  pointer-events: none; /* Allows clicking through the empty space around player */
+}
+
+.audio-player-card {
+  pointer-events: auto; /* Re-enable clicking on the player itself */
   width: 420px;
-
   background: #181818;
-  color: #fff;
-
-  border-radius: 14px;
-  padding: 12px 16px;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  font-family: system-ui, sans-serif;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  padding: 16px 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
 }
 
 .song-info {
-  text-align: center;
-  font-size: 14px;
-  margin-bottom: 8px;
-  opacity: 0.9;
-}
-
-.controls {
   display: flex;
-  justify-content: center;
-  gap: 14px;
-  margin-bottom: 10px;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.controls button {
+.song-title {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+
+.genre-tag {
+  color: #ffc107;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.icon-btn {
   background: none;
   border: none;
-  color: #fff;
-  font-size: 22px;
+  color: #aaa;
+  font-size: 20px;
   cursor: pointer;
 }
 
-.controls button:hover {
-  color: #1db954;
-}
-
-.timeline {
+.main-play-btn {
+  background: white;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 20px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
 }
 
-.timeline input[type="range"] {
+.main-play-btn:hover {
+  transform: scale(1.1);
+}
+
+.timeline-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-text {
+  color: #888;
+  font-size: 11px;
+  font-family: monospace;
+  width: 35px;
+}
+
+.modern-slider {
   flex: 1;
-  accent-color: #1db954;
+  accent-color: #ffc107;
+  cursor: pointer;
+  height: 4px;
 }
 
-.genre-badge {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 3px 10px;
-
+.close-player-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #ffc107; /* Red background for visibility */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
   font-size: 12px;
-  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  z-index: 10001;
+  pointer-events: auto; /* Ensure it's clickable */
+  transition: transform 0.2s;
+}
 
-  background: #2a2a2a; /* dark pill */
-  color: #e5e5e5;
+.close-player-btn:hover {
+  transform: scale(1.1);
+  background: #cc0000;
+}
 
-  border-radius: 999px; /* full pill */
-  letter-spacing: 0.3px;
+/* Ensure the container can host the absolute positioned close button */
+.audio-player-container {
+  position: fixed;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
 }

@@ -58,6 +58,14 @@
     background: #121212;
 }
 
+.song-item .play-btn {
+  opacity: 0;
+}
+
+.song-item:hover .play-btn {
+  opacity: 1;
+}
+
 .track-index {
     width: 40px;
     color: #444;
@@ -91,6 +99,7 @@
 .song-time {
   color: #666;
     font-family: monospace;
+  padding-right: 5px;
 }
 
 /* PLAY/PAUSE Button */
@@ -102,7 +111,7 @@
   border-radius: 50%;
   border: none;
 
-  background: #1db954;
+  background: #e0a800;
   color: #000;
 
   font-size: 16px;
@@ -117,7 +126,7 @@
 
 .play-btn:hover {
   transform: scale(1.08);
-  background: #1ed760;
+  background: #ffc107;
 }
 
 .play-btn:active {

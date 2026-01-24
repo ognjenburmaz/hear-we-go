@@ -14,6 +14,7 @@ import com.streaming.content.service.HdfsStorageService;
 import com.streaming.content.util.ContentMapper;
 import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
+import org.apache.hadoop.fs.Path;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -26,9 +27,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.apache.hadoop.fs.FileSystem;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
@@ -44,6 +48,7 @@ public class ContentServiceImpl implements ContentService {
     private final KafkaTemplate<String, ContentCreatedEvent> kafkaTemplate;
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
+    private final FileSystem fileSystem;
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
@@ -110,8 +115,8 @@ public class ContentServiceImpl implements ContentService {
         String hdfsPath;
         try {
             hdfsPath = hdfsStorageService.saveFile(file);
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to upload audio file", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         File tempFile = null;
@@ -216,8 +221,25 @@ public class ContentServiceImpl implements ContentService {
             throw new ServiceUnavailableException();}
     }
 
-    public Song getSongObjectById(String id) {
-        return songRepository.findById(id).get();
+    public InputStream getSongAudioStream(String songId) {
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        String hdfsPathStr = song.getAudioFilePath();
+        if (hdfsPathStr == null) {
+            throw new RuntimeException("No audio file linked to this song");
+        }
+
+        try {
+            Path path = new Path(hdfsPathStr);
+            if (!fileSystem.exists(path)) {
+                throw new FileNotFoundException("File missing in HDFS: " + hdfsPathStr);
+            }
+
+            return fileSystem.open(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<SongResponse> getSongsInAlbum(String albumId) {

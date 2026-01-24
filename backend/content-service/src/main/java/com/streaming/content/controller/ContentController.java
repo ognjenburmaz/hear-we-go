@@ -2,11 +2,11 @@ package com.streaming.content.controller;
 
 import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.Song;
-import com.streaming.content.service.ArtistService;
-import com.streaming.content.service.ContentService;
+import com.streaming.content.service.*;
+import com.streaming.content.model.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -16,6 +16,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/content")
 @RequiredArgsConstructor
@@ -105,7 +108,7 @@ public class ContentController {
     }
 
     @GetMapping("/songs")
-    public ResponseEntity<java.util.List<com.streaming.common.dto.SongResponse>> getAllSongs() {
+    public ResponseEntity<List<SongResponse>> getAllSongs() {
         return ResponseEntity.ok(contentService.getAllSongs());
     }
 
@@ -115,23 +118,30 @@ public class ContentController {
     }
 
     @GetMapping("/songs/{id}/audio")
-    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) throws IOException {
-        Song song = contentService.getSongObjectById(id);
-        Path path = new Path(song.getAudioFilePath());
+    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) {
+        try {
+            InputStream audioStream = contentService.getSongAudioStream(id);
 
-        if (!hdfs.exists(path)) {
+            StreamingResponseBody responseBody = outputStream -> {
+                try (InputStream is = audioStream) {
+                    is.transferTo(outputStream);
+                } catch (IOException e) {
+                    log.error("Error during HDFS streaming for song {}: {}", id, e.getMessage());
+                }
+            };
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("audio/mpeg"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                    .body(responseBody);
+
+        } catch (RuntimeException e) {
+            log.warn("Song or file not found: {}", e.getMessage());
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("FATAL ERROR streaming song {}: ", id, e);
+            return ResponseEntity.internalServerError().build();
         }
-
-        StreamingResponseBody body = outputStream -> {
-            try (FSDataInputStream in = hdfs.open(path)) {
-                IOUtils.copyBytes(in, outputStream, 8192, false);
-            }
-        };
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.valueOf("audio/mpeg"))
-                .body(body);
     }
 
     @PutMapping("/songs/{id}")

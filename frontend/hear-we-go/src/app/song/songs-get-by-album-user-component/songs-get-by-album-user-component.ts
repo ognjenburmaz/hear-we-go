@@ -35,27 +35,31 @@ export class SongsGetByAlbumUserComponent implements OnInit {
     this.token = localStorage.getItem("authToken");
   }
 
-
-  protected readonly localStorage = localStorage;
-
+  LoadAllSongs(): void {
+    this.service.getAllByAlbum(this.albumId).subscribe({
+      next: (songs) => {
+        this.songs = songs;
+        // Manually tell Angular to update the UI now that we have data
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Error loading songs:", err)
+    });
+  }
 
   FindAlbum() {
     if (this.albumId != null) {
-      this.albumService.getOne(this.albumId).subscribe
-      ({
+      this.albumService.getOne(this.albumId).subscribe({
         next: (album: Album) => {
-
           this.album = album;
-
-          if (this.album != undefined) {
-            this.cdr.detectChanges();
-          }
-          this.cdr.detectChanges();
-
+          this.cdr.detectChanges(); // Update UI for album details
         },
-        error: (_) => console.log("greska")
-      })
+        error: (err) => console.error("Error loading album:", err)
+      });
     }
+  }
+
+  playSong(song: Song): void {
+    this.setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre);
   }
 
   setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string): void {
@@ -74,40 +78,5 @@ export class SongsGetByAlbumUserComponent implements OnInit {
 
 
     return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  LoadAllSongs(): void {
-    this.service.getAllByAlbum(this.albumId).subscribe(songs => {
-      this.songs = songs;
-
-      for (const song of this.songs) {
-        fetch(`/api/content/songs/${song.id}/audio`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          }
-        })
-          .then(res => {
-            if (!res.ok) {
-              console.warn(`Audio not found for song ${song.id}, status: ${res.status}`);
-              this.cdr.detectChanges();
-              return null;
-            }
-            return res.blob();
-          })
-          .then(blob => {
-            if (!blob) return;
-            const url = URL.createObjectURL(blob);
-            const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
-            audio.src = url;
-            // audio.play();
-            this.cdr.detectChanges();
-          })
-          .catch(err => {
-            console.error(`Error fetching audio for song ${song.id}:`, err);
-            this.cdr.detectChanges();
-          });
-      }
-    });
   }
 }
