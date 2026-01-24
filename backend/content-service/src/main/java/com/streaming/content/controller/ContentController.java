@@ -2,7 +2,9 @@ package com.streaming.content.controller;
 
 import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.service.*;
+import com.streaming.content.model.Song;
+import com.streaming.content.service.ArtistService;
+import com.streaming.content.service.ContentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -14,7 +16,6 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -105,7 +105,7 @@ public class ContentController {
     }
 
     @GetMapping("/songs")
-    public ResponseEntity<List<SongResponse>> getAllSongs() {
+    public ResponseEntity<java.util.List<com.streaming.common.dto.SongResponse>> getAllSongs() {
         return ResponseEntity.ok(contentService.getAllSongs());
     }
 

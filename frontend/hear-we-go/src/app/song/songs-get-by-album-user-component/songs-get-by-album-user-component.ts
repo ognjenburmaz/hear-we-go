@@ -36,41 +36,7 @@ export class SongsGetByAlbumUserComponent implements OnInit {
   }
 
 
-  LoadAllSongs(): void {
-    this.service.getAllByAlbum(this.albumId).subscribe(songs => {
-      this.songs = songs;
-
-      for (const song of this.songs) {
-        fetch(`/api/content/songs/${song.id}/audio`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.token}`
-          }
-        })
-          .then(res => {
-            if (!res.ok) {
-              // handle 404 or other errors
-              console.warn(`Audio not found for song ${song.id}, status: ${res.status}`);
-              this.cdr.detectChanges(); // <-- run change detection even on 404
-              return null; // stop processing
-            }
-            return res.blob();
-          })
-          .then(blob => {
-            if (!blob) return; // skip if previous step failed
-            const url = URL.createObjectURL(blob);
-            const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
-            audio.src = url;
-            // audio.play();
-            this.cdr.detectChanges(); // run change detection after setting src
-          })
-          .catch(err => {
-            console.error(`Error fetching audio for song ${song.id}:`, err);
-            this.cdr.detectChanges(); // also run detectChanges on network/fetch errors
-          });
-      }
-    });
-  }
+  protected readonly localStorage = localStorage;
 
 
   FindAlbum() {
@@ -108,5 +74,41 @@ export class SongsGetByAlbumUserComponent implements OnInit {
 
 
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  LoadAllSongs(): void {
+    this.service.getAllByAlbum(this.albumId).subscribe(songs => {
+      this.songs = songs;
+
+      for (const song of this.songs) {
+        fetch(`/api/content/songs/${song.id}/audio`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${this.token}`
+          }
+        })
+          .then(res => {
+            if (!res.ok) {
+              // handle 404 or other errors
+              console.warn(`Audio not found for song ${song.id}, status: ${res.status}`);
+              this.cdr.detectChanges();
+              return null;
+            }
+            return res.blob();
+          })
+          .then(blob => {
+            if (!blob) return; // skip if previous step failed
+            const url = URL.createObjectURL(blob);
+            const audio = document.getElementById(`audioPlayer${song.id}`) as HTMLAudioElement;
+            audio.src = url;
+            // audio.play();
+            this.cdr.detectChanges();
+          })
+          .catch(err => {
+            console.error(`Error fetching audio for song ${song.id}:`, err);
+            this.cdr.detectChanges();
+          });
+      }
+    });
   }
 }
