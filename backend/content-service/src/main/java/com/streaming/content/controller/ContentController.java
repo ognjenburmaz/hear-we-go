@@ -106,8 +106,11 @@ public class ContentController {
     }
 
     @GetMapping("/songs/{id}")
-    public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
-        return ResponseEntity.ok(contentService.getSongById(id));
+    public ResponseEntity<SongResponse> getSongById(
+            @PathVariable String id,
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
+
+        return ResponseEntity.ok(contentService.getSongById(id, userId));
     }
 
     @GetMapping("/songs/{id}/audio")
@@ -145,8 +148,11 @@ public class ContentController {
     }
 
     @GetMapping("/albums/{albumId}/songs")
-    public ResponseEntity<List<SongResponse>> getSongsByAlbum(@PathVariable String albumId) {
-        return ResponseEntity.ok(contentService.getSongsInAlbum(albumId));
+    public ResponseEntity<List<SongResponse>> getSongsByAlbum(
+            @PathVariable String albumId,
+            @RequestHeader(value = "X-User-Id", required = false) String userId) { // DODAJ OVO
+
+        return ResponseEntity.ok(contentService.getSongsInAlbum(albumId, userId)); // PROSLEDI ID
     }
 
     @DeleteMapping("/songs/{id}")

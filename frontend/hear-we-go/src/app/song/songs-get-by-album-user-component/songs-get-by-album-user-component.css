@@ -1,134 +1,92 @@
-.page-wrapper {
-    background-color: #121212;
-    min-height: 100vh;
-    padding: 40px;
-    font-family: 'Inter', sans-serif;
-    color: white;
-}
+/* --- OSNOVNI STILOVI --- */
+.page-wrapper { background-color: #121212; min-height: 100vh; padding: 40px; font-family: 'Inter', sans-serif; color: white; }
+.back-link { color: #e0a800; text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 30px; }
+.album-hero { background: linear-gradient(135deg, #191919 0%, #000 100%); border-left: 5px solid #ffc107; padding: 40px; margin-bottom: 40px; }
+.genre-pill { background: #e0a800; color: black; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; }
+.album-title { font-size: 3.5rem; color: #ffc107; margin: 15px 0; }
+.tracklist-section { max-width: 900px; }
+.section-title { border-bottom: 1px solid #222; padding-bottom: 10px; color:#b3b3b3; }
+.song-item { display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #111; transition: background 0.2s; }
+.song-item:hover { background: #181818; }
+.song-item .play-btn { opacity: 0; padding-left: 10px; padding-bottom: 2px }
+.song-item:hover .play-btn { opacity: 1; }
+.track-index { width: 40px; color: #444; }
+.song-main { flex-grow: 1; display: flex; align-items: center; gap: 15px; }
+.song-name { font-size: 1.1rem; color: white; }
+.song-name-playing { font-size: 1.1rem; color: #e0a800; }
+.song-genre-tag { font-size: 0.7rem; border: 1px solid #e0a800; color: #e0a800; padding: 2px 6px; border-radius: 3px; }
+.song-time { color: #666; font-family: monospace;  }
 
-.back-link {
-    color: #e0a800;
-    text-decoration: none;
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-bottom: 30px;
-}
+.play-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #e0a800; color: #000; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.15s ease, background 0.15s ease; margin-left: 24px; margin-right: 18px }
+.play-btn:hover { transform: scale(1.08); background: #ffc107; }
 
-.album-hero {
-    background: linear-gradient(135deg, #191919 0%, #000 100%);
-    border-left: 5px solid #ffc107;
-    padding: 40px;
-    margin-bottom: 40px;
-}
-
-.genre-pill {
-    background: #e0a800;
-    color: black;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.75rem;
-}
-
-.album-title {
-    font-size: 3.5rem;
-    color: #ffc107;
-    margin: 15px 0;
-}
-
-.tracklist-section {
-    max-width: 900px;
-}
-
-.section-title {
-    border-bottom: 1px solid #222;
-    padding-bottom: 10px;
-    color:#b3b3b3;
-}
-
-.song-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #111;
-    transition: background 0.2s;
-}
-
-.song-item:hover {
-    background: #121212;
-}
-
-.song-item .play-btn {
-  opacity: 0;
-}
-
-.song-item:hover .play-btn {
-  opacity: 1;
-}
-
-.track-index {
-    width: 40px;
-    color: #444;
-}
-
-.song-main {
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.song-name {
-    font-size: 1.1rem;
-    color: white;
-}
-
-.song-name-playing {
-  font-size: 1.1rem;
-  color: green;
-}
-
-.song-genre-tag {
-    font-size: 0.7rem;
-    border: 1px solid #e0a800;
-    color: #e0a800;
-    padding: 2px 6px;
-    border-radius: 3px;
-}
-
-.song-time {
-  color: #666;
-    font-family: monospace;
-  padding-right: 5px;
-}
-
-/* PLAY/PAUSE Button */
-
-.play-btn {
-  width: 36px;
-  height: 36px;
-
-  border-radius: 50%;
-  border: none;
-
-  background: #e0a800;
-  color: #000;
-
-  font-size: 16px;
-  cursor: pointer;
-
+/* --- RATING SISTEM --- */
+.rating-container {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  transition: transform 0.15s ease, background 0.15s ease;
+  padding: 10px 40px 10px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+  z-index: 100;
 }
 
-.play-btn:hover {
-  transform: scale(1.08);
-  background: #ffc107;
+.star-picker {
+  display: none;
+  position: absolute;
+  left: 45px;
+  background: #1a1a1a;
+  padding: 8px 15px;
+  border-radius: 30px;
+  border: 1px solid #ffc107;
+  gap: 5px;
+  z-index: 110;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.9);
 }
 
-.play-btn:active {
-  transform: scale(0.95);
+/* MOSTOVI ZA HOVER */
+.star-picker::before { content: ""; position: absolute; left: -25px; top: 0; width: 25px; height: 100%; background: transparent; }
+.star-picker::after { content: ""; position: absolute; right: -25px; top: 0; width: 25px; height: 100%; background: transparent; }
+
+.rating-container:hover .star-picker,
+.rating-container:has(.spinning) .star-picker,
+.rating-container:has(.breaking) .star-picker {
+  display: flex !important;
 }
+
+/* ZVEZDICE */
+.star-btn { color: #444; font-size: 1.2rem; transition: all 0.2s; cursor: pointer; display: inline-block; }
+.star-btn.active { color: #ffca08 !important; }
+
+/* HOVER LOGIKA BOJA */
+.star-picker:hover .star-btn:not(.active) { color: #444; }
+.star-btn:hover, .star-btn:has(~ .star-btn:hover) {
+  color: #ffc107 !important;
+  transform: scale(1.3);
+}
+
+/* ANIMACIJE */
+@keyframes star-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* --- NOVA ANIMACIJA ZA BRISANJE (X) --- */
+@keyframes star-vanish {
+  0% { transform: scale(1) rotate(0); opacity: 1; }
+  15% { transform: scale(1.4) rotate(-15deg); color: #ff4444 !important; }
+  30% { transform: scale(1.2) rotate(15deg); }
+  45% { transform: scale(1.4) rotate(-15deg); }
+  100% { transform: scale(0) translateY(30px) rotate(45deg); opacity: 0; filter: blur(5px); }
+}
+
+.star-btn.spinning { animation: star-spin 0.5s infinite linear; color: #ffc107 !important; }
+
+/* IZMENJENA BREAKING KLASA */
+.star-btn.breaking {
+  animation: star-vanish 0.7s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* X DUGME */
+.remove-x { color: #ff4444; margin-left: 5px; font-weight: bold; font-size: 1rem; opacity: 0.5; transition: 0.3s; }
+.remove-x:hover { opacity: 1; transform: rotate(90deg) scale(1.2); }
