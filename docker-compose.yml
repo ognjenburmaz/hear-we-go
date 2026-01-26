@@ -38,14 +38,52 @@ services:
       timeout: 5s
       retries: 10
 
+  #  neo4j:
+  #    image: neo4j:latest
+  #    container_name: streaming-neo4j
+  #    ports:
+  #      - "7474:7474"
+  #      - "7687:7687"
+  #    environment:
+  #      - NEO4J_AUTH=none
+  #    networks:
+  #      - streaming-net
+  #
+  #  kafka:
+  #    image: redpandadata/redpanda:latest
+  #    container_name: streaming-kafka
+  #    command:
+  #      - redpanda start
+  #      - --smp 1
+  #      - --memory 512M
+  #      - --overprovisioned
+  #      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
+  #      - --advertise-kafka-addr internal://kafka:9092,external://localhost:29092
+  #      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+  #    ports:
+  #      - "${PORT_KAFKA}:29092"
+  #    networks:
+  #      - streaming-net
+
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5
     container_name: streaming-neo4j
     ports:
-      - "7474:7474"
-      - "7687:7687"
+      - "7474:7474"   # Neo4j Browser
+      - "7687:7687"   # Bolt
     environment:
-      - NEO4J_AUTH=none
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    volumes:
+      - neo4j_data:/data
+      - ./neo4j/init:/init
+    command: >
+      bash -c "
+      neo4j start &&
+      sleep 5 &&
+      cypher-shell -u neo4j -p password < /init/schema.cypher &&
+      tail -f /logs/neo4j.log
+      "
     networks:
       - streaming-net
 
@@ -53,15 +91,19 @@ services:
     image: redpandadata/redpanda:latest
     container_name: streaming-kafka
     command:
-      - redpanda start
-      - --smp 1
-      - --memory 512M
+      - redpanda
+      - start
+      - --smp
+      - "1"
+      - --memory
+      - "512M"
       - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
-      - --advertise-kafka-addr internal://kafka:9092,external://localhost:29092
-      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:29092
+      - --advertise-kafka-addr
+      - internal://streaming-kafka:9092,external://localhost:29092
     ports:
-      - "${PORT_KAFKA}:29092"
+      - "29092:29092"
     networks:
       - streaming-net
 
