@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Album, AlbumService } from '../../services/album-service';
-import { ArtistService } from '../../services/artist-service';
-import { SubRequest, SubscriptionService } from '../../services/subscription-service';
+import {CommonModule} from '@angular/common';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {firstValueFrom} from 'rxjs';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {Album, AlbumService} from '../../services/album-service';
+import {ArtistService} from '../../services/artist-service';
+import {SubRequest, SubscriptionService} from '../../services/subscription-service';
 
 @Component({
   selector: 'app-albums-get-by-artist-component',
@@ -33,7 +33,8 @@ export class AlbumsGetByArtistComponent implements OnInit {
     private artistService: ArtistService,
     private subService: SubscriptionService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -94,19 +95,28 @@ export class AlbumsGetByArtistComponent implements OnInit {
     if (!this.artistId) return;
     try {
       if (this.isArtistSubscribed) {
-        await firstValueFrom(this.subService.unsubscribe(this.artistId));
         this.isArtistSubscribed = false;
+        this.cdr.detectChanges();
+        await firstValueFrom(this.subService.unsubscribe(this.artistId));
       } else {
         const req: SubRequest = {
           targetId: this.artistId,
           targetName: this.artistName,
           type: 'ARTIST'
         };
-        await firstValueFrom(this.subService.subscribe(req));
         this.isArtistSubscribed = true;
+        this.cdr.detectChanges();
+        await firstValueFrom(this.subService.subscribe(req));
       }
       this.cdr.detectChanges();
     } catch (error) {
+      if (this.isArtistSubscribed) {
+        this.isArtistSubscribed = false;
+        this.cdr.detectChanges();
+      } else {
+        this.isArtistSubscribed = true;
+        this.cdr.detectChanges();
+      }
       console.error("Error toggling artist:", error);
     }
   }
