@@ -26,6 +26,9 @@ export class AlbumsGetByArtistComponent implements OnInit {
   uniqueGenres: string[] = [];
   genreSubscriptionStatus: { [genre: string]: boolean } = {};
 
+  subscriptionErrorMessage: string | null = null;
+  private errorTimeout?: number;
+
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -111,9 +114,19 @@ export class AlbumsGetByArtistComponent implements OnInit {
       this.cdr.detectChanges();
     } catch (error) {
       if (this.isArtistSubscribed) {
+
+        this.showSubscriptionError(
+          "Failed to subscribe to an artist, please try again :("
+        );
+
         this.isArtistSubscribed = false;
         this.cdr.detectChanges();
       } else {
+
+        this.showSubscriptionError(
+          "Failed to unsubscribe from an artist, please try again :("
+        );
+
         this.isArtistSubscribed = true;
         this.cdr.detectChanges();
       }
@@ -149,13 +162,35 @@ export class AlbumsGetByArtistComponent implements OnInit {
       this.cdr.detectChanges();
     } catch (error) {
       if (this.genreSubscriptionStatus[genre]) {
+
+        this.showSubscriptionError(
+          "Failed to subscribe to a genre, please try again :("
+        );
+
         this.genreSubscriptionStatus[genre] = false;
-        this.cdr.detectChanges()
+        this.cdr.detectChanges();
       } else {
+
+        this.showSubscriptionError(
+          "Failed to unsubscribe from a genre, please try again :("
+        );
+
         this.genreSubscriptionStatus[genre] = true;
-        this.cdr.detectChanges()
+        this.cdr.detectChanges();
       }
       console.error("Error toggling genre:", error);
     }
   }
+
+  showSubscriptionError(message: string) {
+    this.subscriptionErrorMessage = message;
+    this.cdr.detectChanges()
+
+    clearTimeout(this.errorTimeout);
+    this.errorTimeout = window.setTimeout(() => {
+      this.subscriptionErrorMessage = null;
+      this.cdr.detectChanges();
+    }, 5000);
+  }
+
 }
