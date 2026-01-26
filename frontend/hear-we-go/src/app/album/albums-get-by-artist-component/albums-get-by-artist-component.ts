@@ -128,8 +128,10 @@ export class AlbumsGetByArtistComponent implements OnInit {
     try {
       if (this.genreSubscriptionStatus[genre]) {
         // Unsubscribe
-        await firstValueFrom(this.subService.unsubscribe(genreId));
         this.genreSubscriptionStatus[genre] = false;
+        this.cdr.detectChanges()
+
+        await firstValueFrom(this.subService.unsubscribe(genreId));
         console.log(`Unsubscribed from ${genre}`);
       } else {
         // Subscribe
@@ -138,12 +140,21 @@ export class AlbumsGetByArtistComponent implements OnInit {
           targetName: genre,
           type: 'GENRE'
         };
-        await firstValueFrom(this.subService.subscribe(req));
         this.genreSubscriptionStatus[genre] = true;
+        this.cdr.detectChanges()
+
+        await firstValueFrom(this.subService.subscribe(req));
         console.log(`Subscribed to ${genre}`);
       }
       this.cdr.detectChanges();
     } catch (error) {
+      if (this.genreSubscriptionStatus[genre]) {
+        this.genreSubscriptionStatus[genre] = false;
+        this.cdr.detectChanges()
+      } else {
+        this.genreSubscriptionStatus[genre] = true;
+        this.cdr.detectChanges()
+      }
       console.error("Error toggling genre:", error);
     }
   }
