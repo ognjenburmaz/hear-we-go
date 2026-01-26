@@ -54,3 +54,13 @@
     }
   </div>
 </div>
+@if (subscriptionErrorMessage) {
+  <div [class.hidden]="!subscriptionErrorMessage" class="liquid-error">
+    <div class="error-icon">✕</div>
+    <div class="error-content">
+      <h4>Subscription Error</h4>
+      <p>{{ subscriptionErrorMessage }}</p>
+    </div>
+  </div>
+}
+

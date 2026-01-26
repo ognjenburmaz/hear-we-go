@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { Album, AlbumService } from '../../services/album-service';
-import { ArtistService } from '../../services/artist-service';
-import { SubRequest, SubscriptionService } from '../../services/subscription-service';
+import {CommonModule} from '@angular/common';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {firstValueFrom} from 'rxjs';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {Album, AlbumService} from '../../services/album-service';
+import {ArtistService} from '../../services/artist-service';
+import {SubRequest, SubscriptionService} from '../../services/subscription-service';
 
 @Component({
   selector: 'app-albums-get-by-artist-component',
@@ -26,6 +26,9 @@ export class AlbumsGetByArtistComponent implements OnInit {
   uniqueGenres: string[] = [];
   genreSubscriptionStatus: { [genre: string]: boolean } = {};
 
+  subscriptionErrorMessage: string | null = null;
+  private errorTimeout?: number;
+
   constructor(
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -33,7 +36,8 @@ export class AlbumsGetByArtistComponent implements OnInit {
     private artistService: ArtistService,
     private subService: SubscriptionService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -94,19 +98,38 @@ export class AlbumsGetByArtistComponent implements OnInit {
     if (!this.artistId) return;
     try {
       if (this.isArtistSubscribed) {
-        await firstValueFrom(this.subService.unsubscribe(this.artistId));
         this.isArtistSubscribed = false;
+        this.cdr.detectChanges();
+        await firstValueFrom(this.subService.unsubscribe(this.artistId));
       } else {
         const req: SubRequest = {
           targetId: this.artistId,
           targetName: this.artistName,
           type: 'ARTIST'
         };
-        await firstValueFrom(this.subService.subscribe(req));
         this.isArtistSubscribed = true;
+        this.cdr.detectChanges();
+        await firstValueFrom(this.subService.subscribe(req));
       }
       this.cdr.detectChanges();
     } catch (error) {
+      if (this.isArtistSubscribed) {
+
+        this.showSubscriptionError(
+          "Failed to subscribe to an artist, please try again :("
+        );
+
+        this.isArtistSubscribed = false;
+        this.cdr.detectChanges();
+      } else {
+
+        this.showSubscriptionError(
+          "Failed to unsubscribe from an artist, please try again :("
+        );
+
+        this.isArtistSubscribed = true;
+        this.cdr.detectChanges();
+      }
       console.error("Error toggling artist:", error);
     }
   }
@@ -118,8 +141,10 @@ export class AlbumsGetByArtistComponent implements OnInit {
     try {
       if (this.genreSubscriptionStatus[genre]) {
         // Unsubscribe
-        await firstValueFrom(this.subService.unsubscribe(genreId));
         this.genreSubscriptionStatus[genre] = false;
+        this.cdr.detectChanges()
+
+        await firstValueFrom(this.subService.unsubscribe(genreId));
         console.log(`Unsubscribed from ${genre}`);
       } else {
         // Subscribe
@@ -128,13 +153,44 @@ export class AlbumsGetByArtistComponent implements OnInit {
           targetName: genre,
           type: 'GENRE'
         };
-        await firstValueFrom(this.subService.subscribe(req));
         this.genreSubscriptionStatus[genre] = true;
+        this.cdr.detectChanges()
+
+        await firstValueFrom(this.subService.subscribe(req));
         console.log(`Subscribed to ${genre}`);
       }
       this.cdr.detectChanges();
     } catch (error) {
+      if (this.genreSubscriptionStatus[genre]) {
+
+        this.showSubscriptionError(
+          "Failed to subscribe to a genre, please try again :("
+        );
+
+        this.genreSubscriptionStatus[genre] = false;
+        this.cdr.detectChanges();
+      } else {
+
+        this.showSubscriptionError(
+          "Failed to unsubscribe from a genre, please try again :("
+        );
+
+        this.genreSubscriptionStatus[genre] = true;
+        this.cdr.detectChanges();
+      }
       console.error("Error toggling genre:", error);
     }
   }
+
+  showSubscriptionError(message: string) {
+    this.subscriptionErrorMessage = message;
+    this.cdr.detectChanges()
+
+    clearTimeout(this.errorTimeout);
+    this.errorTimeout = window.setTimeout(() => {
+      this.subscriptionErrorMessage = null;
+      this.cdr.detectChanges();
+    }, 5000);
+  }
+
 }
