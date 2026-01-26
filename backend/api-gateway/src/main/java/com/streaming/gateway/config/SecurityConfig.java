@@ -85,6 +85,8 @@ public class SecurityConfig {
                         .filters(f -> f.dedupeResponseHeader("Access-Control-Allow-Origin", "RETAIN_FIRST")
                                 .dedupeResponseHeader("Access-Control-Allow-Credentials", "RETAIN_FIRST"))
                         .uri("lb://NOTIFICATION-SERVICE"))
+                .route("analytics-service", r -> r.path("/api/analytics/**")
+                        .uri("lb://ANALYTICS-SERVICE"))
                 .build();
     }
 

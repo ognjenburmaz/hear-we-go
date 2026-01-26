@@ -3,6 +3,7 @@ package com.streaming.content.service.impl;
 import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.common.dto.SongResponse;
 import com.streaming.common.event.ContentCreatedEvent;
+import com.streaming.common.event.UserActivityEvent;
 import com.streaming.content.client.RatingClient;
 import com.streaming.content.dto.*;
 import com.streaming.content.model.Album;
@@ -55,6 +56,7 @@ public class ContentServiceImpl implements ContentService {
     private final HdfsStorageService hdfsStorageService;
     private final FileSystem fileSystem;
     private final RatingClient ratingClient;
+    private final KafkaTemplate<String, Object> genericKafkaTemplate;
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
@@ -244,10 +246,17 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
-    public InputStream getSongAudioStream(String songId) {
+    public InputStream getSongAudioStream(String songId, String userId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
-
+        if (userId != null) {
+            UserActivityEvent event = new UserActivityEvent(
+                    userId,
+                    "SONG_LISTENED",
+                    Map.of("songId", songId, "title", song.getTitle())
+            );
+            genericKafkaTemplate.send("user-activities", event);
+        }
         String hdfsPathStr = song.getAudioFilePath();
         if (hdfsPathStr == null) {
             throw new RuntimeException("No audio file linked to this song");

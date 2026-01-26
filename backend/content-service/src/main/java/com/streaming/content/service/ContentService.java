@@ -36,7 +36,7 @@ public interface ContentService {
 
     SongResponse getSongById(String id, String userId);
 
-    InputStream getSongAudioStream(String songId);
+    InputStream getSongAudioStream(String songId, String userId);
 
     List<SongResponse> getAllSongs();
 
