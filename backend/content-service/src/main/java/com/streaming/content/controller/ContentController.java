@@ -114,9 +114,9 @@ public class ContentController {
     }
 
     @GetMapping("/songs/{id}/audio")
-    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) {
+    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id, @RequestHeader("X-User-Id") String userId) {
         try {
-            InputStream audioStream = contentService.getSongAudioStream(id);
+            InputStream audioStream = contentService.getSongAudioStream(id, userId);
 
             StreamingResponseBody responseBody = outputStream -> {
                 try (InputStream is = audioStream) {

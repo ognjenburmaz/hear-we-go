@@ -1,0 +1,65 @@
+<div class="theme-wrapper">
+  <div class="controls-bar">
+    <h2>Dnevnik Aktivnosti</h2>
+    <button class="btn-refresh" (click)="refreshData()" [disabled]="isLoading">
+      <span *ngIf="!isLoading">🔄 Osveži</span>
+      <span *ngIf="isLoading">Učitavanje...</span>
+    </button>
+  </div>
+
+  <div class="dashboard-grid" *ngIf="history.length > 0">
+
+    <div class="history-column">
+      <h3 class="column-title">🎧 Slušanje</h3>
+      <div class="loader-container" *ngIf="isLoading">
+        <div class="loader"></div>
+      </div>
+      <div class="vertical-stack" [class.content-blur]="isLoading">
+        <div *ngFor="let item of listeningHistory" class="compact-card listen-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM.yyyy HH:mm' }}</span>
+          <h4 class="activity-text">{{ getDisplayName(item.payload) }}</h4>
+        </div>
+        <div *ngIf="listeningHistory.length === 0 && !isLoading" class="empty-state-text">Nema pesama.</div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">⭐ Rejtinzi</h3>
+      <div class="loader-container" *ngIf="isLoading">
+        <div class="loader"></div>
+      </div>
+      <div class="vertical-stack" [class.content-blur]="isLoading">
+        <div *ngFor="let item of ratingHistory" class="compact-card interaction-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM.yyyy HH:mm' }}</span>
+          <h4 class="activity-text">{{ getDisplayName(item.payload) }}</h4>
+          <div class="badge-row" *ngIf="item.payload['value']">
+            <span class="mini-badge">Ocena: {{ item.payload['value'] }}</span>
+          </div>
+        </div>
+        <div *ngIf="ratingHistory.length === 0 && !isLoading" class="empty-state-text">Nema rejtinga.</div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">👥 Pratioci</h3>
+      <div class="loader-container" *ngIf="isLoading">
+        <div class="loader"></div>
+      </div>
+      <div class="vertical-stack" [class.content-blur]="isLoading">
+        <div *ngFor="let item of followHistory" class="compact-card system-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM.yyyy HH:mm' }}</span>
+          <h4 class="activity-text">{{ formatEventType(item.eventType) }}</h4>
+          <div class="badge-row">
+            <span class="mini-badge">{{ getDisplayName(item.payload) }}</span>
+          </div>
+        </div>
+        <div *ngIf="followHistory.length === 0 && !isLoading" class="empty-state-text">Nema aktivnosti.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="history.length === 0 && !isLoading" class="subtitle">
+    Vaša istorija aktivnosti je prazna.
+  </div>
+</div>
