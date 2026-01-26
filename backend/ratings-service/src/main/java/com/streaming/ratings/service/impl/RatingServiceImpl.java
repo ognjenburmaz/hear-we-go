@@ -1,6 +1,7 @@
 package com.streaming.ratings.service.impl;
 
 import com.streaming.common.dto.RatingRequest;
+import com.streaming.common.event.UserActivityEvent;
 import com.streaming.common.event.UserRatedEvent;
 import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.ratings.model.Rating;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -26,6 +28,7 @@ public class RatingServiceImpl implements RatingService {
     private final SongValidationService validationService;
     private final KafkaTemplate<String, UserRatedEvent> kafkaTemplate;
     private final RatingStatsRepository statsRepository;
+    private final KafkaTemplate<String, Object> genericKafkaTemplate;
 
     public void addRating(String userId, RatingRequest request) {
         if (!validationService.exists(request.getSongId())) {
@@ -42,8 +45,16 @@ public class RatingServiceImpl implements RatingService {
         );
         repository.save(rating);
 
-        String eventType = existingRating.isPresent() ? "UPDATED" : "RATED";
+        Map<String, Object> payload = Map.of(
+                "songId", request.getSongId(),
+                "value", request.getValue(),
+                "title", "Song ID: " + request.getSongId()
+        );
 
+        UserActivityEvent analyticsEvent = new UserActivityEvent(userId, "RATING_SAVED", payload);
+        genericKafkaTemplate.send("user-activities", analyticsEvent);
+
+        String eventType = existingRating.isPresent() ? "UPDATED" : "RATED";
         UserRatedEvent event = new UserRatedEvent(userId, request.getSongId(), request.getValue(), eventType);
         kafkaTemplate.send("rating-events-topic", event);
 
@@ -53,6 +64,14 @@ public class RatingServiceImpl implements RatingService {
     public void removeRating(String userId, String songId) {
         repository.findBySongIdAndUserId(songId, userId).ifPresent(rating -> {
             repository.delete(rating);
+
+            Map<String, Object> payload = Map.of(
+                    "songId", songId,
+                    "title", "Uklonjena ocena"
+            );
+
+            UserActivityEvent analyticsEvent = new UserActivityEvent(userId, "RATING_REMOVED", payload);
+            genericKafkaTemplate.send("user-activities", analyticsEvent);
 
             UserRatedEvent event = new UserRatedEvent(userId, songId, rating.getValue(), "UNRATED");
             kafkaTemplate.send("rating-events-topic", event);
