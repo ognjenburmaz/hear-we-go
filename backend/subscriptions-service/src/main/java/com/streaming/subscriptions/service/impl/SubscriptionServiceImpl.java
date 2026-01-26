@@ -2,6 +2,7 @@ package com.streaming.subscriptions.service.impl;
 
 import com.streaming.common.event.ContentCreatedEvent;
 import com.streaming.common.event.NotificationDispatchEvent;
+import com.streaming.common.event.UserActivityEvent;
 import com.streaming.subscriptions.dto.SubscriptionRequest;
 import com.streaming.subscriptions.model.TargetSubscriber;
 import com.streaming.subscriptions.model.UserSubscription;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -27,6 +29,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final TargetSubscriberRepository targetRepo;
     private final ContentValidationService validationService;
     private final KafkaTemplate<String, NotificationDispatchEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> genericKafkaTemplate;
 
     @Override
     public void subscribe(String userId, SubscriptionRequest request) {
@@ -56,13 +59,35 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         targetRepo.save(targetSub);
 
         log.info("User {} subscribed to {} ({})", userId, request.getTargetName(), request.getType());
+
+        Map<String, Object> payload = Map.of(
+                "targetId", request.getTargetId(),
+                "targetName", request.getTargetName(),
+                "type", request.getType()
+        );
+        genericKafkaTemplate.send("user-activities", new UserActivityEvent(userId, "SUB_CREATED", payload));
     }
 
     @Override
     public void unsubscribe(String userId, String targetId) {
+        UserSubscription subscription = userRepo.findByUserId(userId).stream()
+                .filter(sub -> sub.getTargetId().equals(targetId))
+                .findFirst()
+                .orElse(null);
+
+        String targetName = (subscription != null) ? subscription.getTargetName() : "Unknown Artist";
+
         userRepo.deleteByUserIdAndTargetId(userId, targetId);
         targetRepo.deleteByTargetIdAndUserId(targetId, userId);
-        log.info("User {} unsubscribed from {}", userId, targetId);
+
+        log.info("User {} unsubscribed from {} ({})", userId, targetName, targetId);
+
+        Map<String, Object> payload = Map.of(
+                "targetId", targetId,
+                "targetName", targetName
+        );
+
+        genericKafkaTemplate.send("user-activities", new UserActivityEvent(userId, "SUB_DELETED", payload));
     }
 
     @Override

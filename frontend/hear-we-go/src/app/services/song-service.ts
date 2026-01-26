@@ -10,6 +10,10 @@ export interface Song {
   durationSeconds: number;
   genre: string;
   albumId: string;
+  averageRating?: number;
+  totalRatings?: number;
+  userRating?: number;
+  isLoading?: boolean;
 }
 @Injectable({
   providedIn: 'root',
@@ -57,20 +61,19 @@ export class SongService {
           );
       }
 
-  getAllByAlbum(albumId: string | null): Observable<Song[]>
-  {
-      return this.http.get<Song[]>(this.apiUrlAlbums+'/'+albumId+'/songs');
-   }
+  getAllByAlbum(albumId: string | null): Observable<Song[]> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('authToken')}`);
+    return this.http.get<Song[]>(`${this.apiUrlAlbums}/${albumId}/songs`, { headers });
+  }
 
-  getAll(): Observable<Song[]>
-         {
+  getAll(): Observable<Song[]> {
              return this.http.get<Song[]>(this.apiUrl);
-         }
+  }
 
-  getOne(id: string): Observable<Song>
-         {
-             return this.http.get<Song>(this.apiUrl+'/'+id);
-         }
+  getOne(id: string): Observable<Song> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${localStorage.getItem('authToken')}`);
+    return this.http.get<Song>(`${this.apiUrl}/${id}`, { headers });
+  }
 
   delete(id: string): Observable<Song>
          {
@@ -90,4 +93,13 @@ export class SongService {
       }
     );
   }
+
+  rateSong(songId: string, value: number): Observable<void> {
+    return this.http.post<void>(`api/ratings`, { songId, value });
+  }
+
+  deleteRating(songId: string): Observable<void> {
+    return this.http.delete<void>(`api/ratings/${songId}`);
+  }
 }
+

@@ -1,7 +1,10 @@
 package com.streaming.content.service.impl;
 
+import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.common.dto.SongResponse;
 import com.streaming.common.event.ContentCreatedEvent;
+import com.streaming.common.event.UserActivityEvent;
+import com.streaming.content.client.RatingClient;
 import com.streaming.content.dto.*;
 import com.streaming.content.model.Album;
 import com.streaming.content.model.Artist;
@@ -14,6 +17,7 @@ import com.streaming.content.service.HdfsStorageService;
 import com.streaming.content.util.ContentMapper;
 import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.fs.Path;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -35,10 +39,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ContentServiceImpl implements ContentService {
 
@@ -49,6 +55,8 @@ public class ContentServiceImpl implements ContentService {
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
     private final FileSystem fileSystem;
+    private final RatingClient ratingClient;
+    private final KafkaTemplate<String, Object> genericKafkaTemplate;
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
@@ -210,21 +218,45 @@ public class ContentServiceImpl implements ContentService {
                 .collect(Collectors.toList());
     }
 
-    public SongResponse getSongById(String id) {
+    public SongResponse getSongById(String id, String userId) {
         try {
             if(Objects.equals(id, "67")) {Thread.sleep(4500);}
             Song song = songRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
-            return mapper.toResponse(song);
+            SongResponse response = mapper.toResponse(song);
+
+            // API COMPOSITION
+            try {
+                RatingStatsDTO stats = ratingClient.getStats(id, userId);
+
+                response.setAverageRating(stats.getAverageRating());
+                response.setTotalRatings(stats.getTotalRatings());
+                response.setUserRating(stats.getUserRating());
+            } catch (Exception e) {
+                log.error("Greška pri dovlačenju rejtinga: {}", e.getMessage());
+                response.setAverageRating(0.0);
+                response.setTotalRatings(0L);
+                response.setUserRating(0);
+            }
+
+            return response;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new ServiceUnavailableException();}
+            throw new ServiceUnavailableException();
+        }
     }
 
-    public InputStream getSongAudioStream(String songId) {
+    public InputStream getSongAudioStream(String songId, String userId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
-
+        if (userId != null) {
+            UserActivityEvent event = new UserActivityEvent(
+                    userId,
+                    "SONG_LISTENED",
+                    Map.of("songId", songId, "title", song.getTitle())
+            );
+            genericKafkaTemplate.send("user-activities", event);
+        }
         String hdfsPathStr = song.getAudioFilePath();
         if (hdfsPathStr == null) {
             throw new RuntimeException("No audio file linked to this song");
@@ -242,11 +274,36 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
-    public List<SongResponse> getSongsInAlbum(String albumId) {
-        return songRepository.findByAlbumId(albumId)
+    public List<SongResponse> getSongsInAlbum(String albumId, String userId) { // DODAJ userId OVDE
+
+        List<SongResponse> responses = songRepository.findByAlbumId(albumId)
                 .stream()
                 .map(mapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
+
+        List<String> songIds = responses.stream()
+                .map(SongResponse::getId)
+                .toList();
+
+        // API Composition
+        try {
+            if (!songIds.isEmpty()) {
+                Map<String, RatingStatsDTO> statsMap = ratingClient.getBulkStats(songIds, userId);
+
+                responses.forEach(res -> {
+                    RatingStatsDTO stats = statsMap.get(res.getId());
+                    if (stats != null) {
+                        res.setAverageRating(stats.getAverageRating());
+                        res.setTotalRatings(stats.getTotalRatings());
+                        res.setUserRating(stats.getUserRating());
+                    }
+                });
+            }
+        } catch (Exception e) {
+            log.error("Failed to fetch ratings for album {}: {}", albumId, e.getMessage());
+        }
+
+        return responses;
     }
 
     private void validateFile(MultipartFile file) {

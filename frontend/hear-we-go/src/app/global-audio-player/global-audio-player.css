@@ -113,6 +113,110 @@
 }
 
 /* Main play button with ring and pulse when playing */
+:root {
+  --bg: #0f0f10;
+  --card: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  --border: rgba(255, 255, 255, 0.04);
+  --accent: #ffc107;
+  --accent-strong: #ffb000;
+  --muted: #9a9a9a;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-2: rgba(255, 255, 255, 0.02);
+  --shadow: 0 10px 30px rgba(3, 3, 3, 0.6);
+}
+
+.audio-player-container {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  pointer-events: none;
+  width: calc(100% - 40px);
+  max-width: 520px;
+}
+
+.audio-player-card {
+  pointer-events: auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 14px 18px;
+  box-shadow: 0 8px 30px rgba(10, 10, 10, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+}
+
+.song-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cover-placeholder {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #222, #111);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  flex: 0 0 46px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.song-title {
+  color: #f8f8f8;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.genre-tag {
+  color: #ffd369;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  color: #d0d0d0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.icon-btn:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+/* --- PLAY BUTTON - BEZ KRUGOVA --- */
 .main-play-btn {
   background: linear-gradient(135deg, #ffffff, #f0f0f0);
   color: #111;
@@ -130,52 +234,19 @@
   transition: transform 0.15s ease, box-shadow 0.15s;
 }
 
-/* subtle lift on hover */
 .main-play-btn:hover {
   transform: translateY(-4px);
 }
 
-/* ring around the button */
-.main-play-btn::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 20%, rgba(255, 200, 90, 0.15), transparent 25%),
-  radial-gradient(circle at 70% 80%, rgba(255, 100, 150, 0.06), transparent 15%);
-  filter: blur(6px);
-  opacity: 0;
-  transition: opacity 0.25s;
-  pointer-events: none;
-}
-
-/* playing state: pulse and glow */
+/* Ovde smo vratili boju, a SKLONILI onaj dosadni krug (::before) */
 .main-play-btn.playing {
   background: linear-gradient(135deg, #ffd369, #ffb347);
   color: #111;
   transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(255, 180, 60, 0.18), 0 4px 10px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 24px rgba(255, 180, 60, 0.3), 0 4px 10px rgba(0, 0, 0, 0.6);
 }
 
-.main-play-btn.playing::before {
-  opacity: 1;
-  animation: pulse-ring 1.8s infinite;
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.9);
-    opacity: 0.8;
-  }
-  70% {
-    transform: scale(1.35);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1.6);
-    opacity: 0;
-  }
-}
+/* NEMA VIŠE pulse-ring ANIMACIJE NI ::BEFORE ELEMENTA */
 
 /* Timeline */
 .timeline-box {
@@ -248,9 +319,9 @@
   top: 50%;
   transform: translateY(-50%);
   height: 6px;
-  background: linear-gradient(90deg, rgba(255, 207, 107, 0.95), rgba(255, 160, 80, 0.85));
+  background: #ffc107;
   border-radius: 999px;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 
