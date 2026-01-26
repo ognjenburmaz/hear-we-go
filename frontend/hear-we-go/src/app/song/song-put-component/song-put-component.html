@@ -7,17 +7,22 @@
       <div class="form-group">
         <label for="title">Naziv</label>
         <input type="text" id="title" name="title" [(ngModel)]="title" class="form-control" required>
+         @if (titleMessage) {
+        <div class="error-message">
+          {{ titleMessage }}
+        </div>
+      }
       </div>
 
       <div class="form-group">
         <label for="genre">Zanr</label>
         <input type="text" id="genre" name="genre" [(ngModel)]="genre" class="form-control" required>
+        @if (genreMessage) {
+        <div class="error-message">
+          {{ genreMessage }}
+        </div>}
       </div>
 
-      <div class="form-group">
-        <label for="releaseDate">Trajanje</label>
-        <input type="number" id="durationSeconds" name="durationSeconds" [(ngModel)]="durationSeconds" class="form-control" required>
-      </div>
 
       <div class="form-group">
         <label for="albumId">Album</label>

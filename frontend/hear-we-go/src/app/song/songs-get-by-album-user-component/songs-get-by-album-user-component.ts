@@ -59,14 +59,15 @@ export class SongsGetByAlbumUserComponent implements OnInit {
   }
 
   playSong(song: Song): void {
-    this.setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre);
+    this.setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre,song.albumId);
   }
 
-  setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string): void {
+  setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string,albumId:string): void {
     localStorage.setItem("currentSongName", name);
     localStorage.setItem("currentSongId", id)
     localStorage.setItem("currentSongDuration", duration as unknown as string)
     localStorage.setItem("currentSongGenre", genre)
+    localStorage.setItem("currentSongAlbumId", albumId)
     this.changeService.requestChange()
   }
 
