@@ -7,6 +7,11 @@
       <div class="form-group">
         <label for="name">Ime</label>
         <input  type="text" id="name" name="name" [(ngModel)]="name" class="form-control" required>
+        @if (imeMessage) {
+        <div class="error-message">
+          {{ imeMessage }}
+        </div>
+      }
       </div>
 
       <div class="form-group">
@@ -17,6 +22,11 @@
       <div class="form-group">
         <label for="genres">Zanrovi</label>
         <input type="text" id="genres" name="genres" [(ngModel)]="genres" class="form-control" required>
+        @if (zanrMessage) {
+        <div class="error-message">
+          {{ zanrMessage }}
+        </div>
+      }
       </div>
 
       @if (errorMessage) {
