@@ -4,8 +4,8 @@
   <thead>
   <tr class="tr-th">
     <th>Email</th>
-    <th>Adresa</th>
-    <th>Status</th>
+    <th>Ime</th>
+    <th>Prezime</th>
     <!--    <th>Datum</th>-->
     <th>Akcija</th>
   </tr>
@@ -16,7 +16,7 @@
         <td>{{ User.email }}</td>
         <td>{{ User.firstName }}</td>
         <td>{{ User.lastName }}</td>
-        <td>
+        <td class="actions-cell">
           @if (User.registrationStatus == "PENDING") {
             <button class="accept" (click)="accept(User.email)" matButton="outlined">Prihvati</button>
             <button class="reject" (click)="reject(User.email)" matButton="outlined">Odbij</button>

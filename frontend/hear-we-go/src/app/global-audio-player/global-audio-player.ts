@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SongChangeService } from '../services/song-change-service';
 import { DatePipe } from '@angular/common';
+import { Song, SongService } from '../services/song-service';
 
 @Component({
   selector: 'app-global-audio-player',
@@ -15,18 +16,21 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
   currentSongName: string | null = null;
   currentSongGenre: string | null = null;
   currentSongId: string | null = null;
+  currentAlbumId: string | null = null;
 
   isPlaying = false;
   currentSeconds = 0;
   duration = 0;
   currentTime = new Date(0);
 
+  songs:Song[]=[];
   private sub!: Subscription;
   private currentBlobUrl?: string;
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private changeService: SongChangeService
+    private changeService: SongChangeService,
+    private songService:SongService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +39,7 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
     this.currentSongName = localStorage.getItem("currentSongName");
     this.currentSongGenre = localStorage.getItem("currentSongGenre");
     const savedDuration = localStorage.getItem("currentSongDuration");
+    this.currentSongId = localStorage.getItem("currentSongAlbumId");
     this.duration = savedDuration ? Number(savedDuration) : 0;
 
     // 2. Link the audio element
@@ -61,6 +66,7 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
       this.currentSongId = localStorage.getItem("currentSongId");
       this.currentSongName = localStorage.getItem("currentSongName");
       this.currentSongGenre = localStorage.getItem("currentSongGenre");
+      this.currentAlbumId = localStorage.getItem("currentSongAlbumId");
       this.loadAndPlaySong();
     });
   }
@@ -100,6 +106,55 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
     this.audio.currentTime = Math.max(0, Math.min(this.audio.currentTime + seconds, this.audio.duration));
   }
 
+  skip(orientation:number)
+  {
+    // 1. Fetch the songs first
+  this.songService.getAllByAlbum(this.currentAlbumId).subscribe({
+    next: (songs) => {
+      this.songs = songs;
+
+      // 2. Find the index of the song currently playing
+      const currentIndex = this.songs.findIndex(s => s.id === this.currentSongId);
+
+      if (currentIndex !== -1) {
+        // 3. Calculate the new index
+        let nextIndex = currentIndex + orientation;
+
+        // 4.  Add wrap-around logic 
+        if (nextIndex >= this.songs.length) {
+          nextIndex = 0; 
+        } else if (nextIndex < 0) {
+          nextIndex = this.songs.length - 1;
+        }
+
+        const targetSong = this.songs[nextIndex];
+
+        // 5. Update the player
+        this.currentSongId = targetSong.id; // Update the ID for the next skip
+        this.setCurrentlyPlayingSong(
+          targetSong.title, 
+          targetSong.id, 
+          targetSong.durationSeconds, 
+          targetSong.genre,
+          targetSong.albumId
+        );
+      }
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => console.error("Error loading songs:", err)
+  });
+  }
+  
+  
+    setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string,albumId:string): void {
+      localStorage.setItem("currentSongName", name);
+      localStorage.setItem("currentSongId", id)
+      localStorage.setItem("currentSongDuration", duration as unknown as string)
+      localStorage.setItem("currentSongGenre", genre)
+      localStorage.setItem("currentSongAlbumId", albumId)
+      this.changeService.requestChange()
+    }
   onSeek(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.audio.currentTime = Number(value);

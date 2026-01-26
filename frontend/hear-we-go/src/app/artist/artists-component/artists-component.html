@@ -4,12 +4,18 @@
     <button class="addArtist" (click)="navigateToAdd()">Dodaj Umetnika</button>
 
     <table  class="table-artists">
+      <colgroup>
+        <col class="col-name">
+        <col class="col-bio">
+        <col class="col-gen">
+        <col class="col-edit">
+      </colgroup>
       <thead>
         <tr class="tr-th">
           <th>Name</th>
           <th>Biography</th>
           <th>Genres</th>
-          <th>Edit</th>
+          <th style="text-align: center;">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -19,7 +25,7 @@
             <td>{{artist.name}}</td>
             <td>{{artist.biography}}</td>
             <td>{{artist.genres.join(', ')}}</td>
-            <td class="table-artists"><button class="editArtist"  [routerLink]="['/artists/put', artist.id]">Izmeni Umetnika</button></td>
+            <td style="text-align: center;"><button class="editArtist"  [routerLink]="['/artists/put', artist.id]">Izmeni Umetnika</button></td>
           </tr>
         }
       </tbody>

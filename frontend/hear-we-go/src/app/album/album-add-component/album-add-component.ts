@@ -19,6 +19,10 @@ export class AlbumAddComponent implements OnInit
     genre!: string;
     artistIds: string[]=[];
     errorMessage:string='';
+    titleMessage:string='';
+    genreMessage:string='';
+    dateMessage:string='';
+    validation:boolean=true;
     artists:Artist[]=[];
     constructor(
       private router: Router,
@@ -49,11 +53,8 @@ export class AlbumAddComponent implements OnInit
     onSubmit(): void {
       this.errorMessage = '';
 
-      if (this.title=='' || this.releaseDate==null || this.genre==''||this.artistIds.length==0) {
-        this.errorMessage = 'Sva polja su obavezna!';
-        return;
-      }
-
+      this.validate()
+      if(this.validation){
        const album: Album ={
            title: this.title.trim(),
             releaseDate:this.releaseDate.trim(),
@@ -69,6 +70,44 @@ export class AlbumAddComponent implements OnInit
                 console.log("Greska!")
               }
             })
+          }
     }
 
+     validate()
+  { 
+
+
+    this.validation = true;
+    this.errorMessage = '';
+    this.titleMessage = '';
+    this.genreMessage = '';
+
+     if (this.title=='' || this.releaseDate==null || this.genre==''||this.artistIds.length==0) {
+        this.errorMessage = 'Sva polja su obavezna!';
+        this.validation=false;
+        
+      }
+
+    const nameRegex = /^[\p{L}\d\s]+$/u;
+    if (!nameRegex.test(this.title)) {
+        this.titleMessage = 'Naziv mora sadržati samo slova i brojeve.';
+        this.validation = false;
+    }
+
+    const genreRegex = /^[\p{L}\d\s]+$/u;
+    
+    if (!genreRegex.test(this.genre)) {
+        this.genreMessage = 'Specijalni karakteri nisu dozvoljeni.';
+        this.validation = false;
+    }
+
+    const inputDate = new Date(this.releaseDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (inputDate > today) {
+        this.dateMessage = 'Datum ne može biti u budućnosti!';
+        this.validation = false;
+    }
+  }
 }
