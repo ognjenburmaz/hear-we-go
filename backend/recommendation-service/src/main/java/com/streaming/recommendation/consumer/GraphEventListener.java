@@ -1,10 +1,12 @@
 package com.streaming.recommendation.consumer;
 
+
 import com.streaming.common.event.ContentCreatedEvent;
 import com.streaming.common.event.UserActivityEvent;
 import lombok.RequiredArgsConstructor;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.Values;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +17,7 @@ public class GraphEventListener {
     private final Driver neo4jDriver;
 
     // ---------------- Content Created ----------------
-    @KafkaListener(topics = "content-created", groupId = "recommendation-service")
+    @KafkaListener(topics = "content-created", groupId = "recommendation-service-v8")
     public void onContentCreated(ContentCreatedEvent e) {
 
         if (!"SONG".equalsIgnoreCase(e.getType())) {
@@ -23,27 +25,30 @@ public class GraphEventListener {
         }
 
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> tx.run(
-                    "MERGE (a:Artist {id: $artistId}) " +
-                            "SET a.name = $artistName " +
-                            "MERGE (g:Genre {name: $genre}) " +
-                            "MERGE (s:Song {id: $songId}) " +
-                            "SET s.title = $title " +
-                            "MERGE (s)-[:BELONGS_TO]->(g) " +
-                            "MERGE (a)-[:CREATED]->(s)",
-                    org.neo4j.driver.Values.parameters(
-                            "artistId", e.getArtistId(),
-                            "artistName", e.getArtistName(),
-                            "genre", e.getGenre(),
-                            "songId", e.getId(),
-                            "title", e.getTitle()
-                    )
-            ));
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MERGE (a:Artist {id: $artistId}) " +
+                                "SET a.name = $artistName " +
+                                "MERGE (g:Genre {name: $genre}) " +
+                                "MERGE (s:Song {id: $songId}) " +
+                                "SET s.title = $title " +
+                                "MERGE (s)-[:BELONGS_TO]->(g) " +
+                                "MERGE (a)-[:CREATED]->(s)",
+                        Values.parameters(
+                                "artistId", e.getArtistId(),
+                                "artistName", e.getArtistName(),
+                                "genre", e.getGenre(),
+                                "songId", e.getId(),
+                                "title", e.getTitle()
+                        )
+                );
+                return null; // Explicitly return null so the Result isn't leaked
+            });
         }
     }
 
     // ---------------- User Activity ----------------
-    @KafkaListener(topics = "user-activity", groupId = "recommendation-service")
+    @KafkaListener(topics = "user-activity", groupId = "recommendation-service-v8")
     public void onUserActivity(UserActivityEvent e) {
 
         switch (e.getEventType()) {
@@ -61,15 +66,18 @@ public class GraphEventListener {
         String genre = (String) e.getPayload().get("genre");
 
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> tx.run(
-                    "MERGE (u:User {id: $userId}) " +
-                            "MERGE (g:Genre {name: $genre}) " +
-                            "MERGE (u)-[:SUBSCRIBED_TO]->(g)",
-                    org.neo4j.driver.Values.parameters(
-                            "userId", e.getUserId(),
-                            "genre", genre
-                    )
-            ));
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MERGE (u:User {id: $userId}) " +
+                                "MERGE (g:Genre {name: $genre}) " +
+                                "MERGE (u)-[:SUBSCRIBED_TO]->(g)",
+                        Values.parameters(
+                                "userId", e.getUserId(),
+                                "genre", genre
+                        )
+                );
+                return null;
+            });
         }
     }
 
@@ -77,33 +85,41 @@ public class GraphEventListener {
         String genre = (String) e.getPayload().get("genre");
 
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> tx.run(
-                    "MATCH (u:User {id: $userId})-[r:SUBSCRIBED_TO]->(g:Genre {name: $genre}) " +
-                            "DELETE r",
-                    org.neo4j.driver.Values.parameters(
-                            "userId", e.getUserId(),
-                            "genre", genre
-                    )
-            ));
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MATCH (u:User {id: $userId})-[r:SUBSCRIBED_TO]->(g:Genre {name: $genre}) " +
+                                "DELETE r",
+                        Values.parameters(
+                                "userId", e.getUserId(),
+                                "genre", genre
+                        )
+                );
+                return null;
+            });
         }
     }
 
     private void handleRated(UserActivityEvent e) {
         String songId = (String) e.getPayload().get("songId");
-        int value = ((Number) e.getPayload().get("value")).intValue();
+        // Safe number handling
+        Object val = e.getPayload().get("value");
+        int value = (val instanceof Number n) ? n.intValue() : 0;
 
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> tx.run(
-                    "MERGE (u:User {id: $userId}) " +
-                            "MERGE (s:Song {id: $songId}) " +
-                            "MERGE (u)-[r:RATED]->(s) " +
-                            "SET r.value = $value",
-                    org.neo4j.driver.Values.parameters(
-                            "userId", e.getUserId(),
-                            "songId", songId,
-                            "value", value
-                    )
-            ));
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MERGE (u:User {id: $userId}) " +
+                                "MERGE (s:Song {id: $songId}) " +
+                                "MERGE (u)-[r:RATED]->(s) " +
+                                "SET r.value = $value",
+                        Values.parameters(
+                                "userId", e.getUserId(),
+                                "songId", songId,
+                                "value", value
+                        )
+                );
+                return null;
+            });
         }
     }
 
@@ -111,14 +127,17 @@ public class GraphEventListener {
         String songId = (String) e.getPayload().get("songId");
 
         try (Session session = neo4jDriver.session()) {
-            session.writeTransaction(tx -> tx.run(
-                    "MATCH (u:User {id: $userId})-[r:RATED]->(s:Song {id: $songId}) " +
-                            "DELETE r",
-                    org.neo4j.driver.Values.parameters(
-                            "userId", e.getUserId(),
-                            "songId", songId
-                    )
-            ));
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MATCH (u:User {id: $userId})-[r:RATED]->(s:Song {id: $songId}) " +
+                                "DELETE r",
+                        Values.parameters(
+                                "userId", e.getUserId(),
+                                "songId", songId
+                        )
+                );
+                return null;
+            });
         }
     }
 }
