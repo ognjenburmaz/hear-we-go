@@ -93,6 +93,18 @@ public class ContentServiceImpl implements ContentService {
                 .collect(Collectors.toList());
     }
 
+    public ArtistAlbumsResponse getArtistWithAlbums(String artistId) {
+        Artist artist = artistRepository.findById(artistId)
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
+
+        List<AlbumResponse> albums = albumRepository.findByArtistIdsContaining(artistId)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return new ArtistAlbumsResponse(artist.getId(), artist.getName(), albums);
+    }
+
     public List<AlbumResponse> getAllAlbums() {
         return albumRepository.findAll()
                 .stream()

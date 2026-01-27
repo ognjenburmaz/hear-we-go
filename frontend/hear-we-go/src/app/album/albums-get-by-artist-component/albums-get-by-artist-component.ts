@@ -50,27 +50,22 @@ export class AlbumsGetByArtistComponent implements OnInit {
   }
 
   async LoadData(artistId: string): Promise<void> {
-    if (artistId != null) {
-      try {
-        const artist = await firstValueFrom(this.artistService.getOne(artistId));
-        this.artistName = artist.name;
+    try {
+      const data = await firstValueFrom(this.service.getArtistAlbums(artistId));
 
-        this.albums = await firstValueFrom(this.service.getAllByArtist(artistId));
+      this.artistName = data.artistName;
+      this.albums = data.albums;
 
-        // 1. Extract unique genres from the albums
-        const allGenres = this.albums.map(a => a.genre).filter(g => !!g);
-        this.uniqueGenres = [...new Set(allGenres)]; // Remove duplicates
+      const allGenres = this.albums.map(a => a.genre).filter(g => !!g);
+      this.uniqueGenres = [...new Set(allGenres)];
 
-        // 2. Initialize status map
-        this.uniqueGenres.forEach(g => this.genreSubscriptionStatus[g] = false);
+      this.uniqueGenres.forEach(g => this.genreSubscriptionStatus[g] = false);
 
-        // 3. Check statuses
-        await this.checkSubscriptionStatus(artistId);
+      await this.checkSubscriptionStatus(artistId);
 
-        this.cdr.detectChanges();
-      } catch (error) {
-        console.error("Error loading data:", error);
-      }
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.error("Error loading artist data:", error);
     }
   }
 
