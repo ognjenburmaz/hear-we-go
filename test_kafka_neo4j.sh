@@ -1,70 +1,46 @@
 #!/bin/bash
 
-# Test script to populate Neo4j via Kafka events
-# Aleksa version – safe ordering
-
-# 0️⃣ Variables
+# 0️⃣ Configuration
 KAFKA_CONTAINER="streaming-kafka"
+NEO4J_CONTAINER="streaming-neo4j"
 CONTENT_TOPIC="content-created"
 USER_ACTIVITY_TOPIC="user-activity"
 
-echo "⏳ Cleaning Neo4j database..."
-docker exec -i streaming-neo4j cypher-shell "MATCH (n) DETACH DELETE n;"
+echo "--------------------------------------------------"
+echo "🧹 1. Cleaning Neo4j Database..."
+docker exec -i $NEO4J_CONTAINER cypher-shell "MATCH (n) DETACH DELETE n;"
 echo "✅ Neo4j cleaned."
 
-sleep 2
-
-# 1️⃣ Produce content-created event
+# 1️⃣ Produce content-created event (One-liner format)
+echo "--------------------------------------------------"
 echo "⏳ Producing content-created event..."
-docker exec -i $KAFKA_CONTAINER rpk topic produce $CONTENT_TOPIC <<'EOF'
-{
-  "id": "song1",
-  "title": "Test Song",
-  "type": "SONG",
-  "artistId": "artist1",
-  "artistName": "Test Artist",
-  "genre": "Rock"
-}
-EOF
+echo '{"id":"song1","title":"Test Song","type":"SONG","artistId":"artist1","artistName":"Test Artist","genre":"Rock"}' | \
+docker exec -i $KAFKA_CONTAINER rpk topic produce $CONTENT_TOPIC
 echo "✅ content-created event sent."
 
 sleep 2
 
-# 2️⃣ Produce user subscribes to genre
-echo "⏳ Producing GENRE_SUBSCRIBED event..."
-docker exec -i $KAFKA_CONTAINER rpk topic produce $USER_ACTIVITY_TOPIC <<'EOF'
-{
-  "userId": "user1",
-  "eventType": "GENRE_SUBSCRIBED",
-  "payload": {
-    "genre": "Rock"
-  }
-}
-EOF
-echo "✅ GENRE_SUBSCRIBED event sent."
-
-sleep 2
-
-# 3️⃣ Produce RATED event
+# 2️⃣ Produce user activity (One-liner format)
+echo "--------------------------------------------------"
 echo "⏳ Producing RATED event..."
-docker exec -i $KAFKA_CONTAINER rpk topic produce $USER_ACTIVITY_TOPIC <<'EOF'
-{
-  "userId": "user1",
-  "eventType": "RATED",
-  "payload": {
-    "songId": "song1",
-    "value": 5
-  }
-}
-EOF
+echo '{"userId":"user1","eventType":"RATED","payload":{"songId":"song1","value":5}}' | \
+docker exec -i $KAFKA_CONTAINER rpk topic produce $USER_ACTIVITY_TOPIC
 echo "✅ RATED event sent."
 
-sleep 2
+echo "--------------------------------------------------"
+echo "⏳ Waiting for Recommendation Service to process (5s)..."
+sleep 5
 
-# 4️⃣ Instructions for Neo4j verification
-echo ""
-echo "🎉 Done producing events."
-echo "Check Neo4j to see nodes and relationships:"
-echo "MATCH (u:User)-[r:RATED]->(s:Song)<-[:CREATED]-(a:Artist),"
-echo "      (s)-[:BELONGS_TO]->(g:Genre)"
-echo "RETURN u, r, s, a, g;"
+# 3️⃣ Verify in Neo4j
+echo "--------------------------------------------------"
+echo "🔍 VERIFYING NEO4J DATA..."
+echo "--------------------------------------------------"
+
+# This query joins User -> Song -> Artist to prove the logic worked
+docker exec -i $NEO4J_CONTAINER cypher-shell --format plain "
+MATCH (u:User {id: 'user1'})-[r:RATED]->(s:Song {id: 'song1'})<-[:CREATED]-(a:Artist)
+RETURN 'SUCCESS: User ' + u.id + ' rated \"' + s.title + '\" (' + r.value + ' stars) by Artist: ' + a.name AS result;
+"
+
+echo "--------------------------------------------------"
+echo "🎉 If you see 'SUCCESS', the JSON truncation is fixed!"
