@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {UserActivity} from '../DTOs/analytics-module';
+import {UserActivity, UserAnalytics} from '../DTOs/analytics-module';
 
 @Injectable({
   providedIn: 'root',
@@ -15,4 +15,9 @@ export class AnalyticsService {
   getUserHistory(): Observable<UserActivity[]> {
     return this.http.get<UserActivity[]>(this.apiUrl + '/history');
   }
+
+  getUserStats(): Observable<UserAnalytics> {
+    return this.http.get<UserAnalytics>(`${this.apiUrl}/stats`);
+  }
+
 }

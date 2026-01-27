@@ -15,6 +15,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ public class RatingServiceImpl implements RatingService {
         }
 
         Optional<Rating> existingRating = repository.findBySongIdAndUserId(request.getSongId(), userId);
+        Integer oldValue = existingRating.map(Rating::getValue).orElse(null);
 
         Rating rating = new Rating(
                 request.getSongId(),
@@ -45,11 +47,11 @@ public class RatingServiceImpl implements RatingService {
         );
         repository.save(rating);
 
-        Map<String, Object> payload = Map.of(
-                "songId", request.getSongId(),
-                "value", request.getValue(),
-                "title", "Song ID: " + request.getSongId()
-        );
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("songId", request.getSongId());
+        payload.put("value", request.getValue());
+        payload.put("oldValue", oldValue);
+        payload.put("title", "Song ID: " + request.getSongId());
 
         UserActivityEvent analyticsEvent = new UserActivityEvent(userId, "RATING_SAVED", payload);
         genericKafkaTemplate.send("user-activities", analyticsEvent);
@@ -67,6 +69,7 @@ public class RatingServiceImpl implements RatingService {
 
             Map<String, Object> payload = Map.of(
                     "songId", songId,
+                    "value", rating.getValue(),
                     "title", "Uklonjena ocena"
             );
 

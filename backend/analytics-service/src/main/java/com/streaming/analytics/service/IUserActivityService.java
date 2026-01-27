@@ -1,6 +1,7 @@
 package com.streaming.analytics.service;
 
 import com.streaming.analytics.dto.UserActivityResponse;
+import com.streaming.analytics.dto.UserAnalyticsResponse;
 import com.streaming.analytics.model.UserActivity;
 import com.streaming.common.event.UserActivityEvent;
 
@@ -17,5 +18,7 @@ public interface IUserActivityService{
     long countActivitiesByUserAndType(String userId, String eventType);
 
     List<Map<String, Object>> getTopArtists(String userId);
+
+    UserAnalyticsResponse getUserAnalytics(String userId);
 }
 

@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -249,14 +250,27 @@ public class ContentServiceImpl implements ContentService {
     public InputStream getSongAudioStream(String songId, String userId) {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
+
         if (userId != null) {
-            UserActivityEvent event = new UserActivityEvent(
-                    userId,
-                    "SONG_LISTENED",
-                    Map.of("songId", songId, "title", song.getTitle())
-            );
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("songId", songId);
+            payload.put("title", song.getTitle());
+            payload.put("genre", song.getGenre() != null ? song.getGenre() : "Unknown");
+
+            List<String> artistNames = song.getArtistIds().stream()
+                    .map(id -> {
+                        return artistRepository.findById(id)
+                                .map(Artist::getName)
+                                .orElse("Nepoznat Izvođač (" + id + ")");
+                    })
+                    .collect(Collectors.toList());
+
+            payload.put("artistNames", artistNames);
+
+            UserActivityEvent event = new UserActivityEvent(userId, "SONG_LISTENED", payload);
             genericKafkaTemplate.send("user-activities", event);
         }
+
         String hdfsPathStr = song.getAudioFilePath();
         if (hdfsPathStr == null) {
             throw new RuntimeException("No audio file linked to this song");
@@ -267,14 +281,13 @@ public class ContentServiceImpl implements ContentService {
             if (!fileSystem.exists(path)) {
                 throw new FileNotFoundException("File missing in HDFS: " + hdfsPathStr);
             }
-
             return fileSystem.open(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<SongResponse> getSongsInAlbum(String albumId, String userId) { // DODAJ userId OVDE
+    public List<SongResponse> getSongsInAlbum(String albumId, String userId) {
 
         List<SongResponse> responses = songRepository.findByAlbumId(albumId)
                 .stream()
