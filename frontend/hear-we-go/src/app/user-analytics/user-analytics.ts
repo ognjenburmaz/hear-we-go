@@ -2,8 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AnalyticsService } from '../services/analytics-service';
 import { UserAnalytics } from '../DTOs/analytics-module';
 import { DecimalPipe, KeyValuePipe, NgForOf, NgIf, UpperCasePipe } from '@angular/common';
-import { delay, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { delay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-analytics',
@@ -29,7 +28,6 @@ export class UserAnalyticsComponent implements OnInit {
     this.loading = true;
     this.cdr.detectChanges();
 
-    // Dodajemo delay od 800ms da bi se animacija lepo videla
     this.analyticsService.getUserStats().pipe(
       delay(800)
     ).subscribe({

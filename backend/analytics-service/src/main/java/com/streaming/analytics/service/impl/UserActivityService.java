@@ -10,12 +10,13 @@ import com.streaming.analytics.repository.UserActivityRepository;
 import com.streaming.analytics.repository.UserAnalyticsRepository;
 import com.streaming.analytics.service.IUserActivityService;
 import com.streaming.common.event.UserActivityEvent;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class UserActivityService implements IUserActivityService {
@@ -39,8 +40,10 @@ public class UserActivityService implements IUserActivityService {
     }
 
     @Override
-    public List<UserActivityResponse> getUserHistory(String userId) {
-        return userActivityRepository.findByUserIdOrderByTimestampDesc(userId)
+    public List<UserActivityResponse> getUserHistory(String userId, List<String> types, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        return userActivityRepository.findByUserIdAndEventTypeInOrderByTimestampDesc(userId, types, pageable)
                 .stream()
                 .map(activity -> new UserActivityResponse(
                         activity.getEventType(),
@@ -69,13 +72,22 @@ public class UserActivityService implements IUserActivityService {
         UserAnalytics stats = analyticsRepository.findById(userId)
                 .orElse(new UserAnalytics());
 
+        Map<String, Long> limitedGenres = stats.getSongsByGenre().entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(10)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new));
+
         return UserAnalyticsResponse.builder()
                 .totalSongsListened(stats.getTotalSongsListened())
                 .subscribedArtistsCount(stats.getSubscribedArtistsCount())
                 .averageRating(stats.getRatingsCount() > 0
                         ? stats.getRatingsSum() / stats.getRatingsCount()
                         : 0.0)
-                .songsByGenre(stats.getSongsByGenre())
+                .songsByGenre(limitedGenres)
                 .top5Artists(stats.getArtistListenCounts().entrySet().stream()
                         .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
                         .limit(5)
