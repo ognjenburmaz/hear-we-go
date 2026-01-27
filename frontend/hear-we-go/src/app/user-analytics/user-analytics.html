@@ -1,0 +1,63 @@
+<div class="theme-wrapper">
+  <div class="controls-bar">
+    <h2 class="glitch-title">SISTEMSKA ANALITIKA</h2>
+    <button class="btn-refresh" (click)="refreshData()" [disabled]="loading">
+      {{ loading ? 'SKENIRAM...' : 'OSVEŽI PODATKE' }}
+    </button>
+  </div>
+
+  <div class="dashboard-grid" *ngIf="stats">
+
+    <div class="history-column">
+      <h3 class="column-title">📈 STATISTIKA</h3>
+      <div class="loader-container" *ngIf="loading"><div class="loader"></div></div>
+      <div class="vertical-stack scrollable" [class.content-blur]="loading">
+        <div class="compact-card glow-hover yellow-border">
+          <h4 class="card-label">UKUPNO ODŠLUŠANO</h4>
+          <span class="stat-number">{{ stats.totalSongsListened }}</span>
+        </div>
+        <div class="compact-card glow-hover yellow-border">
+          <h4 class="card-label">PROSEČNA OCENA</h4>
+          <span class="stat-number">{{ stats.averageRating | number:'1.1-1' }}</span>
+        </div>
+        <div class="compact-card glow-hover yellow-border">
+          <h4 class="card-label">BROJ PRETPLATA</h4>
+          <span class="stat-number">{{ stats.subscribedArtistsCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">🏆 TOP UMETNICI</h3>
+      <div class="loader-container" *ngIf="loading"><div class="loader"></div></div>
+      <div class="vertical-stack scrollable" [class.content-blur]="loading">
+        <div *ngFor="let artist of stats.top5Artists | keyvalue; let i = index" class="compact-card artist-card glow-hover">
+          <div class="rank-badge">{{ i + 1 }}</div>
+          <div class="artist-info">
+            <h4 class="artist-name">{{ artist.key | uppercase }}</h4>
+            <span class="listen-badge">{{ artist.value }} SLUŠANJA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">🎸 ŽANROVI</h3>
+      <div class="loader-container" *ngIf="loading"><div class="loader"></div></div>
+      <div class="vertical-stack scrollable" [class.content-blur]="loading">
+        <div *ngFor="let genre of stats.songsByGenre | keyvalue" class="genre-card glow-hover">
+          <div class="genre-header">
+            <span class="genre-name">{{ genre.key | uppercase }}</span>
+            <span class="genre-count-tag">
+              {{ genre.value }} {{ genre.value === 1 ? 'PESMA' : (genre.value > 1 && genre.value < 5 ? 'PESME' : 'PESAMA') }}
+            </span>
+          </div>
+          <div class="progress-container">
+            <div class="progress-fill" [style.width.%]="(genre.value / (stats.totalSongsListened || 1)) * 100"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
