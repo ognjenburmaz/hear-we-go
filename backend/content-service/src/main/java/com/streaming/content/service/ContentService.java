@@ -43,4 +43,7 @@ public interface ContentService {
     List<SongResponse> getSongsInAlbum(String albumId, String userId);
 
     SearchResponse searchEverything(String query);
+
+    ArtistAlbumsResponse getArtistWithAlbums(String id);
+
 }

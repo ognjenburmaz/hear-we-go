@@ -34,12 +34,15 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // 1. IMMEDIATELY check storage so the player displays on refresh
+    // 1. IMPROVED: Check storage
     this.currentSongId = localStorage.getItem("currentSongId");
     this.currentSongName = localStorage.getItem("currentSongName");
     this.currentSongGenre = localStorage.getItem("currentSongGenre");
+
+    // FIX: Assign to currentAlbumId, NOT currentSongId
+    this.currentAlbumId = localStorage.getItem("currentSongAlbumId");
+
     const savedDuration = localStorage.getItem("currentSongDuration");
-    this.currentSongId = localStorage.getItem("currentSongAlbumId");
     this.duration = savedDuration ? Number(savedDuration) : 0;
 
     // 2. Link the audio element
@@ -120,9 +123,9 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
         // 3. Calculate the new index
         let nextIndex = currentIndex + orientation;
 
-        // 4.  Add wrap-around logic 
+        // 4.  Add wrap-around logic
         if (nextIndex >= this.songs.length) {
-          nextIndex = 0; 
+          nextIndex = 0;
         } else if (nextIndex < 0) {
           nextIndex = this.songs.length - 1;
         }
@@ -132,9 +135,9 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
         // 5. Update the player
         this.currentSongId = targetSong.id; // Update the ID for the next skip
         this.setCurrentlyPlayingSong(
-          targetSong.title, 
-          targetSong.id, 
-          targetSong.durationSeconds, 
+          targetSong.title,
+          targetSong.id,
+          targetSong.durationSeconds,
           targetSong.genre,
           targetSong.albumId
         );
@@ -145,8 +148,8 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
     error: (err) => console.error("Error loading songs:", err)
   });
   }
-  
-  
+
+
     setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string,albumId:string): void {
       localStorage.setItem("currentSongName", name);
       localStorage.setItem("currentSongId", id)
@@ -164,31 +167,30 @@ export class GlobalAudioPlayer implements OnInit, OnDestroy {
     return new Date((seconds || 0) * 1000);
   }
 
-  // Add this method inside your GlobalAudioPlayer class
   closePlayer() {
-    // 1. Stop the audio
     if (this.audio) {
       this.audio.pause();
       this.audio.src = '';
     }
 
-    // 2. Clear Blob URL to free memory
     if (this.currentBlobUrl) {
       URL.revokeObjectURL(this.currentBlobUrl);
       this.currentBlobUrl = undefined;
     }
 
-    // 3. Clear logic state
+    // Clear logic state
     this.currentSongId = null;
     this.currentSongName = null;
     this.currentSongGenre = null;
+    this.currentAlbumId = null; // Clear this too
     this.isPlaying = false;
 
-    // 4. Clear LocalStorage so it doesn't come back on refresh
+    // Clear ALL LocalStorage keys
     localStorage.removeItem("currentSongId");
     localStorage.removeItem("currentSongName");
     localStorage.removeItem("currentSongGenre");
     localStorage.removeItem("currentSongDuration");
+    localStorage.removeItem("currentSongAlbumId"); // FIX: Clear the album ID
 
     this.cdr.detectChanges();
   }
