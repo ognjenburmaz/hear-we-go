@@ -20,13 +20,13 @@ public interface RecommendationRepository extends Neo4jRepository<SongNode, Stri
 
     @Query("""
                 MATCH (u:User {id: $userId})
-                MATCH (s:Song)-[:BELONGS_TO]->(g:Genre)
-                WHERE NOT (u)-[:SUBSCRIBED_TO]->(g)
-                MATCH (other:User)-[r:RATED {value: 5}]->(s)
-                WHERE other.id <> $userId
-                RETURN s
-                ORDER BY COUNT(r) DESC
-                LIMIT 1
+                    MATCH (s:Song)-[:BELONGS_TO]->(g:Genre)
+                    WHERE NOT (u)-[:SUBSCRIBED_TO]->(g)
+                    MATCH (other:User)-[r:RATED {value: 5}]->(s)
+                    WHERE other.id <> $userId
+                    RETURN s, count(r) AS ratingCount
+                    ORDER BY ratingCount DESC
+                    LIMIT 1
             """)
     Optional<SongNode> findTopOutsideGenre(String userId);
 }

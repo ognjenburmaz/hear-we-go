@@ -1,6 +1,7 @@
 package com.streaming.recommendation.controller;
 
 import com.streaming.common.dto.SongResponse;
+import com.streaming.common.event.ContentCreatedEvent;
 import com.streaming.common.event.UserActivityEvent;
 import com.streaming.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +33,42 @@ public class RecommendationController {
         return service.getHomeRecommendations(userId);
     }
 
-    @GetMapping("/send")
+    @GetMapping("/test1")
     public String sendTest() {
+        ContentCreatedEvent event = new ContentCreatedEvent();
+        event.setId("song1");
+        event.setTitle("Test Song");
+        event.setType("SONG");
+        event.setArtistId("artist1");
+        event.setArtistName("Test Artist");
+        event.setGenre("Rock");
+
+        kafkaTemplate.send("content-created", event);
+
+        return "Sent content created event!";
+    }
+
+    @GetMapping("/test2")
+    public String sendTest2() {
         UserActivityEvent event = new UserActivityEvent();
-        event.setUserId("user123");
-        event.setEventType("RATED");
-        event.setPayload(Map.of("songId", "song456", "value", 5));
+        event.setUserId("user1");
+        event.setEventType("GENRE_SUBSCRIBED");
+        event.setPayload(Map.of("genre", "Rock"));
 
         kafkaTemplate.send("user-activity", event);
-        return "Event sent with headers!";
+
+        return "Sent genre subscribed event!";
+    }
+
+    @GetMapping("/test3")
+    public String sendTest3() {
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId("user1");
+        event.setEventType("RATED");
+        event.setPayload(Map.of("songId", "song1", "value", 5));
+
+        kafkaTemplate.send("user-activity", event);
+
+        return "Sent user rating event!";
     }
 }
