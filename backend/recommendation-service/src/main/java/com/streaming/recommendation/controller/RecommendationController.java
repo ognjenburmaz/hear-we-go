@@ -71,4 +71,64 @@ public class RecommendationController {
 
         return "Sent user rating event!";
     }
+
+    @GetMapping("/test-outside-song")
+    public String createOutsideSong() {
+        ContentCreatedEvent event = new ContentCreatedEvent();
+        event.setId("song_outside");
+        event.setTitle("Jazz Banger");
+        event.setType("SONG");
+        event.setArtistId("artist2");
+        event.setArtistName("Jazz Man");
+        event.setGenre("Jazz"); // IMPORTANT: outside genre
+
+        kafkaTemplate.send("content-created", event);
+        return "Created outside-genre song";
+    }
+
+    @GetMapping("/test-user1-subscribe-rock")
+    public String user1SubscribeRock() {
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId("user1");
+        event.setEventType("GENRE_SUBSCRIBED");
+        event.setPayload(Map.of("genre", "Rock"));
+
+        kafkaTemplate.send("user-activity", event);
+        return "User1 subscribed to Rock";
+    }
+
+    @GetMapping("/test-user2-rate")
+    public String user2Rates() {
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId("user2");
+        event.setEventType("RATED");
+        event.setPayload(Map.of("songId", "song_outside", "value", 5));
+
+        kafkaTemplate.send("user-activity", event);
+        return "User2 rated song";
+    }
+
+    @GetMapping("/test-user3-rate")
+    public String user3Rates() {
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId("user3");
+        event.setEventType("RATED");
+        event.setPayload(Map.of("songId", "song_outside", "value", 5));
+
+        kafkaTemplate.send("user-activity", event);
+        return "User3 rated song";
+    }
+
+    @GetMapping("/test-user4-rate")
+    public String user4Rates() {
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId("user4");
+        event.setEventType("RATED");
+        event.setPayload(Map.of("songId", "song_outside", "value", 5));
+
+        kafkaTemplate.send("user-activity", event);
+        return "User4 rated song";
+    }
+
+
 }
