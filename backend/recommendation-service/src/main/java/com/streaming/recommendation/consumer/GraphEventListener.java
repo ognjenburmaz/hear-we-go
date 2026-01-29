@@ -21,7 +21,7 @@ public class GraphEventListener {
     public void onContentCreated(ContentCreatedEvent e) {
 
         if (!"SONG".equalsIgnoreCase(e.getType())) {
-            return; // skip non-song content
+            return;
         }
 
         try (Session session = neo4jDriver.session()) {
@@ -42,12 +42,11 @@ public class GraphEventListener {
                                 "title", e.getTitle()
                         )
                 );
-                return null; // Explicitly return null so the Result isn't leaked
+                return null;
             });
         }
     }
 
-    // ---------------- User Activity ----------------
     @KafkaListener(topics = "user-activity-graph", groupId = "recommendation-service")
     public void onUserActivity(UserActivityEvent e) {
 
@@ -57,7 +56,6 @@ public class GraphEventListener {
             case "RATED" -> handleRated(e);
             case "RATING_REMOVED" -> handleRatingRemoved(e);
             default -> {
-                // ignore other events
             }
         }
     }

@@ -1,10 +1,12 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { AuthService } from '../services/auth.service';
-import { Router, RouterModule } from '@angular/router';
-import { Artist, ArtistService } from '../services/artist-service';
-import { ContentService } from '../services/content-service';
-import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {AuthService} from '../services/auth.service';
+import {Router, RouterModule} from '@angular/router';
+import {Artist, ArtistService} from '../services/artist-service';
+import {ContentService} from '../services/content-service';
+import {debounceTime, distinctUntilChanged, of, Subject, switchMap} from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {Song, SongService} from '../services/song-service';
+import {SongChangeService} from '../services/song-change-service';
 
 @Component({
   selector: 'app-home-page-component',
@@ -20,20 +22,26 @@ export class HomePageComponent implements OnInit {
   searchResults: any = null;
   selectedGenres: string[] = [];
   showGenres: boolean = false;
+  recommendedSongs: Song[] = []
 
   private searchTerms = new Subject<string>();
+  protected readonly localStorage = localStorage;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private service: ArtistService,
-    private contentService: ContentService
-  ) { }
+    private contentService: ContentService,
+    private songService: SongService,
+    private changeService: SongChangeService
+  ) {
+  }
 
   ngOnInit(): void {
     // Prvi load - inicijalizujemo i artiste i listu dugmića (žanrova)
     this.LoadAllArtists(true);
+    this.GetRecommendedSongs(localStorage.getItem("username"))
 
     this.searchTerms.pipe(
       debounceTime(300),
@@ -93,5 +101,35 @@ export class HomePageComponent implements OnInit {
 
   onLogout(): void {
     this.authService.logout();
+  }
+
+  GetRecommendedSongs(username: string | null) {
+    this.songService.getRecommended(username).subscribe({
+      next: (songs: Song[]) => {
+        this.recommendedSongs = songs;
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error("Greška pri učitavanju propruka:", err)
+    });
+  }
+
+  playSong(song: Song): void {
+    this.setCurrentlyPlayingSong(song.title, song.id, song.durationSeconds, song.genre, song.albumId);
+  }
+
+  setCurrentlyPlayingSong(name: string, id: string, duration: number, genre: string, albumId: string): void {
+    localStorage.setItem("currentSongName", name);
+    localStorage.setItem("currentSongId", id)
+    localStorage.setItem("currentSongDuration", duration as unknown as string)
+    localStorage.setItem("currentSongGenre", genre)
+    localStorage.setItem("currentSongAlbumId", albumId)
+    this.changeService.requestChange()
+  }
+
+  formatDuration(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
 }
