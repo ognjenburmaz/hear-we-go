@@ -23,6 +23,7 @@ import {AlbumsGetByArtistComponent} from './album/albums-get-by-artist-component
 import {SongsGetByAlbumUserComponent} from './song/songs-get-by-album-user-component/songs-get-by-album-user-component';
 import {RegistrationRequests} from './registration-requests/registration-requests';
 import {UserHistoryComponent} from './user-history-component/user-history-component';
+import {UserAnalyticsComponent} from './user-analytics/user-analytics';
 
 export const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -64,6 +65,7 @@ export const routes: Routes = [
       {path: 'songs/delete/:id', component: SongDeleteComponent},
 
       {path: 'history', component: UserHistoryComponent},
+      {path: 'analytics', component: UserAnalyticsComponent},
     ]
   },
 

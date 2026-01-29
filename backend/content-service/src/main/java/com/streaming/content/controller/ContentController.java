@@ -61,9 +61,14 @@ public class ContentController {
         return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
+//    @GetMapping("/artists/{artistId}/albums")
+//    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
+//        return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
+//    }
+
     @GetMapping("/artists/{artistId}/albums")
-    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
-        return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
+    public ResponseEntity<ArtistAlbumsResponse> getArtistAlbums(@PathVariable String artistId) {
+        return ResponseEntity.ok(contentService.getArtistWithAlbums(artistId));
     }
     // --- ALBUMS ---
 
