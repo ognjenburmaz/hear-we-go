@@ -11,9 +11,11 @@ public interface RecommendationRepository extends Neo4jRepository<SongNode, Stri
     @Query("""
                 MATCH (u:User {id: $userId})-[:SUBSCRIBED_TO]->(g:Genre)
                 MATCH (s:Song)-[:BELONGS_TO]->(g)
-                OPTIONAL MATCH (u)-[r:RATED]->(s)
-                WHERE r IS NULL OR r.value >= 4
-                RETURN DISTINCT s
+                WHERE NOT EXISTS {
+                    MATCH (u)-[r:RATED]->(s)
+                    WHERE r.value < 4
+                }
+                RETURN s
                 LIMIT 20
             """)
     List<SongNode> findFromSubscribedGenres(String userId);

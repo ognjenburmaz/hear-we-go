@@ -31,10 +31,11 @@ public class KafkaConfig {
         DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
         typeMapper.setTypePrecedence(DefaultJackson2JavaTypeMapper.TypePrecedence.TYPE_ID);
 
+
         // 2. Map Topic/ID to Classes - This tells Kafka exactly which class to use
         Map<String, Class<?>> mappings = new HashMap<>();
-        mappings.put("content-created", ContentCreatedEvent.class);
-        mappings.put("user-activity", UserActivityEvent.class);
+        mappings.put("content-created-topic", ContentCreatedEvent.class);
+        mappings.put("user-activity-graph", UserActivityEvent.class);
         typeMapper.setIdClassMapping(mappings);
 
         // 3. Configure the JsonDeserializer
@@ -50,7 +51,7 @@ public class KafkaConfig {
         // 5. Basic Connection Properties
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "streaming-kafka:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "recommendation-service-v8");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "recommendation-service");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return new DefaultKafkaConsumerFactory<>(

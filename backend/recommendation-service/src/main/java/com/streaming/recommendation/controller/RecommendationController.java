@@ -43,7 +43,7 @@ public class RecommendationController {
         event.setArtistName("Test Artist");
         event.setGenre("Rock");
 
-        kafkaTemplate.send("content-created", event);
+        kafkaTemplate.send("content-created-topic", event);
 
         return "Sent content created event!";
     }
@@ -55,7 +55,7 @@ public class RecommendationController {
         event.setEventType("GENRE_SUBSCRIBED");
         event.setPayload(Map.of("genre", "Rock"));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
 
         return "Sent genre subscribed event!";
     }
@@ -67,7 +67,7 @@ public class RecommendationController {
         event.setEventType("RATED");
         event.setPayload(Map.of("songId", "song1", "value", 5));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
 
         return "Sent user rating event!";
     }
@@ -82,7 +82,7 @@ public class RecommendationController {
         event.setArtistName("Jazz Man");
         event.setGenre("Jazz"); // IMPORTANT: outside genre
 
-        kafkaTemplate.send("content-created", event);
+        kafkaTemplate.send("content-created-topic", event);
         return "Created outside-genre song";
     }
 
@@ -93,7 +93,7 @@ public class RecommendationController {
         event.setEventType("GENRE_SUBSCRIBED");
         event.setPayload(Map.of("genre", "Rock"));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
         return "User1 subscribed to Rock";
     }
 
@@ -104,7 +104,7 @@ public class RecommendationController {
         event.setEventType("RATED");
         event.setPayload(Map.of("songId", "song_outside", "value", 5));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
         return "User2 rated song";
     }
 
@@ -115,7 +115,7 @@ public class RecommendationController {
         event.setEventType("RATED");
         event.setPayload(Map.of("songId", "song_outside", "value", 5));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
         return "User3 rated song";
     }
 
@@ -126,7 +126,7 @@ public class RecommendationController {
         event.setEventType("RATED");
         event.setPayload(Map.of("songId", "song_outside", "value", 5));
 
-        kafkaTemplate.send("user-activity", event);
+        kafkaTemplate.send("user-activity-graph", event);
         return "User4 rated song";
     }
 

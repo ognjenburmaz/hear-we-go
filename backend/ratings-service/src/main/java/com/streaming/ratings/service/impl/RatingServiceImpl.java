@@ -1,9 +1,9 @@
 package com.streaming.ratings.service.impl;
 
 import com.streaming.common.dto.RatingRequest;
+import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.common.event.UserActivityEvent;
 import com.streaming.common.event.UserRatedEvent;
-import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.ratings.model.Rating;
 import com.streaming.ratings.repository.RatingRepository;
 import com.streaming.ratings.repository.RatingStatsRepository;
@@ -15,7 +15,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -58,7 +57,22 @@ public class RatingServiceImpl implements RatingService {
         UserRatedEvent event = new UserRatedEvent(userId, request.getSongId(), request.getValue(), eventType);
         kafkaTemplate.send("rating-events-topic", event);
 
+        if (existingRating.isPresent()) {
+            UserActivityEvent userActivityEvent = new UserActivityEvent();
+            userActivityEvent.setUserId(userId);
+            userActivityEvent.setEventType("RATING_REMOVED");
+            userActivityEvent.setPayload(Map.of("songId", request.getSongId(), "value", -1));
+            genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
+        }
+
+        UserActivityEvent userActivityEvent = new UserActivityEvent();
+        userActivityEvent.setUserId(userId);
+        userActivityEvent.setEventType("RATED");
+        userActivityEvent.setPayload(Map.of("songId", request.getSongId(), "value", request.getValue()));
+        genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
+
         log.info("User {} {} song {} with {}", userId, eventType, request.getSongId(), request.getValue());
+
     }
 
     public void removeRating(String userId, String songId) {
@@ -75,6 +89,12 @@ public class RatingServiceImpl implements RatingService {
 
             UserRatedEvent event = new UserRatedEvent(userId, songId, rating.getValue(), "UNRATED");
             kafkaTemplate.send("rating-events-topic", event);
+
+            UserActivityEvent userActivityEvent = new UserActivityEvent();
+            userActivityEvent.setUserId(userId);
+            userActivityEvent.setEventType("RATING_REMOVED");
+            userActivityEvent.setPayload(Map.of("songId", songId, "value", -1));
+            genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
 
             log.info("User {} removed rating for song {}", userId, songId);
         });

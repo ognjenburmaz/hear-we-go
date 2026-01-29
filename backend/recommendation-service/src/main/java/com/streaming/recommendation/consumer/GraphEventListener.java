@@ -17,7 +17,7 @@ public class GraphEventListener {
     private final Driver neo4jDriver;
 
     // ---------------- Content Created ----------------
-    @KafkaListener(topics = "content-created", groupId = "recommendation-service-v8")
+    @KafkaListener(topics = "content-created-topic", groupId = "recommendation-service")
     public void onContentCreated(ContentCreatedEvent e) {
 
         if (!"SONG".equalsIgnoreCase(e.getType())) {
@@ -48,7 +48,7 @@ public class GraphEventListener {
     }
 
     // ---------------- User Activity ----------------
-    @KafkaListener(topics = "user-activity", groupId = "recommendation-service-v8")
+    @KafkaListener(topics = "user-activity-graph", groupId = "recommendation-service")
     public void onUserActivity(UserActivityEvent e) {
 
         switch (e.getEventType()) {
