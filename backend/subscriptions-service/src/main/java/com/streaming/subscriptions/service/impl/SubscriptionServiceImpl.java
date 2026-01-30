@@ -41,9 +41,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             if (!exists) {
                 throw new IllegalArgumentException("Artist with ID " + request.getTargetId() + " does not exist.");
             }
-        }
-
-        else
+        } else
             request.setTargetId(request.getTargetId().toUpperCase());
 
         if (userRepo.existsByUserIdAndTargetId(userId, request.getTargetId())) {
@@ -66,6 +64,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 "type", request.getType()
         );
         genericKafkaTemplate.send("user-activities", new UserActivityEvent(userId, "SUB_CREATED", payload));
+
+        // Event za graf bazu preporuka
+        if ("GENRE".equalsIgnoreCase(request.getType())) {
+            UserActivityEvent event = new UserActivityEvent();
+            event.setUserId(userId);
+            event.setEventType("GENRE_SUBSCRIBED");
+            event.setPayload(Map.of("genre", request.getTargetName()));
+
+            genericKafkaTemplate.send("user-activity-graph", event);
+        }
     }
 
     @Override
@@ -88,6 +96,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         );
 
         genericKafkaTemplate.send("user-activities", new UserActivityEvent(userId, "SUB_DELETED", payload));
+
+        // Event za graf bazu preporuka
+//        assert subscription != null;
+        if (subscription.getType().equals("GENRE")) {
+            UserActivityEvent event = new UserActivityEvent();
+            event.setUserId(userId);
+            event.setEventType("GENRE_UNSUBSCRIBED");
+            event.setPayload(Map.of("genre", subscription.getTargetName()));
+
+            genericKafkaTemplate.send("user-activity-graph", event);
+        }
     }
 
     @Override

@@ -25,6 +25,7 @@ db1.users.insertMany([
         registrationStatus: "APPROVED"
     },
     {
+        // id: "adminuser",
         username: "admin",
         email: "aleksavelickovic555@gmail.com",
         firstName: "Admin",
