@@ -38,30 +38,70 @@ services:
       timeout: 5s
       retries: 10
 
+  #  neo4j:
+  #    image: neo4j:latest
+  #    container_name: streaming-neo4j
+  #    ports:
+  #      - "7474:7474"
+  #      - "7687:7687"
+  #    environment:
+  #      - NEO4J_AUTH=none
+  #    networks:
+  #      - streaming-net
+  #
+  #  kafka:
+  #    image: redpandadata/redpanda:latest
+  #    container_name: streaming-kafka
+  #    command:
+  #      - redpanda start
+  #      - --smp 1
+  #      - --memory 512M
+  #      - --overprovisioned
+  #      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
+  #      - --advertise-kafka-addr internal://kafka:9092,external://localhost:29092
+  #      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+  #    ports:
+  #      - "${PORT_KAFKA}:29092"
+  #    networks:
+  #      - streaming-net
+
+  # TODO ---------------------------------
+
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5
     container_name: streaming-neo4j
     ports:
       - "7474:7474"
       - "7687:7687"
     environment:
-      - NEO4J_AUTH=none
+      NEO4J_AUTH: none
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    volumes:
+      - neo4j_data:/data
+      - ./neo4j/init:/var/lib/neo4j/import
+    command: [ "/bin/bash", "/var/lib/neo4j/import/init.sh" ]
     networks:
       - streaming-net
+
+
 
   kafka:
     image: redpandadata/redpanda:latest
     container_name: streaming-kafka
     command:
-      - redpanda start
-      - --smp 1
-      - --memory 512M
+      - redpanda
+      - start
+      - --smp
+      - "1"
+      - --memory
+      - "512M"
       - --overprovisioned
-      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:29092
-      - --advertise-kafka-addr internal://kafka:9092,external://localhost:29092
-      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:28082
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:29092
+      - --advertise-kafka-addr
+      - internal://streaming-kafka:9092,external://localhost:29092
     ports:
-      - "${PORT_KAFKA}:29092"
+      - "29092:29092"
     networks:
       - streaming-net
 
@@ -105,35 +145,6 @@ services:
       - streaming-net
     volumes:
       - datanode_data:/hadoop/dfs/data
-
-  #  # One-shot uploader
-  #  hdfs-uploader:
-  #    image: bde2020/hadoop-base:2.0.0-hadoop3.2.1-java8
-  #    container_name: hdfs-uploader
-  #    depends_on:
-  #      - namenode
-  #      - datanode
-  #    environment:
-  #      - CORE_CONF_fs_defaultFS=hdfs://namenode:8020
-  #    volumes:
-  #      - ./sample-mp3s:/local-mp3s:ro
-  #    networks:
-  #      - streaming-net
-  #    entrypoint: [ "/bin/bash", "-c" ]
-  #    command: >
-  #      "
-  #      echo 'Waiting for HDFS...';
-  #      until hdfs dfs -ls / >/dev/null 2>&1; do echo '.'; sleep 5; done;
-  #
-  #      echo 'Creating /music directory';
-  #      hdfs dfs -mkdir -p /music;
-  #
-  #      echo 'Uploading MP3';
-  #      hdfs dfs -put -f /local-mp3s/sample-42s.mp3 /music/sample-42s.mp3;
-  #
-  #      echo 'Done';
-  #      sleep 2
-  #      "
 
   mailhog:
     image: mailhog/mailhog:latest
@@ -335,6 +346,7 @@ volumes:
   mongo_data:
   namenode_data:
   datanode_data:
+  neo4j_data:
 
 networks:
   streaming-net:

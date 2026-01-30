@@ -10,7 +10,7 @@
         <button class="genre-btn"
                 [class.active]="isGenreSelected(genre)"
                 (click)="toggleGenre(genre)">
-          {{genre}}
+          {{ genre }}
         </button>
       }
     </div>
@@ -23,7 +23,7 @@
             <p class="res-label">Artists</p>
             @for (a of searchResults.artists; track a.id) {
               <div class="res-item" [routerLink]="['/home/artists', a.id, 'albums']" (click)="searchResults = null">
-                {{a.name}}
+                {{ a.name }}
               </div>
             }
           }
@@ -31,7 +31,7 @@
             <p class="res-label" style="margin-top: 10px;">Albums</p>
             @for (al of searchResults.albums; track al.id) {
               <div class="res-item" [routerLink]="['/home/albums', al.id, 'songs']" (click)="searchResults = null">
-                {{al.title}}
+                {{ al.title }}
               </div>
             }
           }
@@ -39,7 +39,7 @@
             <p class="res-label" style="margin-top: 10px;">Songs</p>
             @for (s of searchResults.songs; track s.id) {
               <div class="res-item" [routerLink]="['/home/albums', s.albumId, 'songs']" (click)="searchResults = null">
-                {{s.title}} <small style="color: #888;">- {{s.artistName}}</small>
+                {{ s.title }} <small style="color: #888;">- {{ s.artistName }}</small>
               </div>
             }
           }
@@ -51,17 +51,44 @@
   <div class="artist-grid">
     @for (artist of filteredArtists; track artist.id) {
       <div class="artist-card" [routerLink]="['artists/', artist.id, 'albums']">
-        <h2 class="artist-name">{{artist.name}}</h2>
+        <h2 class="artist-name">{{ artist.name }}</h2>
         <div class="genre-container">
           @for (genre of artist.genres; track genre) {
-            <span class="genre-badge">{{genre}}</span>
+            <span class="genre-badge">{{ genre }}</span>
           }
         </div>
         <div class="biography-section">
           <span class="biography-label">Biography</span>
-          <p class="biography-text">{{artist.biography}}</p>
+          <p class="biography-text">{{ artist.biography }}</p>
         </div>
       </div>
     }
   </div>
+  <div class="song-container">
+    <h2 class="list-header">Pesme preporučene za Vas</h2>
+
+    <div class="song-grid">
+      @for (song of recommendedSongs; track song.id) {
+        <div (click)="playSong(song)" class="song-card">
+          <div class="thumbnail">
+            <div class="play-overlay">
+              <span class="material-icons">▶</span>
+            </div>
+          </div>
+
+          <div class="content">
+            <div class="title-row">
+              <span class="song-title">{{ song.title }}</span>
+              <span class="duration">{{ formatDuration(song.durationSeconds) }}</span>
+            </div>
+            <p class="song-genre">{{ song.genre }}</p>
+          </div>
+        </div>
+      } @empty {
+        <p class="no-data">Nema dostupnih pesama.</p>
+      }
+    </div>
+  </div>
 </div>
+
+
