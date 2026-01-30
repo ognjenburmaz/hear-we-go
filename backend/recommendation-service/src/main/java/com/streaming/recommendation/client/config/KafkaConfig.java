@@ -38,7 +38,7 @@ public class KafkaConfig {
         JsonDeserializer<Object> jsonDeserializer = new JsonDeserializer<>();
         jsonDeserializer.setTypeMapper(typeMapper);
         jsonDeserializer.addTrustedPackages("*");
-        jsonDeserializer.setUseTypeHeaders(false); // Critical since we use shell scripts
+        jsonDeserializer.setUseTypeHeaders(false);
 
         ErrorHandlingDeserializer<Object> errorHandlingDeserializer =
                 new ErrorHandlingDeserializer<>(jsonDeserializer);

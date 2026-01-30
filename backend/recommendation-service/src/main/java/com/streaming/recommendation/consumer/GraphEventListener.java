@@ -55,8 +55,23 @@ public class GraphEventListener {
             case "GENRE_UNSUBSCRIBED" -> handleGenreUnsubscribed(e);
             case "RATED" -> handleRated(e);
             case "RATING_REMOVED" -> handleRatingRemoved(e);
+            case "REGISTERED" -> handleUserRegistered(e);
             default -> {
             }
+        }
+    }
+
+    private void handleUserRegistered(UserActivityEvent e) {
+        try (Session session = neo4jDriver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run(
+                        "MERGE (u:User {id: $userId})",
+                        Values.parameters(
+                                "userId", e.getUserId()
+                        )
+                );
+                return null;
+            });
         }
     }
 
