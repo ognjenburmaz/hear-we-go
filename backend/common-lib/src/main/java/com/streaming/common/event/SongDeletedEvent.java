@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SongDeletedEvent {
     private String songId;
+    private String hdfsPath;
 }
