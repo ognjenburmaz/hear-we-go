@@ -1,6 +1,7 @@
 package com.streaming.recommendation.client.config;
 
 import com.streaming.common.event.ContentCreatedEvent;
+import com.streaming.common.event.SongDeletedEvent;
 import com.streaming.common.event.UserActivityEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -32,6 +33,7 @@ public class KafkaConfig {
 
         Map<String, Class<?>> mappings = new HashMap<>();
         mappings.put("content-created-topic", ContentCreatedEvent.class);
+        mappings.put("song-deleted-topic", SongDeletedEvent.class);
         mappings.put("user-activity-graph", UserActivityEvent.class);
         typeMapper.setIdClassMapping(mappings);
 

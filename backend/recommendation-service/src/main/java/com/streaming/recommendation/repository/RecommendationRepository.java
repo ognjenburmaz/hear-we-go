@@ -31,4 +31,7 @@ public interface RecommendationRepository extends Neo4jRepository<SongNode, Stri
                     LIMIT 1
             """)
     Optional<SongNode> findTopOutsideGenre(String userId);
+
+    @Query("MATCH (s:Song {id: $songId}) DETACH DELETE s")
+    void deleteSongNode(String songId);
 }
