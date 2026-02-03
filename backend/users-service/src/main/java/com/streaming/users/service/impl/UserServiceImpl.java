@@ -1,11 +1,13 @@
 package com.streaming.users.service.impl;
 
+import com.streaming.common.event.UserActivityEvent;
 import com.streaming.users.dto.UserRegistrationRequest;
 import com.streaming.users.dto.UserRegistrationResponse;
 import com.streaming.users.model.RegistrationStatus;
 import com.streaming.users.model.User;
 import com.streaming.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserRegistrationResponse registerUser(UserRegistrationRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -46,6 +49,12 @@ public class UserServiceImpl implements UserDetailsService {
         user.setRegistrationStatus(RegistrationStatus.PENDING);
 
         User savedUser = userRepository.save(user);
+
+        UserActivityEvent event = new UserActivityEvent();
+        event.setUserId(user.getUsername());
+        event.setEventType("REGISTERED");
+
+        kafkaTemplate.send("user-activity-graph", event);
 
         return toResponse(savedUser);
     }
@@ -95,5 +104,9 @@ public class UserServiceImpl implements UserDetailsService {
 
     public Optional<User> findByRecoveryHash(UUID recoveryHash) {
         return userRepository.findFirstByRecoveryHash(recoveryHash);
+    }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

@@ -3,6 +3,7 @@ package com.streaming.content.service.impl;
 import com.streaming.common.dto.RatingStatsDTO;
 import com.streaming.common.dto.SongResponse;
 import com.streaming.common.event.ContentCreatedEvent;
+import com.streaming.common.event.SongDeletedEvent;
 import com.streaming.common.event.UserActivityEvent;
 import com.streaming.content.client.RatingClient;
 import com.streaming.content.dto.*;
@@ -51,13 +52,14 @@ public class ContentServiceImpl implements ContentService {
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
     private final ArtistRepository artistRepository;
-    private final KafkaTemplate<String, ContentCreatedEvent> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ContentMapper mapper;
     private final HdfsStorageService hdfsStorageService;
     private final FileSystem fileSystem;
     private final RatingClient ratingClient;
     private final KafkaTemplate<String, Object> genericKafkaTemplate;
     private final RedisTemplate<String, byte[]> redisTemplate;
+  
     private static final String CACHE_PREFIX = "audio_cache::";
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
@@ -92,6 +94,18 @@ public class ContentServiceImpl implements ContentService {
                 .stream()
                 .map(mapper::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public ArtistAlbumsResponse getArtistWithAlbums(String artistId) {
+        Artist artist = artistRepository.findById(artistId)
+                .orElseThrow(() -> new RuntimeException("Artist not found"));
+
+        List<AlbumResponse> albums = albumRepository.findByArtistIdsContaining(artistId)
+                .stream()
+                .map(mapper::toResponse)
+                .collect(Collectors.toList());
+
+        return new ArtistAlbumsResponse(artist.getId(), artist.getName(), albums);
     }
 
     public List<AlbumResponse> getAllAlbums() {
@@ -203,14 +217,21 @@ public class ContentServiceImpl implements ContentService {
         return mapper.toResponse(saved);
     }
 
+    @Transactional
     public void deleteSong(String songId) {
-        if (!songRepository.existsById(songId)) {
-            throw new RuntimeException("Song not found");
+        Song song = songRepository.findById(songId)
+                .orElseThrow(() -> new RuntimeException("Song not found"));
+
+        String hdfsPath = song.getAudioFilePath();
+
+        songRepository.deleteById(songId);
+
+        if (hdfsPath != null) {
+            hdfsStorageService.deleteFile(hdfsPath);
         }
 
-        // REQ 1.14 & 2.13 (SAGA PATTERN START)
-        // 1. Delete locally
-        songRepository.deleteById(songId);
+        log.info("Emitting SongDeletedEvent for ID: {}", songId);
+        kafkaTemplate.send("song-deleted-topic", new SongDeletedEvent(songId, hdfsPath));
     }
 
     public List<SongResponse> getAllSongs() {
@@ -278,7 +299,7 @@ public class ContentServiceImpl implements ContentService {
             payload.put("artistNames", artistNames);
 
             UserActivityEvent event = new UserActivityEvent(userId, "SONG_LISTENED", payload);
-            genericKafkaTemplate.send("user-activities", event);
+            kafkaTemplate.send("user-activities", event);
         }
 
         String hdfsPathStr = song.getAudioFilePath();

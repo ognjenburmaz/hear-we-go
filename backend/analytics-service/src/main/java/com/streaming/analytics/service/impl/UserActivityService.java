@@ -53,7 +53,6 @@ public class UserActivityService implements IUserActivityService {
                 .toList();
     }
 
-   
     public void save(UserActivity userActivity){
         userActivityRepository.save(userActivity);
     }
