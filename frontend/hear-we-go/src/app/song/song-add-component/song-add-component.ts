@@ -19,6 +19,9 @@ export class SongAddComponent implements OnInit {
   genre!: string;
   durationSeconds!: number;
   errorMessage: string = '';
+  titleMessage:string='';
+    genreMessage:string='';
+    validation:boolean=true;
 
   albums: Album[] = [];
 
@@ -62,13 +65,11 @@ export class SongAddComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.errorMessage = '';
+    this.validate()
 
-    if (this.file == null || this.title == '' || this.albumId == '' || this.genre == '' || this.durationSeconds == 0) {
-      this.errorMessage = 'Sva polja su obavezna!';
-      return;
-    }
 
+   
+    if(this.validation && this.file!=null){
 
     const song: Song = {
       title: this.title.trim(),
@@ -92,4 +93,35 @@ export class SongAddComponent implements OnInit {
       }
     })
   }
+  }
+
+   validate()
+  { 
+
+
+    this.validation = true;
+    this.errorMessage = '';
+    this.titleMessage = '';
+    this.genreMessage = '';
+
+     if (this.file == null || this.title == '' || this.albumId == '' || this.genre == '' || this.durationSeconds == 0) {
+      this.errorMessage = 'Sva polja su obavezna!';
+      this.validation=false;
+    }
+
+    const nameRegex = /^[\p{L}\d\s]+$/u;
+    if (!nameRegex.test(this.title)) {
+        this.titleMessage = 'Specijalni karakteri nisu dozvoljeni.';
+        this.validation = false;
+    }
+
+    const genreRegex = /^[\p{L}\d\s]+$/u;
+    
+    if (!genreRegex.test(this.genre)) {
+        this.genreMessage = 'Specijalni karakteri nisu dozvoljeni.';
+        this.validation = false;
+    }
+
+    }
+  
 }

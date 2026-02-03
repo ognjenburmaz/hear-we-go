@@ -34,13 +34,16 @@ public interface ContentService {
 
     void deleteSong(String id);
 
-    SongResponse getSongById(String id);
+    SongResponse getSongById(String id, String userId);
 
-    InputStream getSongAudioStream(String songId);
+    InputStream getSongAudioStream(String songId, String userId);
 
     List<SongResponse> getAllSongs();
 
-    List<SongResponse> getSongsInAlbum(String albumId);
+    List<SongResponse> getSongsInAlbum(String albumId, String userId);
 
     SearchResponse searchEverything(String query);
+
+    ArtistAlbumsResponse getArtistWithAlbums(String id);
+
 }

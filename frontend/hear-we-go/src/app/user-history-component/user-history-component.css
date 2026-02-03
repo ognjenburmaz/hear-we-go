@@ -1,0 +1,221 @@
+/* TVOJ OSNOVNI WRAPPER */
+.theme-wrapper {
+  background-color: #0a0a0a; /* Malo tamnije za bolji kontrast */
+  min-height: 100vh;
+  padding: 40px;
+  font-family: 'Inter', sans-serif;
+  color: #e0e0e0;
+}
+
+/* KONTROLNI BAR I GLAVNO DUGME */
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.glitch-title {
+  color: #ffc107;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.btn-refresh {
+  background: #ffc107;
+  color: #000;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: #fff;
+  transform: translateY(-2px);
+}
+
+/* DASHBOARD GRID */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+/* KOLONE - DODATA FIKSNA VISINA I FLEX */
+.history-column {
+  background: #121212;
+  border-radius: 15px;
+  padding: 20px;
+  height: 650px; /* Fiksna visina za uniformisan izgled */
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.column-title {
+  color: #ffc107;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border-left: 4px solid #ffc107;
+  padding-left: 12px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* SKROL UNUTAR KOLONE */
+.vertical-stack.scrollable {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  flex-grow: 1; /* Popunjava prostor do dugmadi */
+  padding-right: 8px;
+}
+
+/* STILIZACIJA SKROLA */
+.scrollable::-webkit-scrollbar { width: 4px; }
+.scrollable::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+
+/* KARTICE */
+.compact-card {
+  background: #1e1e1e;
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid transparent;
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s;
+}
+
+.compact-card:hover {
+  transform: scale(1.02);
+  background: #252525;
+}
+
+.listen-border { border-left-color: #ffc107; }
+.interaction-border { border-left-color: #e0a800; }
+.system-border { border-left-color: #007bff; }
+
+.time-tag {
+  font-size: 0.7rem;
+  color: #666;
+  position: absolute;
+  top: 10px;
+  right: 12px;
+}
+
+.activity-text {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  padding-right: 50px;
+}
+
+.mini-badge {
+  background: rgba(255, 193, 7, 0.1);
+  color: #ffc107;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  margin-top: 10px;
+  display: inline-block;
+  border: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+/* MINI KONTROLE NA DNU KOLONA */
+.mini-controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 10px;
+  background: #121212; /* Da se ne providi sadržaj dok skroluješ */
+}
+
+.btn-mini {
+  flex: 1;
+  background: transparent;
+  color: #777;
+  border: 1px solid #333;
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: 0.2s;
+  text-transform: uppercase;
+}
+
+.btn-mini.yellow {
+  color: #ffc107;
+  border-color: #ffc107;
+}
+
+.btn-mini:hover:not(:disabled) {
+  background: #333;
+  color: #fff;
+}
+
+.btn-mini.yellow:hover:not(:disabled) {
+  background: #ffc107;
+  color: #000;
+}
+
+/* LOADER I OSTALO */
+.loader-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+
+.loader {
+  border: 3px solid rgba(255, 193, 7, 0.1);
+  border-top: 3px solid #ffc107;
+  border-radius: 50%;
+  width: 35px; height: 35px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+@media (max-width: 1100px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .history-column { height: 500px; }
+}
+/* LOKALNI BLUR ZA SADRŽAJ */
+.content-blur {
+  filter: blur(4px);
+  opacity: 0.3;
+  pointer-events: none; /* Da ne možeš da klikneš ništa dok se učitava */
+  transition: all 0.4s ease-in-out;
+}
+
+/* POZICIONIRANJE LOADERA U CENTAR KOLONE */
+.loader-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 20;
+}
+
+.loader {
+  border: 3px solid rgba(255, 193, 7, 0.1);
+  border-top: 3px solid #ffc107;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  box-shadow: 0 0 15px rgba(255, 193, 7, 0.2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

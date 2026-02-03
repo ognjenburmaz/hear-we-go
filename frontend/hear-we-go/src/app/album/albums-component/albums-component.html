@@ -7,11 +7,10 @@
     <table  class="table-artists">
       <thead>
         <tr class="tr-th">
-          <th>Naziv</th>
-          <th>Zanr</th>
-          <th>Datum Objave</th>
-          <th>Izmeni</th>
-          <th>Pesme</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Release Date</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -21,12 +20,15 @@
             <td>{{album.title}}</td>
             <td>{{album.genre}}</td>
             <td>{{album.releaseDate}}</td>
-            <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/put', album.id]">Izmeni Album</button></td>
-            <td class="table-artists"><button class="editArtist"  [routerLink]="['/albums/', album.id,'songs']">Pesme</button></td>
+            <td class="actions-cell">
+            <button class="editArtist"  [routerLink]="['/albums/put', album.id]">Izmeni Album</button>
+            <button class="editArtist"  [routerLink]="['/albums/', album.id,'songs']">Pesme</button>
+            </td>
           </tr>
         }
       </tbody>
     </table>
   </div>
 </div>
+
 

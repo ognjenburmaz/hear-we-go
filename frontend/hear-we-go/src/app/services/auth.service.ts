@@ -72,6 +72,7 @@ export class AuthService {
           console.log("Login succesful, response from endpoint: " + response);
           console.log("EMAIL: " + response.email)
           localStorage.setItem("email", response.email)
+          localStorage.setItem("username", response.username)
           // this.router.navigate(['/home']);
         }),
         catchError(error => {

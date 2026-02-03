@@ -3,6 +3,7 @@ import { Router, RouterModule ,ActivatedRoute} from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
 import { Artist, ArtistService } from '../../services/artist-service';
+import { validate } from '@angular/forms/signals';
 
 
 @Component({
@@ -16,6 +17,9 @@ export class ArtistPutComponent implements OnInit {
     biography!: string;
     genres: string = '';
     errorMessage:string='';
+    zanrMessage:string='';
+    imeMessage:string='';
+    validation:boolean=true;
     artist: Artist|undefined = undefined;
     artistId: string | null = null;
     artists: Artist[]=[];
@@ -54,10 +58,8 @@ export class ArtistPutComponent implements OnInit {
     onSubmit(): void {
       this.errorMessage = '';
 
-      if (this.name=='' || this.biography=='' || this.genres.length==0) {
-        this.errorMessage = 'Sva polja su obavezna!';
-        return;
-      }
+      this.validate()
+      if(this.validation){
 
       const artist: Artist ={
            name: this.name.trim(),
@@ -74,6 +76,37 @@ export class ArtistPutComponent implements OnInit {
               }
             })
           }
+        }
     }
+
+
+     validate()
+  { 
+
+
+    this.validation = true;
+    this.errorMessage = '';
+    this.imeMessage = '';
+    this.zanrMessage = '';
+
+    if (!this.name || !this.biography || !this.genres || this.genres.length === 0) {
+        this.errorMessage = 'Sva polja su obavezna!';
+        this.validation = false;
+    }
+
+    const nameRegex = /^[\p{L}\d\s]+$/u;
+    if (!nameRegex.test(this.name)) {
+        this.imeMessage = 'Ime mora sadržati samo slova i brojeve.';
+        this.validation = false;
+    }
+
+    const genreRegex = /^[\p{L}\d,\s]+$/u;
+    
+    if (!genreRegex.test(this.genres)) {
+        this.zanrMessage = 'Specijalni karakteri nisu dozvoljeni.';
+        this.validation = false;
+    }
+
+  }
 
 }

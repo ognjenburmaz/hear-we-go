@@ -2,15 +2,12 @@ package com.streaming.content.controller;
 
 import com.streaming.common.dto.SongResponse;
 import com.streaming.content.dto.*;
-import com.streaming.content.model.Song;
-import com.streaming.content.service.*;
+import com.streaming.content.service.ArtistService;
+import com.streaming.content.service.ContentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IOUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -64,9 +61,14 @@ public class ContentController {
         return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
+//    @GetMapping("/artists/{artistId}/albums")
+//    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
+//        return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
+//    }
+
     @GetMapping("/artists/{artistId}/albums")
-    public ResponseEntity<List<AlbumResponse>> getAlbumsByArtist(@PathVariable String artistId) {
-        return ResponseEntity.ok(contentService.getAlbumsByArtist(artistId));
+    public ResponseEntity<ArtistAlbumsResponse> getArtistAlbums(@PathVariable String artistId) {
+        return ResponseEntity.ok(contentService.getArtistWithAlbums(artistId));
     }
     // --- ALBUMS ---
 
@@ -98,7 +100,8 @@ public class ContentController {
     @PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SongResponse> addSong(
             @RequestPart("song") @Valid SongRequest request,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file
+    ) {
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 
@@ -108,14 +111,17 @@ public class ContentController {
     }
 
     @GetMapping("/songs/{id}")
-    public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
-        return ResponseEntity.ok(contentService.getSongById(id));
+    public ResponseEntity<SongResponse> getSongById(
+            @PathVariable String id,
+            @RequestHeader(value = "X-User-Id", required = false) String userId) {
+
+        return ResponseEntity.ok(contentService.getSongById(id, userId));
     }
 
     @GetMapping("/songs/{id}/audio")
-    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id) {
+    public ResponseEntity<StreamingResponseBody> streamAudio(@PathVariable String id, @RequestHeader("X-User-Id") String userId) {
         try {
-            InputStream audioStream = contentService.getSongAudioStream(id);
+            InputStream audioStream = contentService.getSongAudioStream(id, userId);
 
             StreamingResponseBody responseBody = outputStream -> {
                 try (InputStream is = audioStream) {
@@ -147,8 +153,11 @@ public class ContentController {
     }
 
     @GetMapping("/albums/{albumId}/songs")
-    public ResponseEntity<List<SongResponse>> getSongsByAlbum(@PathVariable String albumId) {
-        return ResponseEntity.ok(contentService.getSongsInAlbum(albumId));
+    public ResponseEntity<List<SongResponse>> getSongsByAlbum(
+            @PathVariable String albumId,
+            @RequestHeader(value = "X-User-Id", required = false) String userId) { // DODAJ OVO
+
+        return ResponseEntity.ok(contentService.getSongsInAlbum(albumId, userId)); // PROSLEDI ID
     }
 
     @DeleteMapping("/songs/{id}")

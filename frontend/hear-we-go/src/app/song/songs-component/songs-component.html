@@ -20,8 +20,10 @@
             <td>{{song.title}}</td>
             <td>{{song.genre}}</td>
             <td>{{song.durationSeconds}}</td>
-            <td class="table-songs"><button class="editSong"  [routerLink]="['/songs/put', song.id]">Izmeni Pesmu</button>
-            <button class="editSong" [routerLink]="['/songs/delete', song.id]" >Obrisi Pesmu</button></td>
+            <td class="actions-cell">
+            <button class="editSong"  [routerLink]="['/songs/put', song.id]">Izmeni Pesmu</button>
+            <button class="editSong" [routerLink]="['/songs/delete', song.id]" >Obrisi Pesmu</button>
+          </td>
           </tr>
         }
       </tbody>

@@ -1,0 +1,72 @@
+<div class="theme-wrapper">
+  <div class="controls-bar">
+    <h2 class="glitch-title">DNEVNIK AKTIVNOSTI</h2>
+    <button class="btn-refresh" (click)="refreshData()" [disabled]="loadingL || loadingR || loadingF">
+      {{ (loadingL || loadingR || loadingF) ? 'SKENIRAM...' : '🔄 OSVEŽI SVE' }}
+    </button>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="history-column">
+      <h3 class="column-title">🎧 SLUŠANJE</h3>
+
+      <div class="loader-container" *ngIf="loadingL">
+        <div class="loader"></div>
+      </div>
+
+      <div class="vertical-stack scrollable" [class.content-blur]="loadingL">
+        <div *ngFor="let item of listeningHistory" class="compact-card listen-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM HH:mm' }}</span>
+          <h4 class="activity-text">{{ getDisplayName(item.payload) | uppercase }}</h4>
+        </div>
+
+        <div class="mini-controls" *ngIf="!loadingL">
+          <button class="btn-mini" (click)="lessL()" *ngIf="listeningHistory.length > 10">MANJE</button>
+          <button class="btn-mini yellow" (click)="moreL()" *ngIf="hasMoreL">VIŠE</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">⭐ REJTINZI</h3>
+
+      <div class="loader-container" *ngIf="loadingR">
+        <div class="loader"></div>
+      </div>
+
+      <div class="vertical-stack scrollable" [class.content-blur]="loadingR">
+        <div *ngFor="let item of ratingHistory" class="compact-card interaction-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM HH:mm' }}</span>
+          <h4 class="activity-text">{{ getDisplayName(item.payload) | uppercase }}</h4>
+          <span class="mini-badge" *ngIf="item.payload['value']">OCENA: {{ item.payload['value'] }}</span>
+        </div>
+
+        <div class="mini-controls" *ngIf="!loadingR">
+          <button class="btn-mini" (click)="lessR()" *ngIf="ratingHistory.length > 10">MANJE</button>
+          <button class="btn-mini yellow" (click)="moreR()" *ngIf="hasMoreR">VIŠE</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="history-column">
+      <h3 class="column-title">👥 PRATIOCI</h3>
+
+      <div class="loader-container" *ngIf="loadingF">
+        <div class="loader"></div>
+      </div>
+
+      <div class="vertical-stack scrollable" [class.content-blur]="loadingF">
+        <div *ngFor="let item of followHistory" class="compact-card system-border">
+          <span class="time-tag">{{ item.timestamp | date:'dd.MM HH:mm' }}</span>
+          <h4 class="activity-text">{{ formatEventType(item.eventType) | uppercase }}</h4>
+          <span class="mini-badge">{{ getDisplayName(item.payload) | uppercase }}</span>
+        </div>
+
+        <div class="mini-controls" *ngIf="!loadingF">
+          <button class="btn-mini" (click)="lessF()" *ngIf="followHistory.length > 10">MANJE</button>
+          <button class="btn-mini yellow" (click)="moreF()" *ngIf="hasMoreF">VIŠE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

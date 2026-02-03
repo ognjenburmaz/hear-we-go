@@ -1,5 +1,4 @@
 <div class="page-wrapper">
-
   @if (album) {
     <div class="album-hero">
       <div class="album-meta">
@@ -16,13 +15,35 @@
       @for (song of songs; track song.id; let i = $index) {
         <div class="song-item">
           <span class="track-index">{{ i + 1 }}</span>
+
           <div class="song-main">
-            <span class="song-name">{{ song.title }}</span>
+            @if (song.title == localStorage.getItem("currentSongName")) {
+              <span class="song-name-playing">{{ song.title }}</span>
+            } @else {
+              <span class="song-name">{{ song.title }}</span>
+            }
+
+            <div class="rating-container">
+              <div class="stats-info">
+                <span class="current-avg">★ {{ song.averageRating?.toFixed(1) || '0.0' }}</span>
+                <span class="total-votes">👤 {{ song.totalRatings || 0 }}</span>
+              </div>
+
+              <div class="star-picker">
+                @for (v of [1,2,3,4,5]; track v) {
+                  <span class="star-btn"
+                        [class.active]="v <= (song.userRating || 0)"
+                        [class.spinning]="song.isLoading && isChanging(song, v)"
+                        (click)="rate(song, v)">★</span>
+                }
+                <span class="remove-x" (click)="removeRating(song)">✕</span>
+              </div>
+            </div>
+
             <span class="song-genre-tag">{{ song.genre }}</span>
           </div>
-          <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
 
-          <!-- Call playSong directly -->
+          <span class="song-time">{{ formatDuration(song.durationSeconds) }}</span>
           <button class="play-btn" (click)="playSong(song)"> ▶ </button>
         </div>
       }

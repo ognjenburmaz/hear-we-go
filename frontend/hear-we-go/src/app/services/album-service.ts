@@ -11,6 +11,12 @@ export interface Album {
   genre: string;
   artistIds:string[];
 }
+
+export interface AlbumWithArtistName {
+  artistId: string;
+  artistName: string;
+  albums: Album[];
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -57,16 +63,20 @@ export class AlbumService {
             })
           );
       }
-       getAll() :Observable<Album[]> 
+       getAll() :Observable<Album[]>
       {
           return this.http.get<Album[]>(this.apiUrl);
-       } 
-       getAllByArtist(artistId:string) :Observable<Album[]>
-         {
-             return this.http.get<Album[]>(this.apiUrlArtists+'/'+artistId+'/albums');
-          }
-      getOne(id:string) :Observable<Album> 
+       }
+       // getAllByArtist(artistId:string) :Observable<Album[]>
+       //   {
+       //       return this.http.get<Album[]>(this.apiUrlArtists+'/'+artistId+'/albums');
+       //    }
+      getOne(id:string) :Observable<Album>
       {
           return this.http.get<Album>(this.apiUrl+'/'+id);
-       } 
+       }
+
+  getArtistAlbums(artistId: string) :Observable<AlbumWithArtistName> {
+    return this.http.get<AlbumWithArtistName>(this.apiUrlArtists+'/'+artistId+'/albums');
+  }
 }

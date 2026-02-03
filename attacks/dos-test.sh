@@ -1,11 +1,11 @@
 #!/bin/bash
 
 URL="https://localhost:8080/api/content/songs"
-TOKEN="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsImNyZWF0ZWQiOjE3Njg0MjA3MzYyMjMsImV4cCI6MTc2ODQyNDMzNn0.DjcgGJuA5JWPviHhw_Cq4NIvWDAoeQtbhtHID6AUaMM"
+TOKEN="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsImNyZWF0ZWQiOjE3NzAwODQwODE4MzcsImV4cCI6MTc3MDA4NzY4MX0.0n5TG3WunAZQl3L8D7n7M2mgc3CIXXKpLOeIOQYx8Wk"
 
-echo "Launching 10 parallel requests..."
+echo "Launching 1000 parallel requests..."
 
-for i in {1..10}
+for i in {1..2000}
 do
    # The '&' at the end makes it run in background (Parallel)
    curl -k -s -o /dev/null -w "Request $i: %{http_code}\n" \

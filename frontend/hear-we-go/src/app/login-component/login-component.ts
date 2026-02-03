@@ -56,9 +56,13 @@ export class LoginComponent {
             this.errorMessage = 'Vas zahtev za registraciju je odbijen :(';
             break;
 
-          // case 'RESET_TOO_SOON':
-          //   this.errorMessage = 'Ne mozete resetovati lozinku vise od jedanput dnevno!';
-          //   break;
+          case 'WRONG_CREDENTIALS':
+            this.errorMessage = 'Pogresna lozinka ili korisnicko ime!';
+            break;
+
+          case 'LOCKED_ACCOUNT':
+            this.errorMessage = 'Vas nalog je zakljucan zbog prevelikog broja neuspelih pokusaja prijave, molimo Vas promenite Vasu lozinku!'
+            break
 
           default:
             this.errorMessage = 'Nesto je poslo po zlu :(';

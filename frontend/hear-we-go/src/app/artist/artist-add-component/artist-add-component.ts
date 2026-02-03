@@ -18,6 +18,10 @@ export class ArtistAddComponent
     biography!: string;
     genres: string='';
     errorMessage:string='';
+    zanrMessage:string='';
+    imeMessage:string='';
+
+    validation:boolean=true;
 
     constructor(
       private router: Router,
@@ -27,13 +31,9 @@ export class ArtistAddComponent
 
     onSubmit(): void {
       this.errorMessage = '';
+      this.validate()
 
-      if (this.name=='' || this.biography=='' || this.genres.length==0) {
-        this.errorMessage = 'Sva polja su obavezna!';
-        return;
-      }
-
-
+      if(this.validation){
     const artist: Artist ={
      name: this.name.trim(),
       biography:this.biography.trim(),
@@ -48,6 +48,36 @@ export class ArtistAddComponent
           console.log("Greska!")
         }
       })
+    }
+  }
+
+  validate()
+  { 
+
+
+    this.validation = true;
+    this.errorMessage = '';
+    this.imeMessage = '';
+    this.zanrMessage = '';
+
+    if (!this.name || !this.biography || !this.genres || this.genres.length === 0) {
+        this.errorMessage = 'Sva polja su obavezna!';
+        this.validation = false;
+    }
+
+    const nameRegex = /^[\p{L}\d\s]+$/u;
+    if (!nameRegex.test(this.name)) {
+        this.imeMessage = 'Ime mora sadržati samo slova i brojeve.';
+        this.validation = false;
+    }
+
+    const genreRegex = /^[\p{L}\d,\s]+$/u;
+    
+    if (!genreRegex.test(this.genres)) {
+        this.zanrMessage = 'Specijalni karakteri nisu dozvoljeni.';
+        this.validation = false;
+    }
+
   }
 
 }

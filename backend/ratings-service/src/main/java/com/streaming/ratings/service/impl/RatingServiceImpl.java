@@ -1,9 +1,12 @@
 package com.streaming.ratings.service.impl;
 
 import com.streaming.common.dto.RatingRequest;
+import com.streaming.common.dto.RatingStatsDTO;
+import com.streaming.common.event.UserActivityEvent;
 import com.streaming.common.event.UserRatedEvent;
 import com.streaming.ratings.model.Rating;
 import com.streaming.ratings.repository.RatingRepository;
+import com.streaming.ratings.repository.RatingStatsRepository;
 import com.streaming.ratings.service.RatingService;
 import com.streaming.ratings.service.SongValidationService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,11 +28,16 @@ public class RatingServiceImpl implements RatingService {
     private final RatingRepository repository;
     private final SongValidationService validationService;
     private final KafkaTemplate<String, UserRatedEvent> kafkaTemplate;
+    private final RatingStatsRepository statsRepository;
+    private final KafkaTemplate<String, Object> genericKafkaTemplate;
 
     public void addRating(String userId, RatingRequest request) {
         if (!validationService.exists(request.getSongId())) {
             throw new IllegalArgumentException("Song does not exist: " + request.getSongId());
         }
+
+        Optional<Rating> existingRating = repository.findBySongIdAndUserId(request.getSongId(), userId);
+        Integer oldValue = existingRating.map(Rating::getValue).orElse(null);
 
         Rating rating = new Rating(
                 request.getSongId(),
@@ -35,27 +47,82 @@ public class RatingServiceImpl implements RatingService {
         );
         repository.save(rating);
 
-        UserRatedEvent event = new UserRatedEvent(userId, request.getSongId(), request.getValue(), "RATED");
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("songId", request.getSongId());
+        payload.put("value", request.getValue());
+        payload.put("oldValue", oldValue);
+        payload.put("title", "Song ID: " + request.getSongId());
+
+        UserActivityEvent analyticsEvent = new UserActivityEvent(userId, "RATING_SAVED", payload);
+        genericKafkaTemplate.send("user-activities", analyticsEvent);
+
+        String eventType = existingRating.isPresent() ? "UPDATED" : "RATED";
+        UserRatedEvent event = new UserRatedEvent(userId, request.getSongId(), request.getValue(), eventType);
         kafkaTemplate.send("rating-events-topic", event);
 
-        log.info("User {} rated song {} with {}", userId, request.getSongId(), request.getValue());
+        if (existingRating.isPresent()) {
+            UserActivityEvent userActivityEvent = new UserActivityEvent();
+            userActivityEvent.setUserId(userId);
+            userActivityEvent.setEventType("RATING_REMOVED");
+            userActivityEvent.setPayload(Map.of("songId", request.getSongId(), "value", -1));
+            genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
+        }
+
+        UserActivityEvent userActivityEvent = new UserActivityEvent();
+        userActivityEvent.setUserId(userId);
+        userActivityEvent.setEventType("RATED");
+        userActivityEvent.setPayload(Map.of("songId", request.getSongId(), "value", request.getValue()));
+        genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
+
+        log.info("User {} {} song {} with {}", userId, eventType, request.getSongId(), request.getValue());
+
     }
 
     public void removeRating(String userId, String songId) {
-        if (repository.findBySongIdAndUserId(songId, userId).isPresent()) {
-            repository.deleteById(songId);
+        repository.findBySongIdAndUserId(songId, userId).ifPresent(rating -> {
+            repository.delete(rating);
 
-            UserRatedEvent event = new UserRatedEvent(userId, songId, 0, "UNRATED");
+            Map<String, Object> payload = Map.of(
+                    "songId", songId,
+                    "value", rating.getValue(),
+                    "title", "Uklonjena ocena"
+            );
+
+            UserActivityEvent analyticsEvent = new UserActivityEvent(userId, "RATING_REMOVED", payload);
+            genericKafkaTemplate.send("user-activities", analyticsEvent);
+
+            UserRatedEvent event = new UserRatedEvent(userId, songId, rating.getValue(), "UNRATED");
             kafkaTemplate.send("rating-events-topic", event);
-        }
+
+            UserActivityEvent userActivityEvent = new UserActivityEvent();
+            userActivityEvent.setUserId(userId);
+            userActivityEvent.setEventType("RATING_REMOVED");
+            userActivityEvent.setPayload(Map.of("songId", songId, "value", -1));
+            genericKafkaTemplate.send("user-activity-graph", userActivityEvent);
+
+            log.info("User {} removed rating for song {}", userId, songId);
+        });
     }
 
     public void deleteSpecific(String userId, String songId) {
-        repository.findBySongIdAndUserId(songId, userId).ifPresent(repository::delete);
+        removeRating(userId, songId);
     }
 
     public void deleteAllRatingsForSong(String songId) {
         repository.deleteBySongId(songId);
         log.info("SAGA: Deleted all ratings for song {}", songId);
+    }
+
+    public RatingStatsDTO getStatsForSong(String songId, String userId) {
+        RatingStatsDTO dto = statsRepository.findById(songId)
+                .map(s -> new RatingStatsDTO(s.getAverageRating(), (long) s.getTotalRatings(), 0)) // dodaj nulu za sad
+                .orElse(new RatingStatsDTO(0.0, 0L, 0));
+
+        if (userId != null) {
+            repository.findBySongIdAndUserId(songId, userId)
+                    .ifPresent(r -> dto.setUserRating(r.getValue()));
+        }
+
+        return dto;
     }
 }
