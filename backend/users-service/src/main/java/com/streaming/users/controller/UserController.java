@@ -121,6 +121,16 @@ public class UserController {
                     )
             );
         } catch (BadCredentialsException ex) {
+            Optional<User> atteptedLogin = userServiceImpl.findByUsername(authRequest.getUsername());
+            if (atteptedLogin.isPresent()) {
+                User atteptedLoginUser = atteptedLogin.get();
+                atteptedLoginUser.setFailedLoginAttempts(atteptedLoginUser.getFailedLoginAttempts() + 1);
+                if (atteptedLoginUser.getFailedLoginAttempts() > 3) {
+                    atteptedLoginUser.setRegistrationStatus(RegistrationStatus.LOCKED);
+                }
+                userServiceImpl.save(atteptedLoginUser);
+            }
+
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
@@ -131,6 +141,16 @@ public class UserController {
 
 
         User user = userServiceImpl.getUserEntity(authRequest.getUsername());
+
+
+        if (user.getRegistrationStatus().equals(RegistrationStatus.LOCKED)) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "code", "LOCKED_ACCOUNT",
+                            "message", "Your account has been locked due to too many failed login attempts!"
+                    ));
+        }
 
         if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
             return ResponseEntity
@@ -262,6 +282,8 @@ public class UserController {
             user.setPasswordHash(passwordEncoder.encode(newPassword));
             user.setRecoveryHash(null);
             user.setLastPasswordReset(LocalDateTime.now());
+            user.setFailedLoginAttempts(0);
+            user.setRegistrationStatus(RegistrationStatus.APPROVED);
             userServiceImpl.save(user);
             return ResponseEntity.ok(null);
         } else {

@@ -60,6 +60,10 @@ export class LoginComponent {
             this.errorMessage = 'Pogresna lozinka ili korisnicko ime!';
             break;
 
+          case 'LOCKED_ACCOUNT':
+            this.errorMessage = 'Vas nalog je zakljucan zbog prevelikog broja neuspelih pokusaja prijave, molimo Vas promenite Vasu lozinku!'
+            break
+
           default:
             this.errorMessage = 'Nesto je poslo po zlu :(';
         }

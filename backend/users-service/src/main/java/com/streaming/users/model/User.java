@@ -25,4 +25,5 @@ public class User {
     private boolean active;
     private LocalDateTime lastPasswordReset;
     private RegistrationStatus registrationStatus;
+    private int failedLoginAttempts;
 }
