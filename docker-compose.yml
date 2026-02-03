@@ -21,6 +21,7 @@ services:
     container_name: streaming-redis
     ports:
       - "${PORT_REDIS}:6379"
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
     networks:
       - streaming-net
 
