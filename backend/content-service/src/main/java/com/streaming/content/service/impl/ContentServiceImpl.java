@@ -26,6 +26,7 @@ import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +34,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.hadoop.fs.FileSystem;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +57,8 @@ public class ContentServiceImpl implements ContentService {
     private final FileSystem fileSystem;
     private final RatingClient ratingClient;
     private final KafkaTemplate<String, Object> genericKafkaTemplate;
+    private final RedisTemplate<String, byte[]> redisTemplate;
+    private static final String CACHE_PREFIX = "audio_cache::";
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
     private static final List<String> ALLOWED_EXTENSIONS = List.of(".mp3", ".wav", ".ogg");
@@ -251,6 +252,15 @@ public class ContentServiceImpl implements ContentService {
         Song song = songRepository.findById(songId)
                 .orElseThrow(() -> new RuntimeException("Song not found"));
 
+        String cacheKey = CACHE_PREFIX + songId;
+        byte[] cachedAudio = redisTemplate.opsForValue().get(cacheKey);
+
+        if (cachedAudio != null) {
+            log.info("Serving from Redis cache: {}", songId);
+
+            return new ByteArrayInputStream(cachedAudio);
+        }
+
         if (userId != null) {
             Map<String, Object> payload = new HashMap<>();
             payload.put("songId", songId);
@@ -281,7 +291,14 @@ public class ContentServiceImpl implements ContentService {
             if (!fileSystem.exists(path)) {
                 throw new FileNotFoundException("File missing in HDFS: " + hdfsPathStr);
             }
-            return fileSystem.open(path);
+            try (InputStream hdfsStream = fileSystem.open(path)) {
+                byte[] audioBytes = hdfsStream.readAllBytes();
+
+                redisTemplate.opsForValue().set(cacheKey, audioBytes, Duration.ofHours(24));
+                log.info("Saved to Redis cache: {}", songId);
+
+                return new ByteArrayInputStream(audioBytes);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -53,16 +53,7 @@ public class UserActivityService implements IUserActivityService {
                 .toList();
     }
 
-    @Override
-    public long countActivitiesByUserAndType(String userId, String eventType) {
-        return 0;
-    }
-
-    @Override
-    public List<Map<String, Object>> getTopArtists(String userId) {
-        return List.of();
-    }
-
+   
     public void save(UserActivity userActivity){
         userActivityRepository.save(userActivity);
     }
