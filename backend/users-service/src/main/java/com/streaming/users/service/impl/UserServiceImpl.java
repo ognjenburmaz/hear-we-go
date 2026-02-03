@@ -105,4 +105,8 @@ public class UserServiceImpl implements UserDetailsService {
     public Optional<User> findByRecoveryHash(UUID recoveryHash) {
         return userRepository.findFirstByRecoveryHash(recoveryHash);
     }
+
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 }
