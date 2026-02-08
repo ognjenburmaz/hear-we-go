@@ -9,8 +9,10 @@ import com.streaming.users.service.impl.OtpService;
 import com.streaming.users.service.impl.UserServiceImpl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -45,6 +48,8 @@ public class UserController {
     private OtpService otpService;
     @Autowired
     private JavaMailSender mailSender;
+
+//    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request) {
@@ -110,7 +115,7 @@ public class UserController {
 
 
     @PostMapping("/login/psw")
-    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest, HttpServletRequest request) {
         // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
         try {
@@ -129,6 +134,7 @@ public class UserController {
                     atteptedLoginUser.setRegistrationStatus(RegistrationStatus.LOCKED);
                 }
                 userServiceImpl.save(atteptedLoginUser);
+                log.warn("Login failed: username={}, ip={}, reason={}", atteptedLoginUser.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
             }
 
             return ResponseEntity
@@ -195,6 +201,12 @@ public class UserController {
 
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setEmail(user.getEmail());
+
+        log.info(
+                "Login successful: userId={}, ip={}",
+                user.getId(),
+                request.getRemoteAddr()
+        );
 
         return ResponseEntity.ok(emailDTO);
     }
