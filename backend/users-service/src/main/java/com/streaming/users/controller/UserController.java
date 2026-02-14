@@ -134,9 +134,9 @@ public class UserController {
                     atteptedLoginUser.setRegistrationStatus(RegistrationStatus.LOCKED);
                 }
                 userServiceImpl.save(atteptedLoginUser);
-                log.warn("Login failed: username={}, ip={}, reason={}", atteptedLoginUser.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
-            }
 
+            }
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
