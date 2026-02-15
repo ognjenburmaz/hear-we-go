@@ -5,10 +5,6 @@
         <http>
             <url>http://loki:3100/loki/api/v1/push</url>
         </http>
-        <batching>
-            <maxMessages>1</maxMessages>
-            <maxTimeoutMs>500</maxTimeoutMs>
-        </batching>
         <format>
             <label>
                 <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
@@ -22,7 +18,14 @@
         </format>
     </appender>
 
-    <root level="INFO">
+    <root level="OFF">
         <appender-ref ref="LOKI"/>
     </root>
+
+    <logger name="com.streaming.users.controller.UserController" level="INFO"/>
+
+    <logger name="com.streaming.users.security.JwtFilter" level="INFO"/>
+
+    <logger name="com.streaming.users.exception.GlobalExceptionHandler" level="INFO"/>
+
 </configuration>
