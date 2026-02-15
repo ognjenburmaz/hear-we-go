@@ -86,7 +86,7 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-
+        log.info("Account registration request accepted for {}", email);
         return ResponseEntity.ok(user);
     }
 
@@ -109,7 +109,7 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-
+        log.info("Account registration request rejected for {}", email);
         return ResponseEntity.ok(user);
     }
 
@@ -207,7 +207,7 @@ public class UserController {
         emailDTO.setEmail(user.getEmail());
 
         log.info(
-                "Login successful: userId={}, ip={}",
+                "Password login successful: userId={}, ip={}",
                 user.getId(),
                 request.getRemoteAddr()
         );
@@ -216,7 +216,7 @@ public class UserController {
     }
 
     @PostMapping("/login/otp")
-    public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest, HttpServletRequest request) {
         // TODO nek ovde vraca neki UserDTO (ili u login/psw?)
 
         Authentication authentication =
@@ -232,6 +232,11 @@ public class UserController {
 
         String jwt = tokenUtils.generateToken(user.getUsername(), user.getRole());
 
+        log.info(
+                "OTP login successful: userId={}, ip={}",
+                user.getId(),
+                request.getRemoteAddr()
+        );
         return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, tokenUtils.getExpiredIn()));
     }
 

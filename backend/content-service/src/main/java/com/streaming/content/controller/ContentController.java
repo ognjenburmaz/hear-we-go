@@ -35,6 +35,7 @@ public class ContentController {
 
     @PostMapping("/artists")
     public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request) {
+        log.info("Artist created!, Name: {}", request.getName());
         return ResponseEntity.ok(artistService.createArtist(request));
     }
 
@@ -58,6 +59,7 @@ public class ContentController {
     public ResponseEntity<ArtistResponse> updateArtist(
             @PathVariable String id,
             @RequestBody @Valid ArtistRequest request) {
+        log.info("Artist Updated!, New name is: {}", request.getName());
         return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
@@ -74,6 +76,7 @@ public class ContentController {
 
     @PostMapping("/albums")
     public ResponseEntity<AlbumResponse> createAlbum(@RequestBody @Valid AlbumRequest request) {
+        log.info("Album created!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.createAlbum(request));
     }
 
@@ -91,6 +94,7 @@ public class ContentController {
     public ResponseEntity<AlbumResponse> updateAlbum(
             @PathVariable String id,
             @RequestBody @Valid AlbumRequest request) {
+        log.info("Album updated!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.updateAlbum(id, request));
     }
 
@@ -102,6 +106,7 @@ public class ContentController {
             @RequestPart("song") @Valid SongRequest request,
             @RequestPart("file") MultipartFile file
     ) {
+        log.info("Song created!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 
@@ -149,6 +154,7 @@ public class ContentController {
     public ResponseEntity<SongResponse> updateSong(
             @PathVariable String id,
             @RequestBody @Valid SongRequest request) {
+        log.info("Song updated!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.updateSong(id, request));
     }
 
@@ -162,6 +168,7 @@ public class ContentController {
 
     @DeleteMapping("/songs/{id}")
     public ResponseEntity<Void> deleteSong(@PathVariable String id) {
+        log.info("Song deleted!, ID: {}", id);
         contentService.deleteSong(id);
         return ResponseEntity.noContent().build();
     }

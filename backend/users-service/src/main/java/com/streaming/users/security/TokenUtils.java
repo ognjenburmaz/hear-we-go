@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class TokenUtils {
 
@@ -62,6 +64,9 @@ public class TokenUtils {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String email = getEmailFromToken(token);
+        if (isTokenExpired(token)) {
+            log.warn("JWT Token --- {} --- expired at {}", token, this.getExpirationDateFromToken(token));
+        }
         return email.equals(userDetails.getUsername())
                 && !isTokenExpired(token);
     }

@@ -1,0 +1,31 @@
+<configuration>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://loki:3100/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
+            </label>
+            <message class="com.github.loki4j.logback.JsonLayout">
+                <timestampFieldName>time</timestampFieldName>
+                <messageFormatter class="com.github.loki4j.logback.MessageFormatter">
+                    <pattern>%msg %nopex</pattern>
+                </messageFormatter>
+            </message>
+        </format>
+    </appender>
+
+    <root level="OFF">
+        <appender-ref ref="LOKI"/>
+    </root>
+
+    <logger name="com.streaming.content.controller.ContentController" level="INFO"/>
+
+    <logger name="com.streaming.users.security.JwtFilter" level="INFO"/>
+
+    <logger name="com.streaming.users.exception.GlobalExceptionHandler" level="INFO"/>
+
+</configuration>
