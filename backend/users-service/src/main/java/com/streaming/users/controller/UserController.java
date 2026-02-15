@@ -150,6 +150,7 @@ public class UserController {
 
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.LOCKED)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "LOCKED_ACCOUNT");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -159,6 +160,7 @@ public class UserController {
         }
 
         if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "PASSWORD_TOO_OLD");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -168,6 +170,7 @@ public class UserController {
         }
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "PENDING_REGISTRATION");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -177,6 +180,7 @@ public class UserController {
         }
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "DENIED_REGISTRATION");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
