@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -34,7 +37,23 @@ public class ContentController {
 // --- ARTISTS ---
 
     @PostMapping("/artists")
-    public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request) {
+    public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to create artist '{}' failed. Errors: {}",
+                    request.getName(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
         log.info("Artist created!, Name: {}", request.getName());
         return ResponseEntity.ok(artistService.createArtist(request));
     }
