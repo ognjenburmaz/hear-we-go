@@ -5,6 +5,8 @@
         <http>
             <url>http://loki:3100/loki/api/v1/push</url>
         </http>
+        <batchMaxItems>3</batchMaxItems>
+        <batchTimeoutMs>500</batchTimeoutMs>
         <format>
             <label>
                 <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
@@ -12,22 +14,46 @@
             <message class="com.github.loki4j.logback.JsonLayout">
                 <timestampFieldName>time</timestampFieldName>
                 <messageFormatter class="com.github.loki4j.logback.MessageFormatter">
-                    <pattern>%msg %nopex</pattern>
+                    <pattern>%msg</pattern>
                 </messageFormatter>
             </message>
         </format>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>message.contains("Failed to close channel")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>logger.contains("NioEndpoint.certificate")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>logger.contains("NioEndpoint.handshake")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>ACCEPT</OnMatch>
+        </filter>
     </appender>
 
-    <logger name="org.springframework.cloud.gateway" level="OFF"/>
-    <logger name="org.springframework.http.server.reactive" level="OFF"/>
-    <logger name="org.springframework.web.reactive" level="OFF"/>
-    <logger name="reactor.netty" level="OFF"/>
+    <logger name="org.springframework" level="OFF"/>
+    <logger name="org.apache.catalina" level="OFF"/>
 
-    <root level="OFF">
+    <logger name="org.apache.tomcat.util.net.NioEndpoint.handshake" level="DEBUG"/>
+    <logger name="org.apache.tomcat.util.net.NioEndpoint.certificate" level="OFF"/>
+    <logger name="org.apache.tomcat.util.net.NioEndpoint" level="OFF"/>
+
+    <logger name="com.streaming.gateway.config" level="WARN"/>
+
+    <root level="WARN">
         <appender-ref ref="LOKI"/>
     </root>
-
-    <logger name="com.streaming.gateway.config.AccessControlLoggingFilter" level="WARN"/>
-    <logger name="com.streaming.gateway.config.SecurityConfig" level="WARN"/>
-
 </configuration>

@@ -5,6 +5,8 @@
         <http>
             <url>http://loki:3100/loki/api/v1/push</url>
         </http>
+        <batchMaxItems>3</batchMaxItems>
+        <batchTimeoutMs>500</batchTimeoutMs>
         <format>
             <label>
                 <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
