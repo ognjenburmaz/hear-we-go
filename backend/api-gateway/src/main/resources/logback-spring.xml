@@ -1,0 +1,72 @@
+<configuration>
+    <springProperty scope="context" name="appName" source="spring.application.name"/>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://loki:3100/loki/api/v1/push</url>
+        </http>
+        <batchMaxItems>3</batchMaxItems>
+        <batchTimeoutMs>500</batchTimeoutMs>
+        <format>
+            <label>
+                <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
+            </label>
+            <message class="com.github.loki4j.logback.JsonLayout">
+                <timestampFieldName>time</timestampFieldName>
+                <messageFormatter class="com.github.loki4j.logback.MessageFormatter">
+                    <pattern>%msg</pattern>
+                </messageFormatter>
+            </message>
+        </format>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>message.contains("Failed to close channel")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>logger.contains("NioEndpoint.certificate")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>logger.contains("NioEndpoint.handshake")</expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>ACCEPT</OnMatch>
+        </filter>
+    </appender>
+
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>logs/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>100MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.springframework" level="OFF"/>
+    <logger name="org.apache.catalina" level="OFF"/>
+
+    <logger name="org.apache.tomcat.util.net.NioEndpoint.handshake" level="DEBUG"/>
+    <logger name="org.apache.tomcat.util.net.NioEndpoint.certificate" level="OFF"/>
+    <logger name="org.apache.tomcat.util.net.NioEndpoint" level="OFF"/>
+
+    <logger name="com.streaming.gateway.config" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="LOKI"/>
+    </root>
+</configuration>
