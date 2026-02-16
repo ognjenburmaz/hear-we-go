@@ -163,6 +163,8 @@ services:
   loki:
     image: grafana/loki:latest
     container_name: loki
+    env_file:
+      - .env
     ports:
       - "3100:3100"
     volumes:
@@ -174,11 +176,16 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     environment:
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      #      - GF_AUTH_ANONYMOUS_ENABLED=true
+      #      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - ./grafana-ds.yml:/etc/grafana/provisioning/datasources/ds.yml
     networks:

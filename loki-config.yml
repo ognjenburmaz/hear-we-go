@@ -24,7 +24,10 @@ schema_config:
         period: 24h
 
 limits_config:
-  retention_period: 744h # 31 Days retention
+  retention_period: 744h
+  max_line_size: 256kb
+  max_streams_per_user: 10000
+
 
 compactor:
   working_directory: /tmp/loki/retention
