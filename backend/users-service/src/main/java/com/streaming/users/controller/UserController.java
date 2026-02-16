@@ -49,7 +49,6 @@ public class UserController {
     @Autowired
     private JavaMailSender mailSender;
 
-//    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request) {
@@ -72,6 +71,9 @@ public class UserController {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
         User user = optionalUser.get();
         user.setRegistrationStatus(RegistrationStatus.APPROVED);
+        if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            log.warn("UNEXPECTED_STATE_CHANGE: User {} went from DENIED to APPROVED.", email);
+        }
         userServiceImpl.save(user);
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -95,6 +97,10 @@ public class UserController {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
         User user = optionalUser.get();
         user.setRegistrationStatus(RegistrationStatus.DENIED);
+        if (user.getRegistrationStatus().equals(RegistrationStatus.APPROVED)) {
+            log.warn("UNEXPECTED_STATE_CHANGE: User {} went from APPROVED to DENIED.", email);
+
+        }
         userServiceImpl.save(user);
 
         SimpleMailMessage message = new SimpleMailMessage();
