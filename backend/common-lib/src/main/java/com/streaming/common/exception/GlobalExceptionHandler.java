@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({SecurityException.class, IllegalArgumentException.class, CannotReadException.class,
-            TagException.class, InvalidAudioFrameException.class, ReadOnlyFileException.class, IOException.class})
+            TagException.class, InvalidAudioFrameException.class, ReadOnlyFileException.class, IOException.class, NoSuchAlgorithmException.class})
     public ResponseEntity<String> handleSecurityException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
@@ -44,4 +45,8 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body("Service temporarily unavailable. Please retry later.");
     }
+
+//    @ExceptionHandler({IOException.class, NoSuchAlgorithmException.class}) {
+//
+//    }
 }
