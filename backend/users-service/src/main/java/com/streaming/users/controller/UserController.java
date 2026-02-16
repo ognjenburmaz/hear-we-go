@@ -25,10 +25,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -51,7 +54,23 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request) {
+    public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to register account with email: '{}' failed. Errors: {}",
+                    request.getEmail(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
         return ResponseEntity.ok(userServiceImpl.registerUser(request));
     }
 
