@@ -18,7 +18,7 @@ Sistem je realizovan kao mikroservisna arhitektura koja se sastoji od:
 
 ### Komunikacija između servisa:
 
-* **Sinhrono:** REST pozivi (pomoću OpenFeign ili RestTemplate)
+* **Sinhrono:** REST pozivi (pomoću RestTemplate)
 * **Asinhrono:** Event-driven komunikacija putem **Kafka** message brokera.
 
 ### Tehnološki stack:
@@ -86,7 +86,6 @@ Proveravana je:
 * Izloženost Actuator endpoint-a.
 * Konfiguracija CORS-a.
 * Bezbednost JWT implementacije.
-* Debug režim (isključen u produkciji).
 
 ---
 
@@ -212,23 +211,23 @@ se dokazala efikasnost implementiranih odbrambenih mehanizama.
 * **Cilj:** Provera da li će sistem (Spring Boot) i baza podataka (MongoDB) prihvatiti i kasnije renderovati nevalidan
   sadržaj.
 
-### 2. SQL Injection
+### 2. SQL/noSQL Injection
 
-* **Realizacija:** Skripta salje malicioznu SQL sintaksu u JSON formatu.
+* **Realizacija:** Skripta salje malicioznu SQL i noSQL sintaksu u JSON formatu.
 * **Cilj:** Pokušaj zaobilaska autentifikacije.
 
 ### 3. Brute-force Attack
 
 * **Realizacija:** Python skripta koja automatizovano isprobava stotine lozinki iz predefinisane liste (
-  `dictionary attack`) ka `/auth/login`.
-* **Cilj:** Demonstracija rada **Rate Limiting** mehanizma koji nakon određenog broja pokušaja vraća
-  `HTTP 429 Too Many Requests`.
+  `dictionary attack`) ka `api/users/login/psw`.
+* **Cilj:** Nakon 3 pokušaja logovanja na servis sa pogrešnom lozinkom, korisnički nalog se zaključava i forsira promenu
+  šifre.
 
 ### 4. Denial of Service (DoS)
 
-* **Realizacija:** Python skripta koja koristi `threading` za simultano slanje hiljada zahteva ka Content servisu.
-* **Cilj:** Testiranje **Circuit Breaker-a** (Resilience4j) koji treba da prekine komunikaciju sa preopterećenim
-  servisom i sačuva stabilnost ostatka sistema.
+* **Realizacija:** Shell skripta koja koristi `cURL` za simultano slanje hiljada zahteva ka Content servisu.
+* **Cilj:** Demonstracija rada **Rate Limiting** mehanizma koji nakon određenog broja pokušaja vraća
+  `HTTP 429 Too Many Requests`.
 
 ---
 

