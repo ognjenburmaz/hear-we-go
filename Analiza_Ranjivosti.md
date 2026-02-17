@@ -90,6 +90,117 @@ Proveravana je:
 
 ---
 
+### 2.6 Statička analiza koda (SonarQube)
+
+Za potrebe provere kvaliteta izvornog koda i identifikacije potencijalnih sigurnosnih propusta, korišćen je **SonarQube
+**. Ovaj alat omogućava automatizovanu detekciju "tehničkog duga" i kritičnih tačaka u
+mikroservisnoj arhitekturi.
+
+Skeniranje je izvršeno nad celokupnim `backend` sistemom, a rezultati su agregirani kako bi se dobila kompletna slika
+stanja projekta.
+
+#### Fokus analize:
+
+* **Bugs:** Detekcija logičkih grešaka koje mogu dovesti do pada servisa.
+* **Vulnerabilities:** Identifikacija sigurnosnih rupa (npr. nesigurna serijalizacija podataka).
+* **Code Smells:** Prepoznavanje koda koji je težak za održavanje.
+* **Security Hotspots:** Analiza delova koda koji zahtevaju manuelnu proveru (npr. konfiguracija CORS-a ili enkripcije).
+
+#### 2.6.1 Pregled stanja (Dashboard)
+
+Sistem je uspešno prošao definisani **Quality Gate**, što znači da kod zadovoljava osnovne kriterijume kvaliteta i
+bezbednosti.
+
+![SonarQube Dashboard](./screenshots/Screenshot_2026_02_18-00:18:56.png)
+*Slika 2.6.1: Prikaz "Quality Gate" statusa - Passed*
+
+**Ključne metrike:**
+
+* **Security (Bezbednost):** Ocena **A**. Nisu pronađene kritične ranjivosti (Vulnerabilities: 0), ali su detektovana
+  2 "Security Hotspot-a" koja zahtevaju manuelni pregled.
+* **Reliability (Pouzdanost):** Ocena **C**. Detektovano je 7 potencijalnih grešaka (Bugs) koje mogu dovesti do
+  `NullPointerException` ili `NoSuchElementException` u runtime-u.
+* **Maintainability (Održivost):** Ocena **A**. Iako postoji 129 "Code Smells-a", "Technical Debt" je procenjen na samo
+  2 dana i 4 sata, što je prihvatljivo za obim projekta.
+* **Duplications (Dupliranje):** 2.8%, što je izuzetno nizak procenat i ukazuje na dobro strukturiran kod.
+
+---
+
+#### 2.6.2 Analiza bezbednosnih tačaka (Security Hotspots)
+
+SonarQube je identifikovao dve tačke u servisu `Content-Service` koje zahtevaju bezbednosnu reviziju.
+
+**1. Upotreba slabih heš algoritama (MD5)**
+U `ContentServiceImpl.java` detektovano je korišćenje MD5 algoritma.
+![MD5 Hashing Issue](./screenshots/Screenshot_2026_02_18-00:20:02.png)
+
+* **Analiza rizika:** MD5 nije bezbedan za heširanje lozinki zbog kolizija.
+* **Zaključak:** U ovom projektu, MD5 se koristi isključivo za **generisanje checksum-a fajlova** radi provere
+  integriteta audio zapisa, a ne u bezbednosnom kontekstu (autentifikacija). Stoga, rizik je prihvatljiv.
+
+**2. Kreiranje privremenih fajlova**
+Detektovano je kreiranje fajlova u javno dostupnim direktorijumima.
+![Temp File Issue](./screenshots/Screenshot_2026_02_18-00:19:40.png)
+
+* **Analiza rizika:** Kreiranje fajlova bez restriktivnih permisija može omogućiti drugim korisnicima sistema pristup
+  osetljivim podacima.
+* **Rešenje:** Implementirano je korišćenje `Files.createTempFile` metode koja po default-u postavlja restriktivne
+  dozvole na operativnom sistemu.
+
+---
+
+#### 2.6.3 Detekcija kritičnih grešaka (Bugs & Reliability)
+
+Najveći deo detektovanih grešaka odnosi se na rukovanje `null` vrednostima i `Optional` objektima, što su najčešći
+uzroci pada Java aplikacija.
+
+**1. Rizik od NullPointerException (NPE)**
+Analiza je ukazala na nekoliko mesta gde objekti nisu provereni na `null` vrednost pre pristupa njihovim metodama.
+
+* *Primer u API Gateway-u (`SecurityConfig.java`):*
+  Moguće je da `getRemoteAddress()` vrati `null`, što bi srušilo filter za logovanje neuspešnih prijava.
+  ![NPE in API Gateway](./screenshots/Screenshot_2026_02_18-00:23:28.png)
+
+* *Primer u `TokenUtils.java`:*
+  Metoda `getExpiration()` se poziva nad objektom `claims` koji može biti `null` ako token nije validan.
+  ![NPE in TokenUtils](./screenshots/Screenshot_2026_02_18-00:24:58.png)
+
+* *Primer u `SubscriptionServiceImpl.java`:*
+  Dohvatanje tipa pretplate bez prethodne provere da li pretplata postoji.
+  ![NPE in Subscriptions](./screenshots/Screenshot_2026_02_18-00:24:24.png)
+
+**2. Nepravilno korišćenje Optional klase**
+U `UserController.java` (Users Service) detektovano je pozivanje metode `.get()` nad `Optional` objektom bez prethodne
+provere `.isPresent()`.
+
+![Optional Issue 1](./screenshots/Screenshot_2026_02_18-00:25:26.png)
+![Optional Issue 2](./screenshots/Screenshot_2026_02_18-00:25:57.png)
+
+* **Rizik:** Ako korisnik nije pronađen u bazi, metoda `.get()` baca `NoSuchElementException` i ruši zahtev sa HTTP 500
+  greškom umesto sa adekvatnom HTTP 404 porukom.
+
+---
+
+#### 2.6.4 Dupliranje koda (Code Duplications)
+
+Iako je ukupan procenat dupliranja nizak (2.8%), identifikovano je ponavljanje konfiguracionih klasa.
+
+![Code Duplication](./screenshots/Screenshot_2026_02_18-00:20:48.png)
+
+* **Analiza:** Klase `CassandraConfig.java` i `KafkaConfig.java` su identične u više mikroservisa (`subscriptions`,
+  `notification`, `ratings`).
+* **Opravdanje:** U mikroservisnoj arhitekturi, princip **"Shared Nothing"** često zahteva da servisi budu nezavisni,
+  čak i po cenu dupliranja boilerplate konfiguracije. Izdvajanje u zajedničku biblioteku bi povećalo spregu (coupling)
+  između servisa, što smo želeli da izbegnemo.
+
+### Zaključak analize
+
+Statička analiza je potvrdila da je arhitektura sistema stabilna. Identifikovani "bugovi" su adresirani dodavanjem
+`null-check` provera i pravilnim rukovanjem `Optional` tipovima (korišćenjem `.orElseThrow()`), čime je značajno
+povećana robusnost aplikacije pre finalne odbrane.
+
+---
+
 ## 3 Demonstracija pokušaja napada
 
 U okviru odbrane projekta, realizovana je praktična demonstracija napada korišćenjem prethodno opisanih skripti kako bi
