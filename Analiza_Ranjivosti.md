@@ -74,8 +74,8 @@ Korišćen kao mrežni uslužni program za dijagnostiku dostupnosti servisa i an
 Ovi alati su korišćeni kao primarni mehanizam za automatizaciju testiranja bezbednosti i simulaciju realnih napada na
 sistem.
 
-* **Simulacija opterećenja (DoS):** Multithreaded Python skripte su korišćene za generisanje velikog broja konkurentnih
-  zahteva ka API Gateway-u.
+* **Simulacija opterećenja (DoS):** Multithreaded Python skripte su korišćene za generisanje JSON payload-a sa
+  nevalidnom SQL i noSQL (MongoDB) sintaksom radi testiranja otpornosti na SQL/noSQL injection napade
 * **Brute-force automatizacija:** Bash (Shell) skripte su korišćene za iteriranje kroz liste lozinki i automatizovano
   slanje `cURL` zahteva radi testiranja rate limitinga.
 
