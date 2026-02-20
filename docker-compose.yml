@@ -109,9 +109,12 @@ services:
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: streaming-jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
     ports:
       - "16686:16686"
       - "4317:4317"
+      - "4318:4318"
       - "9411:9411"
     networks:
       - streaming-net
