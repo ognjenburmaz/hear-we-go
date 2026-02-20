@@ -2,6 +2,7 @@ package com.streaming.gateway.config;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -21,14 +22,13 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.crypto.SecretKey;
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
@@ -38,28 +38,24 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
+        return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                // OMOGUĆEN CORS na nivou Spring Security-a
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://localhost", "https://localhost:4200")); // Dodaj port ako Angular trči na drugom
+                    config.setAllowedOrigins(List.of("https://localhost", "https://localhost:4200"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
                     return config;
                 }))
                 .authorizeExchange(exchanges -> exchanges
-                        // 1. WebSocket putanje
-                        .pathMatchers("/api/ws/**", "/ws/**").permitAll()
-                        .pathMatchers("/api/ws/info/**", "/ws/info/**").permitAll()
+                        // 1. Public / WebSocket
+                        .pathMatchers("/api/ws/**", "/ws/**", "/api/ws/info/**", "/ws/info/**").permitAll()
                         .pathMatchers("/api/users/login/**", "/api/users/register/**").permitAll()
-
-                        // 2. Auth putanje
-                        .pathMatchers("/api/users/login/*", "/api/users/register", "/api/users/recovery", "/api/users/pswchange").permitAll()
+                        .pathMatchers("/api/users/recovery", "/api/users/pswchange").permitAll()
                         .pathMatchers("/actuator/**").permitAll()
 
-                        // 3. RBAC
+                        // 2. RBAC (The Gateway door)
                         .pathMatchers(HttpMethod.POST, "/api/content/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.PUT, "/api/content/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.DELETE, "/api/content/**").hasRole("ADMIN")
@@ -68,13 +64,35 @@ public class SecurityConfig {
 
                         .anyExchange().authenticated()
                 )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        // LOGS 403: User is logged in but lacks 'ADMIN' role
+                        .accessDeniedHandler((exchange, denied) -> {
+                            logSecurityFailure(exchange, "FORBIDDEN", denied.getMessage());
+                            return Mono.error(denied);
+                        })
+                        // LOGS 401: Token is missing, expired, or invalid
+                        .authenticationEntryPoint((exchange, authEx) -> {
+                            logSecurityFailure(exchange, "UNAUTHORIZED", authEx.getMessage());
+                            return Mono.error(authEx);
+                        })
+                )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtDecoder(jwtDecoder())
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
-                );
-        return http.build();
+                )
+                .build();
+    }
+
+    private void logSecurityFailure(org.springframework.web.server.ServerWebExchange exchange, String type, String reason) {
+        String path = exchange.getRequest().getPath().value();
+        String method = exchange.getRequest().getMethod().name();
+        String ip = "unknown";
+        if (exchange.getRequest().getRemoteAddress() != null) {
+            ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+        }
+        log.warn("ACCESS FAILURE: [{}] {} - Type: {}, Reason: {}, IP: {}", method, path, type, reason, ip);
     }
 
     @Bean

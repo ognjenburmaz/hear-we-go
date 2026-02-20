@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -34,7 +37,24 @@ public class ContentController {
 // --- ARTISTS ---
 
     @PostMapping("/artists")
-    public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request) {
+    public ResponseEntity<ArtistResponse> createArtist(@RequestBody @Valid ArtistRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to create artist '{}' failed. Errors: {}",
+                    request.getName(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        log.info("Artist created!, Name: {}", request.getName());
         return ResponseEntity.ok(artistService.createArtist(request));
     }
 
@@ -57,7 +77,23 @@ public class ContentController {
     @PutMapping("/artists/{id}")
     public ResponseEntity<ArtistResponse> updateArtist(
             @PathVariable String id,
-            @RequestBody @Valid ArtistRequest request) {
+            @RequestBody @Valid ArtistRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to update artist '{}' failed. Errors: {}",
+                    request.getName(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+        log.info("Artist Updated!, New name is: {}", request.getName());
         return ResponseEntity.ok(artistService.updateArtist(id, request));
     }
 
@@ -73,7 +109,24 @@ public class ContentController {
     // --- ALBUMS ---
 
     @PostMapping("/albums")
-    public ResponseEntity<AlbumResponse> createAlbum(@RequestBody @Valid AlbumRequest request) {
+    public ResponseEntity<AlbumResponse> createAlbum(@RequestBody @Valid AlbumRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to create album '{}' failed. Errors: {}",
+                    request.getTitle(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        log.info("Album created!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.createAlbum(request));
     }
 
@@ -90,7 +143,24 @@ public class ContentController {
     @PutMapping("/albums/{id}")
     public ResponseEntity<AlbumResponse> updateAlbum(
             @PathVariable String id,
-            @RequestBody @Valid AlbumRequest request) {
+            @RequestBody @Valid AlbumRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to update album '{}' failed. Errors: {}",
+                    request.getTitle(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        log.info("Album updated!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.updateAlbum(id, request));
     }
 
@@ -100,8 +170,26 @@ public class ContentController {
     @PostMapping(value = "/songs", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SongResponse> addSong(
             @RequestPart("song") @Valid SongRequest request,
-            @RequestPart("file") MultipartFile file
+            @RequestPart("file") MultipartFile file,
+            BindingResult result
     ) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to create song '{}' failed. Errors: {}",
+                    request.getTitle(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        log.info("Song created!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.addSong(request, file));
     }
 
@@ -148,7 +236,26 @@ public class ContentController {
     @PutMapping("/songs/{id}")
     public ResponseEntity<SongResponse> updateSong(
             @PathVariable String id,
-            @RequestBody @Valid SongRequest request) {
+            @RequestBody @Valid SongRequest request,
+            BindingResult result
+    ) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to update song '{}' failed. Errors: {}",
+                    request.getTitle(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        log.info("Song updated!, Name: {}", request.getTitle());
         return ResponseEntity.ok(contentService.updateSong(id, request));
     }
 
@@ -162,6 +269,7 @@ public class ContentController {
 
     @DeleteMapping("/songs/{id}")
     public ResponseEntity<Void> deleteSong(@PathVariable String id) {
+        log.info("Song deleted!, ID: {}", id);
         contentService.deleteSong(id);
         return ResponseEntity.noContent().build();
     }

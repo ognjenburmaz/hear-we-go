@@ -17,7 +17,9 @@ public class Song {
     private String genre;
 
     private String audioFilePath;
+    private String checksum;
 
     private String albumId;
     private List<String> artistIds;
+
 }

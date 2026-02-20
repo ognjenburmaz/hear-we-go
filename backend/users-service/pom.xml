@@ -51,6 +51,7 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+
         <!-- 4. Service Discovery (Eureka Client) - NO VERSION NEEDED -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

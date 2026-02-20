@@ -113,6 +113,7 @@ db2.songs.insertMany([
         "albumId": album1Id,
         "artistIds": [artist1Id],
         "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
+        "checksum": "e99a18c428cb38d5f260853678922e03",
         "_class": "com.streaming.content.model.Song"
     },
     {
@@ -123,6 +124,7 @@ db2.songs.insertMany([
         "albumId": album1Id,
         "artistIds": [artist1Id],
         "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
+        "checksum": "5d41402abc4b2a76b9719d911017c592",
         "_class": "com.streaming.content.model.Song"
     },
 
@@ -134,6 +136,7 @@ db2.songs.insertMany([
         "albumId": album2Id,
         "artistIds": [artist2Id],
         "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
+        "checksum": "26ab0db90d72e28ad0ba1e22ee510510",
         "_class": "com.streaming.content.model.Song"
     },
     {
@@ -144,6 +147,7 @@ db2.songs.insertMany([
         "albumId": album2Id,
         "artistIds": [artist2Id],
         "audioFilePath": "hdfs://namenode:8020/music/sample-42s.mp3",
+        "checksum": "827ccb0eea8a706c4c34a16891f84e7b",
         "_class": "com.streaming.content.model.Song"
     }
 ]);

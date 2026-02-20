@@ -9,8 +9,10 @@ import com.streaming.users.service.impl.OtpService;
 import com.streaming.users.service.impl.UserServiceImpl;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +25,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -46,8 +52,25 @@ public class UserController {
     @Autowired
     private JavaMailSender mailSender;
 
+
     @PostMapping("/register")
-    public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request) {
+    public ResponseEntity<UserRegistrationResponse> register(@RequestBody @Valid UserRegistrationRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+
+            String errorLog = result.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                    .collect(Collectors.joining(" | "));
+
+            log.warn("INPUT_VALIDATION_FAILURE: Request to register account with email: '{}' failed. Errors: {}",
+                    request.getEmail(), errorLog);
+
+            List<String> errorList = result.getFieldErrors().stream()
+                    .map(FieldError::getDefaultMessage)
+                    .toList();
+
+            return ResponseEntity.badRequest().body(null);
+        }
+
         return ResponseEntity.ok(userServiceImpl.registerUser(request));
     }
 
@@ -67,6 +90,9 @@ public class UserController {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
         User user = optionalUser.get();
         user.setRegistrationStatus(RegistrationStatus.APPROVED);
+        if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            log.warn("UNEXPECTED_STATE_CHANGE: User {} went from DENIED to APPROVED.", email);
+        }
         userServiceImpl.save(user);
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -81,7 +107,7 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-
+        log.info("Account registration request accepted for {}", email);
         return ResponseEntity.ok(user);
     }
 
@@ -90,6 +116,10 @@ public class UserController {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
         User user = optionalUser.get();
         user.setRegistrationStatus(RegistrationStatus.DENIED);
+        if (user.getRegistrationStatus().equals(RegistrationStatus.APPROVED)) {
+            log.warn("UNEXPECTED_STATE_CHANGE: User {} went from APPROVED to DENIED.", email);
+
+        }
         userServiceImpl.save(user);
 
         SimpleMailMessage message = new SimpleMailMessage();
@@ -104,13 +134,13 @@ public class UserController {
             System.err.println("Greška pri slanju mejla: " + ex.getMessage());
         }
 
-
+        log.info("Account registration request rejected for {}", email);
         return ResponseEntity.ok(user);
     }
 
 
     @PostMapping("/login/psw")
-    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest, HttpServletRequest request) {
         // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
         try {
@@ -129,8 +159,9 @@ public class UserController {
                     atteptedLoginUser.setRegistrationStatus(RegistrationStatus.LOCKED);
                 }
                 userServiceImpl.save(atteptedLoginUser);
-            }
 
+            }
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
@@ -144,6 +175,7 @@ public class UserController {
 
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.LOCKED)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "LOCKED_ACCOUNT");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -153,6 +185,7 @@ public class UserController {
         }
 
         if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "PASSWORD_TOO_OLD");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -162,6 +195,7 @@ public class UserController {
         }
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.PENDING)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "PENDING_REGISTRATION");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -171,6 +205,7 @@ public class UserController {
         }
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "DENIED_REGISTRATION");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(Map.of(
@@ -196,11 +231,17 @@ public class UserController {
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setEmail(user.getEmail());
 
+        log.info(
+                "Password login successful: userId={}, ip={}",
+                user.getId(),
+                request.getRemoteAddr()
+        );
+
         return ResponseEntity.ok(emailDTO);
     }
 
     @PostMapping("/login/otp")
-    public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<TokenUtils.JwtDTO> login(@RequestBody AuthRequest authRequest, HttpServletRequest request) {
         // TODO nek ovde vraca neki UserDTO (ili u login/psw?)
 
         Authentication authentication =
@@ -216,6 +257,11 @@ public class UserController {
 
         String jwt = tokenUtils.generateToken(user.getUsername(), user.getRole());
 
+        log.info(
+                "OTP login successful: userId={}, ip={}",
+                user.getId(),
+                request.getRemoteAddr()
+        );
         return ResponseEntity.ok(new TokenUtils.JwtDTO(jwt, tokenUtils.getExpiredIn()));
     }
 

@@ -62,7 +62,7 @@ A.V.
 Namestio MailHog, kada se app pokrene u dockeru mail-ovi se nece slati na pravi mejl nego ce se nalaziti na
 ```http://localhost:8025/```, tako da ne mora svako da dodaje svoje mejlove medju user-e
 
-O.B. https setup prebacen na jednu skriptu uputstva u README mora biti java instalirana, 
+O.B. https setup prebacen na jednu skriptu uputstva u README mora biti java instalirana,
 notifikacije zavrsene, rate limit impl s skriptom za simuliranje dos napada u nju treba ubaciti validan
 jwt token pre pokretanja, dodao navbar admin links, subscriptions back impl nije testiran flow,
 back validacija za user i content serv, repo cleanup
@@ -96,3 +96,34 @@ artist page now displays artist name, can follow artist or genre, can view subs 
 added content db script
 
 rating service, grpc, 2.7 sve uradjeno
+
+A.V.
+
+Uputstvo za testiranje logovanja:
+
+Logovi se nalaze
+na: http://localhost:3000/explore?schemaVersion=1&panes=%7B%226kl%22:%7B%22datasource%22:%22P8E80F9AEF21F6940%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D~%5C%22.%2B%5C%22%7D%22,%22queryType%22:%22range%22,%22datasource%22:%7B%22type%22:%22loki%22,%22uid%22:%22P8E80F9AEF21F6940%22%7D,%22editorMode%22:%22code%22,%22direction%22:%22backward%22%7D%5D,%22range%22:%7B%22from%22:%22now-1h%22,%22to%22:%22now%22%7D,%22compact%22:false%7D%7D&orgId=1
+
+User i sifra su isti kao oni sto su poslati za .env na wa.
+
+- Neuspehe validacije ulaznih podataka: Posto FE ima svoju validaciju, poslati Postman zahtev sa nevalidnim payload-om,
+  npr: {
+  "name":"",
+  "biography":"ab",
+  "genres":["a"]
+  } poslati na https://localhost:8080/api/content/artists
+
+- pokušaje prijave na sistem (uspešne i neuspešne): Samo se prijaviti i promasiti lozinku ili OTP
+
+- neuspehe kontrole pristupa: Poslati Postman zahtev bez ikakvog JWT tokena ('NoAuth' opcija)
+- neočekivane promene state podataka, ovo je implementirano u kodu da ako korisnik kojim slucajem predje iz
+  RegistrationStatus.DENIED u APPROVED i slicne stvari da se to loguje ali nemoguce je da ikad dodje do toga.
+- pokušaje pristupa sa nevalidnim ili isteklim tokenima sesije: samo poslati istekli JWT.
+- administratorske aktivnosti: Uraditi bilo sta sto moze admin (CRUD i odobravanje registracija)
+- neuspešne bekend TLS konekcije. Opcija 1: poslati pokusaj otvaranja openssl konekcije sa TLS verzijom koju Tomcat ne
+  podrzava: ```openssl s_client -connect localhost:8080 -tls1```, Opcija 2: Otvoriti telnet konekciju pa poslati bilo
+  koji string karaktera (Handshake ocekuje specijalan karakter na pocetku) ```telnet localhost 8080``` pa ukucati
+  ```hello``` pa cuknuti ```enter```
+
+Nakon bilo kojih od ovih koraka, logovi ce se prikazati u Grafani u gorenavedenoj lokaciji (query string da odmah
+prikaze ispravan filter)

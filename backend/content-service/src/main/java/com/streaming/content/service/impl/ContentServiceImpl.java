@@ -19,6 +19,7 @@ import com.streaming.content.util.ContentMapper;
 import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -33,10 +34,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.hadoop.fs.FileSystem;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +62,7 @@ public class ContentServiceImpl implements ContentService {
     private final RatingClient ratingClient;
     private final KafkaTemplate<String, Object> genericKafkaTemplate;
     private final RedisTemplate<String, byte[]> redisTemplate;
-  
+
     private static final String CACHE_PREFIX = "audio_cache::";
 
     private static final List<String> ALLOWED_MIME_TYPES = List.of("audio/mpeg", "audio/wav", "audio/ogg");
@@ -136,6 +139,18 @@ public class ContentServiceImpl implements ContentService {
     public SongResponse addSong(SongRequest request, MultipartFile file) {
 
         validateFile(file);
+        byte[] data = null;
+        try {
+            data = file.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] hash = null;
+        try {
+            hash = MessageDigest.getInstance("MD5").digest(data);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
         String hdfsPath;
         try {
             hdfsPath = hdfsStorageService.saveFile(file);
@@ -177,6 +192,11 @@ public class ContentServiceImpl implements ContentService {
         songEntity.setDurationSeconds(durationInSeconds);
         songEntity.setArtistIds(album.getArtistIds());
         songEntity.setAudioFilePath(hdfsPath);
+
+
+        String checksum = new BigInteger(1, hash).toString(16);
+
+        songEntity.setChecksum(checksum);
 
         Song savedSong = songRepository.save(songEntity);
 
@@ -243,7 +263,9 @@ public class ContentServiceImpl implements ContentService {
 
     public SongResponse getSongById(String id, String userId) {
         try {
-            if(Objects.equals(id, "67")) {Thread.sleep(4500);}
+            if (Objects.equals(id, "67")) {
+                Thread.sleep(4500);
+            }
             Song song = songRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Song not found with ID: " + id));
             SongResponse response = mapper.toResponse(song);
@@ -388,7 +410,7 @@ public class ContentServiceImpl implements ContentService {
         List<ArtistResponse> artists = artistRepository.findTop3ByNameContainingIgnoreCase(query)
                 .stream()
                 .map(artist -> {
-                    ArtistResponse res = new  ArtistResponse();
+                    ArtistResponse res = new ArtistResponse();
                     res.setId(artist.getId());
                     res.setName(artist.getName());
                     res.setBiography(artist.getBiography());
@@ -400,7 +422,7 @@ public class ContentServiceImpl implements ContentService {
         List<AlbumResponse> albums = albumRepository.findTop3ByTitleContainingIgnoreCase(query)
                 .stream()
                 .map(album -> {
-                    AlbumResponse res = new  AlbumResponse();
+                    AlbumResponse res = new AlbumResponse();
                     res.setId(album.getId());
                     res.setTitle(album.getTitle());
                     res.setReleaseDate(album.getReleaseDate());
@@ -413,7 +435,7 @@ public class ContentServiceImpl implements ContentService {
         List<SongResponse> songs = songRepository.findTop3ByTitleContainingIgnoreCase(query)
                 .stream()
                 .map(song -> {
-                    SongResponse res = new  SongResponse();
+                    SongResponse res = new SongResponse();
                     res.setId(song.getId());
                     res.setTitle(song.getTitle());
                     res.setAlbumId(song.getAlbumId());
