@@ -110,7 +110,7 @@ stanja projekta.
 Sistem je uspešno prošao definisani **Quality Gate**, što znači da kod zadovoljava osnovne kriterijume kvaliteta i
 bezbednosti.
 
-![SonarQube Dashboard](./screenshots/Screenshot_2026_02_18-00:18:56.png)
+<!--![SonarQube Dashboard](./screenshots/Screenshot_2026_02_18-00:18:56.png)-->
 *Slika 2.6.1: Prikaz "Quality Gate" statusa - Passed*
 
 **Ključne metrike:**
@@ -131,7 +131,7 @@ SonarQube je identifikovao dve tačke u servisu `Content-Service` koje zahtevaju
 
 **1. Upotreba slabih heš algoritama (MD5)**
 U `ContentServiceImpl.java` detektovano je korišćenje MD5 algoritma.
-![MD5 Hashing Issue](./screenshots/Screenshot_2026_02_18-00:20:02.png)
+<!--![MD5 Hashing Issue](./screenshots/Screenshot_2026_02_18-00:20:02.png)-->
 
 * **Analiza rizika:** MD5 nije bezbedan za heširanje lozinki zbog kolizija.
 * **Zaključak:** U ovom projektu, MD5 se koristi isključivo za **generisanje checksum-a fajlova** radi provere
@@ -139,7 +139,7 @@ U `ContentServiceImpl.java` detektovano je korišćenje MD5 algoritma.
 
 **2. Kreiranje privremenih fajlova**
 Detektovano je kreiranje fajlova u javno dostupnim direktorijumima.
-![Temp File Issue](./screenshots/Screenshot_2026_02_18-00:19:40.png)
+<!--![Temp File Issue](./screenshots/Screenshot_2026_02_18-00:19:40.png)-->
 
 * **Analiza rizika:** Kreiranje fajlova bez restriktivnih permisija može omogućiti drugim korisnicima sistema pristup
   osetljivim podacima.
@@ -158,22 +158,22 @@ Analiza je ukazala na nekoliko mesta gde objekti nisu provereni na `null` vredno
 
 * *Primer u API Gateway-u (`SecurityConfig.java`):*
   Moguće je da `getRemoteAddress()` vrati `null`, što bi srušilo filter za logovanje neuspešnih prijava.
-  ![NPE in API Gateway](./screenshots/Screenshot_2026_02_18-00:23:28.png)
+  <!--![NPE in API Gateway](./screenshots/Screenshot_2026_02_18-00:23:28.png)-->
 
 * *Primer u `TokenUtils.java`:*
   Metoda `getExpiration()` se poziva nad objektom `claims` koji može biti `null` ako token nije validan.
-  ![NPE in TokenUtils](./screenshots/Screenshot_2026_02_18-00:24:58.png)
+  <!--![NPE in TokenUtils](./screenshots/Screenshot_2026_02_18-00:24:58.png)-->
 
 * *Primer u `SubscriptionServiceImpl.java`:*
   Dohvatanje tipa pretplate bez prethodne provere da li pretplata postoji.
-  ![NPE in Subscriptions](./screenshots/Screenshot_2026_02_18-00:24:24.png)
+  <!--![NPE in Subscriptions](./screenshots/Screenshot_2026_02_18-00:24:24.png)-->
 
 **2. Nepravilno korišćenje Optional klase**
 U `UserController.java` (Users Service) detektovano je pozivanje metode `.get()` nad `Optional` objektom bez prethodne
 provere `.isPresent()`.
 
-![Optional Issue 1](./screenshots/Screenshot_2026_02_18-00:25:26.png)
-![Optional Issue 2](./screenshots/Screenshot_2026_02_18-00:25:57.png)
+<!--![Optional Issue 1](./screenshots/Screenshot_2026_02_18-00:25:26.png)-->
+<!--![Optional Issue 2](./screenshots/Screenshot_2026_02_18-00:25:57.png)-->
 
 * **Rizik:** Ako korisnik nije pronađen u bazi, metoda `.get()` baca `NoSuchElementException` i ruši zahtev sa HTTP 500
   greškom umesto sa adekvatnom HTTP 404 porukom.
@@ -184,7 +184,7 @@ provere `.isPresent()`.
 
 Iako je ukupan procenat dupliranja nizak (2.8%), identifikovano je ponavljanje konfiguracionih klasa.
 
-![Code Duplication](./screenshots/Screenshot_2026_02_18-00:20:48.png)
+<!--![Code Duplication](./screenshots/Screenshot_2026_02_18-00:20:48.png)-->
 
 * **Analiza:** Klase `CassandraConfig.java` i `KafkaConfig.java` su identične u više mikroservisa (`subscriptions`,
   `notification`, `ratings`).
