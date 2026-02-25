@@ -88,7 +88,7 @@ public class UserController {
     @PatchMapping("/requests/accept/{email}")
     public ResponseEntity<User> acceptRegistration(@PathVariable String email) {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
-        User user = optionalUser.get();
+        User user = optionalUser.orElseThrow();
         user.setRegistrationStatus(RegistrationStatus.APPROVED);
         if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
             log.warn("UNEXPECTED_STATE_CHANGE: User {} went from DENIED to APPROVED.", email);
@@ -114,7 +114,7 @@ public class UserController {
     @PatchMapping("/requests/reject/{email}")
     public ResponseEntity<User> denyRegistration(@PathVariable String email) {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
-        User user = optionalUser.get();
+        User user = optionalUser.orElseThrow();
         user.setRegistrationStatus(RegistrationStatus.DENIED);
         if (user.getRegistrationStatus().equals(RegistrationStatus.APPROVED)) {
             log.warn("UNEXPECTED_STATE_CHANGE: User {} went from APPROVED to DENIED.", email);

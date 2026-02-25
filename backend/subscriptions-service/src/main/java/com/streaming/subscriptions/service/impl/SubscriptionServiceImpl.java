@@ -98,8 +98,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         genericKafkaTemplate.send("user-activities", new UserActivityEvent(userId, "SUB_DELETED", payload));
 
         // Event za graf bazu preporuka
-//        assert subscription != null;
-        if (subscription.getType().equals("GENRE")) {
+        if (subscription != null && subscription.getType().equals("GENRE")) {
             UserActivityEvent event = new UserActivityEvent();
             event.setUserId(userId);
             event.setEventType("GENRE_UNSUBSCRIBED");

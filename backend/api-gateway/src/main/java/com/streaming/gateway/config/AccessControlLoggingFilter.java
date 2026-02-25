@@ -20,7 +20,9 @@ public class AccessControlLoggingFilter {
                 if (status == HttpStatus.UNAUTHORIZED || status == HttpStatus.FORBIDDEN) {
                     String path = exchange.getRequest().getPath().toString();
                     String method = exchange.getRequest().getMethod().name();
-                    String ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
+                    String ip = "";
+                    if (exchange.getRequest().getRemoteAddress() != null)
+                        ip = exchange.getRequest().getRemoteAddress().getAddress().getHostAddress();
 
                     log.warn("ACCESS FAILURE: [{}] {} returned {} for IP: {}",
                             method, path, status.value(), ip);
