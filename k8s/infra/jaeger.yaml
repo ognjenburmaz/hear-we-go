@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streaming-jaeger
+  namespace: hear-we-go
+spec:
+  selector:
+    matchLabels:
+      app: streaming-jaeger
+  template:
+    metadata:
+      labels:
+        app: streaming-jaeger
+    spec:
+      containers:
+        - name: streaming-jaeger
+          image: jaegertracing/all-in-one:latest
+          ports:
+            - containerPort: 16686
+            - containerPort: 4317
+            - containerPort: 9411
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streaming-jaeger
+  namespace: hear-we-go
+spec:
+  selector:
+    app: streaming-jaeger
+  ports:
+    - name: ui
+      port: 16686
+      targetPort: 16686
+    - name: otlp-grpc
+      port: 4317
+      targetPort: 4317
+    - name: otlp-http # Added this port
+      port: 4318
+      targetPort: 4318

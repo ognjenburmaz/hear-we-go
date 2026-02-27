@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: api-gateway } }
+  template:
+    metadata: { labels: { app: api-gateway } }
+    spec:
+      containers:
+        - name: api-gateway
+          image: hear-we-go-api-gateway:latest # CHECK THIS NAME
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef: { name: app-config }
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+            - name: logback-config
+              mountPath: /config
+              readOnly: true
+          env:
+            - name: LOGGING_CONFIG
+              value: /config/logback-spring.xml
+      volumes:
+        - name: certs-volume
+          secret: { secretName: cert-secret }
+        - name: logback-config
+          configMap:
+            name: logback-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: hear-we-go
+spec:
+  selector: { app: api-gateway }
+  type: LoadBalancer # Exposes Gateway externally just in case
+  ports:
+    - port: 8080
+      targetPort: 8080

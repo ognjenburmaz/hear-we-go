@@ -20,6 +20,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -88,7 +89,7 @@ public class UserController {
     @PatchMapping("/requests/accept/{email}")
     public ResponseEntity<User> acceptRegistration(@PathVariable String email) {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
-        User user = optionalUser.get();
+        User user = optionalUser.orElseThrow();
         user.setRegistrationStatus(RegistrationStatus.APPROVED);
         if (user.getRegistrationStatus().equals(RegistrationStatus.DENIED)) {
             log.warn("UNEXPECTED_STATE_CHANGE: User {} went from DENIED to APPROVED.", email);
@@ -114,7 +115,7 @@ public class UserController {
     @PatchMapping("/requests/reject/{email}")
     public ResponseEntity<User> denyRegistration(@PathVariable String email) {
         Optional<User> optionalUser = userServiceImpl.findByEmail(email);
-        User user = optionalUser.get();
+        User user = optionalUser.orElseThrow();
         user.setRegistrationStatus(RegistrationStatus.DENIED);
         if (user.getRegistrationStatus().equals(RegistrationStatus.APPROVED)) {
             log.warn("UNEXPECTED_STATE_CHANGE: User {} went from APPROVED to DENIED.", email);
@@ -138,30 +139,13 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
     @PostMapping("/login/psw")
     public ResponseEntity<?> pswlogin(@RequestBody AuthRequest authRequest, HttpServletRequest request) {
-        // TODO nek ovde vraca neki UserDTO (ili u login/otp?)
 
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            authRequest.getUsername(),
-                            authRequest.getPassword()
-                    )
-            );
-        } catch (BadCredentialsException ex) {
-            Optional<User> atteptedLogin = userServiceImpl.findByUsername(authRequest.getUsername());
-            if (atteptedLogin.isPresent()) {
-                User atteptedLoginUser = atteptedLogin.get();
-                atteptedLoginUser.setFailedLoginAttempts(atteptedLoginUser.getFailedLoginAttempts() + 1);
-                if (atteptedLoginUser.getFailedLoginAttempts() > 3) {
-                    atteptedLoginUser.setRegistrationStatus(RegistrationStatus.LOCKED);
-                }
-                userServiceImpl.save(atteptedLoginUser);
+        Optional<User> optionalUser = userServiceImpl.findByUsername(authRequest.getUsername());
 
-            }
-            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
+        if (optionalUser.isEmpty()) {
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "USER_NOT_FOUND");
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of(
@@ -170,9 +154,7 @@ public class UserController {
                     ));
         }
 
-
-        User user = userServiceImpl.getUserEntity(authRequest.getUsername());
-
+        User user = optionalUser.get();
 
         if (user.getRegistrationStatus().equals(RegistrationStatus.LOCKED)) {
             log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "LOCKED_ACCOUNT");
@@ -184,7 +166,7 @@ public class UserController {
                     ));
         }
 
-        if (user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
+        if (user.getLastPasswordReset() != null && user.getLastPasswordReset().plusDays(60).isBefore(LocalDateTime.now())) {
             log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "PASSWORD_TOO_OLD");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -211,6 +193,29 @@ public class UserController {
                     .body(Map.of(
                             "code", "DENIED_REGISTRATION",
                             "message", "Your registration has been denied!"
+                    ));
+        }
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            authRequest.getUsername(),
+                            authRequest.getPassword()
+                    )
+            );
+        } catch (AuthenticationException ex) {
+            user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
+            if (user.getFailedLoginAttempts() > 3) {
+                user.setRegistrationStatus(RegistrationStatus.LOCKED);
+            }
+            userServiceImpl.save(user);
+
+            log.warn("Login failed: username={}, ip={}, reason={}", authRequest.getUsername(), request.getRemoteAddr(), "WRONG_CREDENTIALS");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of(
+                            "code", "WRONG_CREDENTIALS",
+                            "message", "Incorrect username or password!"
                     ));
         }
 

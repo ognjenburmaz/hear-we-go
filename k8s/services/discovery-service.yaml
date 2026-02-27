@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: discovery-service
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: discovery-service } }
+  template:
+    metadata: { labels: { app: discovery-service } }
+    spec:
+      containers:
+        - name: discovery-service
+          image: hear-we-go-discovery-service:latest  # CHECK THIS NAME
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef: { name: app-config }
+          ports:
+            - containerPort: 8761
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: certs-volume
+          secret: { secretName: cert-secret }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+  namespace: hear-we-go
+spec:
+  selector: { app: discovery-service }
+  ports:
+    - port: 8761
+      targetPort: 8761

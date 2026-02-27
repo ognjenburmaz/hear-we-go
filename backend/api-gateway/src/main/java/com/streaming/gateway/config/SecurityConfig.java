@@ -14,6 +14,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
@@ -42,7 +43,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("https://localhost", "https://localhost:4200"));
+                    config.setAllowedOrigins(List.of("https://localhost", "https://localhost:4200", "https://127.0.0.1"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
                     config.setAllowCredentials(true);
@@ -132,7 +133,7 @@ public class SecurityConfig {
             @Override
             public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
                 return ReactiveSecurityContextHolder.getContext()
-                        .map(securityContext -> securityContext.getAuthentication())
+                        .map(SecurityContext::getAuthentication)
                         .cast(org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken.class)
                         .map(jwtAuthToken -> {
                             Jwt jwt = jwtAuthToken.getToken();

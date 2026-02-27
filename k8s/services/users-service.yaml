@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-service
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-service
+  template:
+    metadata:
+      labels:
+        app: users-service
+    spec:
+      containers:
+        - name: users-service
+          image: hear-we-go-users-service:latest # Ensure this matches the image name from docker-compose build
+          imagePullPolicy: Never      # CRITICAL for Minikube local images
+          envFrom:
+            - configMapRef:
+                name: app-config        # Pulls in your .env variables
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+            - name: logback-config
+              mountPath: /config
+              readOnly: true
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "docker"
+            - name: LOGGING_CONFIG
+              value: /config/logback-spring.xml
+#            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
+#              value: "DEBUG"
+#            - name: LOGGING_LEVEL_COM_STREAMING
+#              value: "DEBUG"
+#            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_AUTHORIZATION
+#              value: "DEBUG"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://streaming-mongo:27017/users-db"
+      volumes:
+        - name: certs-volume
+          secret:
+            secretName: cert-secret
+        - name: logback-config
+          configMap:
+            name: logback-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users-service
+  namespace: hear-we-go
+spec:
+  selector:
+    app: users-service
+  ports:
+    - name: "https"
+      port: 8081
+      targetPort: 8081
+    - name: "http"
+      port: 8081
+      targetPort: 8081

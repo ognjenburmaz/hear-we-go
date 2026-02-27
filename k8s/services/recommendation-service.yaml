@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendation-service
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: recommendation-service } }
+  template:
+    metadata: { labels: { app: recommendation-service } }
+    spec:
+      containers:
+        - name: recommendation-service
+          image: hear-we-go-recommendation-service:latest # CHECK THIS NAME
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef: { name: app-config }
+          env:
+#            - name: SERVER_PORT
+#              value: "8080"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "streaming-kafka:9092"
+#          ports:
+#            - containerPort: 8080
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: certs-volume
+          secret: { secretName: cert-secret }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: recommendation-service
+  namespace: hear-we-go
+spec:
+  selector: { app: recommendation-service }
+  type: ClusterIP # Exposes Gateway externally just in case
+  ports:
+    - name: "https"
+      port: 8086
+      targetPort: 8086
+    - name: "http"
+      port: 8086
+      targetPort: 8086
