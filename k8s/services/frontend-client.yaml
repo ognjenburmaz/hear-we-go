@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-client
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-client
+  template:
+    metadata:
+      labels:
+        app: frontend-client
+    spec:
+      containers:
+      - name: frontend-client
+        image: hear-we-go-frontend-client:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        volumeMounts:
+        # Mounting the certs exactly where Nginx expects them from your docker-compose
+        - name: certs-volume
+          mountPath: /etc/nginx/certs
+          readOnly: true
+      volumes:
+      - name: certs-volume
+        secret:
+          secretName: cert-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-client
+  namespace: hear-we-go
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend-client
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 443

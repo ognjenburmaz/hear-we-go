@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: content-service
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: content-service } }
+  template:
+    metadata: { labels: { app: content-service } }
+    spec:
+      containers:
+        - name: content-service
+          image: hear-we-go-content-service:latest # CHECK THIS NAME
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef: { name: app-config }
+          env:
+            - name: SPRING_DATA_MONGODB_URI
+              value: "mongodb://streaming-mongo:27017/content-db"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
+            - name: HDFS_URI
+              value: "hdfs://streaming-namenode:8020"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "streaming-kafka:9092"
+#          ports:
+#            - containerPort: 8080
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: certs-volume
+          secret: { secretName: cert-secret }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: content-service
+  namespace: hear-we-go
+spec:
+  selector: { app: content-service }
+  ports:
+    - name: "https"
+      port: 8082
+      targetPort: 8082
+    - name: "http"
+      port: 8082
+      targetPort: 8082

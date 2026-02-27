@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: hear-we-go
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: notification-service } }
+  template:
+    metadata: { labels: { app: notification-service } }
+    spec:
+      containers:
+        - name: notification-service
+          image: hear-we-go-notification-service:latest # CHECK THIS NAME
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef: { name: app-config }
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "streaming-kafka:9092"
+            - name: SPRING_CASSANDRA_CONTACT_POINTS
+              value: "streaming-scylla"
+            - name: SPRING_CASSANDRA_PORT
+              value: "9042"
+            - name: SPRING_CASSANDRA_KEYSPACE_NAME
+              value: "notifications_ks"  # <--- Set specifically for this app
+            - name: SPRING_CASSANDRA_LOCAL_DATACENTER
+              value: "datacenter1"
+          #          ports:
+#            - containerPort: 8080
+          volumeMounts:
+            - name: certs-volume
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: certs-volume
+          secret: { secretName: cert-secret }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: hear-we-go
+spec:
+  selector: { app: notification-service }
+  type: ClusterIP # Exposes Gateway externally just in case
+  ports:
+    - name: "https"
+      port: 8084
+      targetPort: 8084
+    - name: "http"
+      port: 8084
+      targetPort: 8084
