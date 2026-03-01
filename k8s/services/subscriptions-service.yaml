@@ -50,6 +50,3 @@ spec:
     - name: "https"
       port: 8087
       targetPort: 8087
-    - name: "http"
-      port: 8087
-      targetPort: 8087

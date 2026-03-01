@@ -21,18 +21,18 @@ spec:
             - name: certs-volume
               mountPath: /app/certs
               readOnly: true
-            - name: logback-config
-              mountPath: /config
-              readOnly: true
-          env:
-            - name: LOGGING_CONFIG
-              value: /config/logback-spring.xml
+      #            - name: logback-config
+      #              mountPath: /config
+      #              readOnly: true
+      #          env:
+      #            - name: LOGGING_CONFIG
+      #              value: /config/logback-spring.xml
       volumes:
         - name: certs-volume
           secret: { secretName: cert-secret }
-        - name: logback-config
-          configMap:
-            name: logback-config
+#        - name: logback-config
+#          configMap:
+#            name: logback-config
 ---
 apiVersion: v1
 kind: Service

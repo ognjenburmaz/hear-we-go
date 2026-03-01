@@ -21,7 +21,7 @@ spec:
             - name: SPRING_DATA_MONGODB_URI
               value: "mongodb://streaming-mongo:27017/analytics-db"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
-              value: "streaming-kafka:9092"
+              value: "kafka:9092"
 #          ports:
 #            - containerPort: 8080
           volumeMounts:
@@ -43,6 +43,6 @@ spec:
     - name: "https"
       port: 8083
       targetPort: 8083
-    - name: "http"
-      port: 8083
-      targetPort: 8083
+#    - name: "http"
+#      port: 8083
+#      targetPort: 8083

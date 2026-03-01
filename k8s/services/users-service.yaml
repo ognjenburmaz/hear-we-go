@@ -24,14 +24,14 @@ spec:
             - name: certs-volume
               mountPath: /app/certs
               readOnly: true
-            - name: logback-config
-              mountPath: /config
-              readOnly: true
+          #            - name: logback-config
+          #              mountPath: /config
+          #              readOnly: true
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "docker"
-            - name: LOGGING_CONFIG
-              value: /config/logback-spring.xml
+            #            - name: LOGGING_CONFIG
+            #              value: /config/logback-spring.xml
 #            - name: LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY
 #              value: "DEBUG"
 #            - name: LOGGING_LEVEL_COM_STREAMING
@@ -46,9 +46,9 @@ spec:
         - name: certs-volume
           secret:
             secretName: cert-secret
-        - name: logback-config
-          configMap:
-            name: logback-config
+#        - name: logback-config
+#          configMap:
+#            name: logback-config
 ---
 apiVersion: v1
 kind: Service
@@ -60,8 +60,5 @@ spec:
     app: users-service
   ports:
     - name: "https"
-      port: 8081
-      targetPort: 8081
-    - name: "http"
       port: 8081
       targetPort: 8081

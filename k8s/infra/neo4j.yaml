@@ -39,13 +39,13 @@ spec:
         volumeMounts:
         - name: neo4j-data
           mountPath: /data
-        - name: neo4j-init-script
+        - name: neo4j-init-config
           mountPath: /var/lib/neo4j/import
       volumes:
       - name: neo4j-data
         persistentVolumeClaim:
           claimName: neo4j-pvc
-      - name: neo4j-init-script
+      - name: neo4j-init-config
         configMap:
           name: neo4j-init-config
 ---

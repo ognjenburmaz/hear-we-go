@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 echo [1/10] Starting Minikube with 6 Cores and 8GB RAM...
-minikube start --cpus=6 --memory=8192 --driver=docker
+minikube start --cpus=6 --memory=5921 --driver=docker
 
 echo [2/10] Creating namespace 'hear-we-go'...
 kubectl create namespace hear-we-go
@@ -11,7 +11,7 @@ echo [3/10] Fixing ScyllaDB Kernel limits (aio-max-nr)...
 minikube ssh "sudo sysctl -w fs.aio-max-nr=2097152"
 
 echo [4/10] Building Docker Images...
-:: We build locally then load into minikube. 
+:: We build locally then load into minikube.
 :: Alternatively: call @FOR /f "tokens=*" %%i IN ('minikube -p minikube docker-env --shell cmd') DO %%i
 docker-compose build
 
