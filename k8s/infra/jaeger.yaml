@@ -18,6 +18,7 @@ spec:
           ports:
             - containerPort: 16686
             - containerPort: 4317
+            - containerPort: 4318
             - containerPort: 9411
 ---
 apiVersion: v1

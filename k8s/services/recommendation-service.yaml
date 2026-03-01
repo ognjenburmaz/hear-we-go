@@ -44,6 +44,3 @@ spec:
     - name: "https"
       port: 8086
       targetPort: 8086
-    - name: "http"
-      port: 8086
-      targetPort: 8086

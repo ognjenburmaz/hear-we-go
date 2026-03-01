@@ -25,6 +25,8 @@ spec:
               mountPath: /config
               readOnly: true
           env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
             - name: LOGGING_CONFIG
               value: /config/logback-spring.xml
       volumes:

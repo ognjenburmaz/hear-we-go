@@ -21,7 +21,10 @@ kubectl create secret generic cert-secret --from-file=./certs -n hear-we-go
 :: Create configmap from your .env file
 kubectl create configmap app-config --from-env-file=.env -n hear-we-go
 :: Create configmap for neo4j init scripts
-kubectl create configmap neo4j-init-scripts --from-file=./neo4j/init/init.sh -n hear-we-go
+kubectl create configmap neo4j-init-config \
+  --from-file=init.sh=./neo4j/init/init.sh \
+  --from-file=schema.cypher=./neo4j/init/schema.cypher \
+  -n hear-we-go --dry-run=client -o yaml | kubectl apply -f -
 
 echo [6/10] Loading Images into Minikube (This may take a while)...
 set "services=api-gateway discovery-service users-service content-service ratings-service subscriptions-service notification-service recommendation-service analytics-service frontend-client"

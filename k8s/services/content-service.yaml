@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: content-service
-          image: hear-we-go-content-service:latest # CHECK THIS NAME
+          image: hear-we-go-content-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -24,15 +24,23 @@ spec:
               value: "hdfs://streaming-namenode:8020"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
               value: "streaming-kafka:9092"
+            - name: LOGGING_CONFIG
+              value: /config/logback-spring.xml
 #          ports:
 #            - containerPort: 8080
           volumeMounts:
             - name: certs-volume
               mountPath: /app/certs
               readOnly: true
+            - name: logback-config
+              mountPath: /config
+              readOnly: true
       volumes:
         - name: certs-volume
           secret: { secretName: cert-secret }
+        - name: logback-config
+          configMap:
+            name: logback-config
 ---
 apiVersion: v1
 kind: Service
@@ -43,8 +51,5 @@ spec:
   selector: { app: content-service }
   ports:
     - name: "https"
-      port: 8082
-      targetPort: 8082
-    - name: "http"
       port: 8082
       targetPort: 8082

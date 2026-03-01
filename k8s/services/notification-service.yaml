@@ -50,6 +50,3 @@ spec:
     - name: "https"
       port: 8084
       targetPort: 8084
-    - name: "http"
-      port: 8084
-      targetPort: 8084

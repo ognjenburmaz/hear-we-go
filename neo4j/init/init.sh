@@ -12,7 +12,9 @@ until cypher-shell "RETURN 1" >/dev/null 2>&1; do
 done
 
 echo "✅ Neo4j is ready. Applying schema…"
-cypher-shell < /var/lib/neo4j/import/schema.cypher
+#cypher-shell < /var/lib/neo4j/import/schema.cypher
+cypher-shell < /init-scripts/schema.cypher          # new path
+
 
 echo "🎉 Schema applied successfully"
 
