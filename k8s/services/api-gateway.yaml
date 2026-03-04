@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: hear-we-go-api-gateway:latest # CHECK THIS NAME
+          image: hear-we-go-api-gateway:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -25,6 +25,8 @@ spec:
               mountPath: /config
               readOnly: true
           env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://streaming-jaeger:4318"
             - name: LOGGING_CONFIG
               value: /config/logback-spring.xml
       volumes:
@@ -41,7 +43,7 @@ metadata:
   namespace: hear-we-go
 spec:
   selector: { app: api-gateway }
-  type: LoadBalancer # Exposes Gateway externally just in case
+#  type: LoadBalancer
   ports:
     - port: 8080
       targetPort: 8080

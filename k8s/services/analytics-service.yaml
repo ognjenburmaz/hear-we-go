@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: hear-we-go-analytics-service:latest # CHECK THIS NAME
+          image: hear-we-go-analytics-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -41,8 +41,5 @@ spec:
   selector: { app: analytics-service }
   ports:
     - name: "https"
-      port: 8083
-      targetPort: 8083
-    - name: "http"
       port: 8083
       targetPort: 8083

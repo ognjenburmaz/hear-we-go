@@ -11,13 +11,11 @@ spec:
     spec:
       containers:
         - name: ratings-service
-          image: hear-we-go-ratings-service:latest # CHECK THIS NAME
+          image: hear-we-go-ratings-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
           env:
-#            - name: SERVER_PORT
-#              value: "8080"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://streaming-jaeger:4318"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
@@ -47,11 +45,8 @@ metadata:
   namespace: hear-we-go
 spec:
   selector: { app: ratings-service }
-  type: ClusterIP # Exposes Gateway externally just in case
+  type: ClusterIP
   ports:
     - name: "https"
-      port: 8085
-      targetPort: 8085
-    - name: "http"
       port: 8085
       targetPort: 8085

@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: hear-we-go-notification-service:latest # CHECK THIS NAME
+          image: hear-we-go-notification-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -25,7 +25,7 @@ spec:
             - name: SPRING_CASSANDRA_PORT
               value: "9042"
             - name: SPRING_CASSANDRA_KEYSPACE_NAME
-              value: "notifications_ks"  # <--- Set specifically for this app
+              value: "notifications_ks"
             - name: SPRING_CASSANDRA_LOCAL_DATACENTER
               value: "datacenter1"
           #          ports:
@@ -45,11 +45,8 @@ metadata:
   namespace: hear-we-go
 spec:
   selector: { app: notification-service }
-  type: ClusterIP # Exposes Gateway externally just in case
+  type: ClusterIP
   ports:
     - name: "https"
-      port: 8084
-      targetPort: 8084
-    - name: "http"
       port: 8084
       targetPort: 8084

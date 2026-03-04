@@ -3,6 +3,8 @@
 # 1. Install/Update local CA
 mkcert -install
 
+mkdir -p certs
+
 # 2. Generate the Leaf Certificate (For the services)
 echo "Generating Certificate..."
 mkcert -key-file certs/key.pem -cert-file certs/cert.pem \
