@@ -388,7 +388,7 @@ public class ContentServiceImpl implements ContentService {
             throw new IllegalArgumentException("File too large. Max 20MB");
         }
 
-        String filename = StringUtils.cleanPath(file.getOriginalFilename());
+        String filename = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         if (filename.contains("..")) {
             throw new SecurityException("Cannot store file with relative path outside current directory " + filename);
         }

@@ -22,6 +22,8 @@ echo [5/10] Creating ConfigMaps and Secrets...
 kubectl create secret generic cert-secret --from-file=./certs -n hear-we-go
 :: Create configmap from your .env file
 kubectl create configmap app-config --from-env-file=.env -n hear-we-go
+:: Create configmap for logging to console if needed
+kubectl create configmap logback-config --from-file=./k8s/logback-spring.xml  -n hear-we-go
 :: Create configmap for neo4j init scripts
 kubectl create configmap neo4j-init-config \
   --from-file=init.sh=./neo4j/init/init.sh \

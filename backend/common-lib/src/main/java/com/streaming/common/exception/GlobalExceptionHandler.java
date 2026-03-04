@@ -45,8 +45,4 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body("Service temporarily unavailable. Please retry later.");
     }
-
-//    @ExceptionHandler({IOException.class, NoSuchAlgorithmException.class}) {
-//
-//    }
 }
