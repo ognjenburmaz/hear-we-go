@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
         - name: users-service
-          image: hear-we-go-users-service:latest # Ensure this matches the image name from docker-compose build
-          imagePullPolicy: Never      # CRITICAL for Minikube local images
+          image: hear-we-go-users-service:latest
+          imagePullPolicy: Never
           envFrom:
             - configMapRef:
-                name: app-config        # Pulls in your .env variables
+                name: app-config
           volumeMounts:
             - name: certs-volume
               mountPath: /app/certs

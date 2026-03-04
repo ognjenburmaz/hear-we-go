@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: hear-we-go-api-gateway:latest # CHECK THIS NAME
+          image: hear-we-go-api-gateway:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -43,7 +43,7 @@ metadata:
   namespace: hear-we-go
 spec:
   selector: { app: api-gateway }
-  type: LoadBalancer # Exposes Gateway externally just in case
+#  type: LoadBalancer
   ports:
     - port: 8080
       targetPort: 8080

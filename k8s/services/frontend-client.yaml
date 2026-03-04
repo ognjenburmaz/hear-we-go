@@ -21,7 +21,6 @@ spec:
         - containerPort: 80
         - containerPort: 443
         volumeMounts:
-        # Mounting the certs exactly where Nginx expects them from your docker-compose
         - name: certs-volume
           mountPath: /etc/nginx/certs
           readOnly: true

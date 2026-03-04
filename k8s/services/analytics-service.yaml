@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: hear-we-go-analytics-service:latest # CHECK THIS NAME
+          image: hear-we-go-analytics-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }

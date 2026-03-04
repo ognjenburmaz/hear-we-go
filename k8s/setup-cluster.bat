@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+::NOTE: THIS SCRIPT NEEDS WORK, PROBABLY NON FUNCTIONAL AS IT IS, HERE JUST TO POINT YOU IN THE RIGHT DIRECTION
+
 echo [1/10] Starting Minikube with 6 Cores and 8GB RAM...
 minikube start --cpus=6 --memory=8192 --driver=docker
 

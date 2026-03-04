@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: recommendation-service
-          image: hear-we-go-recommendation-service:latest # CHECK THIS NAME
+          image: hear-we-go-recommendation-service:latest
           imagePullPolicy: Never
           envFrom:
             - configMapRef: { name: app-config }
@@ -39,7 +39,7 @@ metadata:
   namespace: hear-we-go
 spec:
   selector: { app: recommendation-service }
-  type: ClusterIP # Exposes Gateway externally just in case
+  type: ClusterIP
   ports:
     - name: "https"
       port: 8086
